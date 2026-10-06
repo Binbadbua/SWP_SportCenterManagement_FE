@@ -1,0 +1,136 @@
+/* ==========================================================================
+   Design tokens — storefront look (white canvas, black ink, one signal colour)
+   ========================================================================== */
+:root {
+  --ink: #111111;
+  --paper: #ffffff;
+  --mist: #f5f5f5;
+  --mist-2: #e9e9e9;
+  --stone: #707072;
+  --hairline: #e5e5e5;
+  --signal: #e0481b;       /* court orange: badges, "spots left", focus accents */
+  --signal-text: #b3370f;  /* orange for small text on white (AA contrast) */
+  --success: #007d48;
+  --danger: #d30005;
+  --warning: #9a6700;
+
+  --font-display: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
+  --font-body: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif;
+
+  --gutter: clamp(16px, 3.4vw, 48px);
+  --max: 1440px;
+  --radius-pill: 999px;
+  --radius: 8px;
+  --header-h: 60px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  font-variation-settings: 'wdth' 100;
+  -webkit-font-smoothing: antialiased;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+
+:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---- Type roles ---------------------------------------------------------- */
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.005em;
+}
+
+/* Condensed, spaced caps — used for eyebrows, tags and nav in the staff area */
+.label {
+  font-stretch: 75%;
+  font-variation-settings: 'wdth' 75;
+  font-weight: 650;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.muted {
+  color: var(--stone);
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.container {
+  width: 100%;
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

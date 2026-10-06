@@ -1,0 +1,78 @@
+import { Route, Routes, useLocation } from 'react-router-dom';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
+import { ToastProvider } from './components/Toast.jsx';
+import StoreLayout from './layouts/StoreLayout.jsx';
+import StaffLayout from './layouts/StaffLayout.jsx';
+import Home from './pages/store/Home.jsx';
+import Classes from './pages/store/Classes.jsx';
+import ClassDetail from './pages/store/ClassDetail.jsx';
+import Schedule from './pages/store/Schedule.jsx';
+import Memberships from './pages/store/Memberships.jsx';
+import Coaches from './pages/store/Coaches.jsx';
+import Login from './pages/store/Login.jsx';
+import Register from './pages/store/Register.jsx';
+import Account from './pages/store/Account.jsx';
+import Help from './pages/store/Help.jsx';
+import NotFound from './pages/NotFound.jsx';
+import Dashboard from './pages/staff/Dashboard.jsx';
+import Attendance from './pages/staff/Attendance.jsx';
+import Bookings from './pages/staff/Bookings.jsx';
+import CrudPage from './pages/staff/CrudPage.jsx';
+import { resources } from './pages/staff/resources.jsx';
+
+// Staff list pages: URL -> config in resources.jsx
+const CRUD_ROUTES = {
+  classes: 'classes',
+  schedule: 'schedule',
+  rooms: 'rooms',
+  sports: 'sports',
+  coaches: 'coaches',
+  managers: 'managers',
+  invoices: 'invoices',
+  'audit-log': 'auditLog',
+  'my-classes': 'myClasses',
+  'my-members': 'myMembers',
+  members: 'members',
+  receptionists: 'receptionists',
+  packages: 'packages',
+  memberships: 'memberships',
+  accounts: 'accounts',
+  'training-plans': 'trainingPlans',
+  'training-results': 'trainingResults',
+};
+
+export default function App() {
+  const location = useLocation();
+  return (
+    <ToastProvider>
+      <ErrorBoundary resetKey={location.pathname}>
+      <Routes>
+        <Route element={<StoreLayout />}>
+          <Route index element={<Home />} />
+          <Route path="classes" element={<Classes />} />
+          <Route path="classes/:id" element={<ClassDetail />} />
+          <Route path="schedule" element={<Schedule />} />
+          <Route path="memberships" element={<Memberships />} />
+          <Route path="coaches" element={<Coaches />} />
+          <Route path="login" element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="account" element={<Account />} />
+          <Route path="help" element={<Help />} />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+
+        <Route path="staff" element={<StaffLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="bookings" element={<Bookings />} />
+          {Object.entries(CRUD_ROUTES).map(([path, key]) => (
+            // key= forces a fresh page (and fresh hooks) when moving between list pages
+            <Route key={path} path={path} element={<CrudPage key={key} config={resources[key]} />} />
+          ))}
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+      </ErrorBoundary>
+    </ToastProvider>
+  );
+}
