@@ -1,6 +1,6 @@
 // Every endpoint that exists in SWP_SportCenter.Api today.
 // Features without a back-end yet use src/api/previewStore.js instead (UI-only).
-import { http } from './client.js';
+import { http } from "./client.js";
 
 const crud = (base) => ({
   list: () => http.get(base),
@@ -11,103 +11,122 @@ const crud = (base) => ({
 });
 
 export const api = {
-  categories: crud('/api/categories'),
-  rooms: crud('/api/rooms'),
+  categories: crud("/api/categories"),
+  rooms: crud("/api/rooms"),
 
   packages: {
-    ...crud('/api/membership-packages'),
+    ...crud("/api/membership-packages"),
     list: async () => {
-      const response = await http.get('/api/membership-packages');
+      const response = await http.get("/api/membership-packages");
       let items = response.items || response.data || response;
-      return items.map(item => ({
+      return items.map((item) => ({
         ...item,
-        id: item.membershipPackageId
+        id: item.membershipPackageId,
       }));
-    }
+    },
   },
 
   auth: {
-    login: (data) => http.post('/api/auth/login', data),
-    register: (data) => http.post('/api/auth/register', data),
+    login: (data) => http.post("/api/auth/login", data),
+    register: (data) => http.post("/api/auth/register", data),
   },
 
   accounts: {
-    ...crud('/api/accounts'),
+    ...crud("/api/accounts"),
     list: async () => {
-      const response = await http.get('/api/accounts');
+      const response = await http.get("/api/accounts");
       let data = response.items || response.data || response;
-      return data.map(item => ({ ...item, id: item.id || item.accountId }));
-    }
+      return data.map((item) => ({ ...item, id: item.id || item.accountId }));
+    },
   },
 
   receptionists: {
-    ...crud('/api/receptionists'),
+    ...crud("/api/receptionists"),
     list: async () => {
-      const response = await http.get('/api/receptionists');
+      const response = await http.get("/api/receptionists");
       let data = response.items || response.data || response;
-      return data.map(item => ({ ...item, id: item.id || item.accountId }));
-    }
+      return data.map((item) => ({ ...item, id: item.id || item.accountId }));
+    },
   },
 
   memberships: {
-    ...crud('/api/memberships'),
+    ...crud("/api/memberships"),
     list: async () => {
-      const response = await http.get('/api/memberships');
+      const response = await http.get("/api/memberships");
       let data = response.items || response.data || response;
-      return data.map(item => ({
+      return data.map((item) => ({
         ...item,
-        id: item.membershipId || item.id 
+        id: item.membershipId || item.id,
       }));
-    }
+    },
   },
 
   members: {
-    ...crud('/api/members'),
+    ...crud("/api/members"),
     list: async () => {
-      const response = await http.get('/api/members');
+      const response = await http.get("/api/members");
       let data = response.items || response.data || response;
-      return data.map(item => ({
+      return data.map((item) => ({
         ...item,
-        id: item.memberId || item.id 
+        id: item.memberId || item.id,
       }));
-    }
+    },
+    me: {
+      get: () => http.get("/api/members/me"),
+      update: (data) => http.put("/api/members/me", data),
+    },
   },
 
   classes: {
-    ...crud('/api/classes'),
+    ...crud("/api/classes"),
     members: (classId) => http.get(`/api/classes/${classId}/members`),
   },
 
   schedules: {
-    ...crud('/api/class-sessions'),
+    ...crud("/api/class-sessions"),
     byClass: (classId) => http.get(`/api/class-sessions/class/${classId}`),
-    attendance: (sessionId) => http.get(`/api/attendances/session/${sessionId}`),
+    attendance: (sessionId) =>
+      http.get(`/api/attendances/session/${sessionId}`),
   },
 
   coaches: {
-    ...crud('/api/coaches'),
+    ...crud("/api/coaches"),
     byAccount: (accountId) => http.get(`/api/coaches/me`),
     classes: (coachId) => http.get(`/api/coaches/me/classes`),
     members: (coachId) => http.get(`/api/coaches/me/members`),
   },
 
-  managers: crud('/api/center-managers'),
-  invoices: crud('/api/invoices'),
+  managers: crud("/api/center-managers"),
+
+  trainingPlans: {
+    listForMember: () => http.get("/api/members/me/training-plans"),
+  },
+
+  trainingResults: {
+    listForMember: () => http.get("/api/members/me/training-results"),
+  },
+
+  invoices: {
+    ...crud("/api/invoices"),
+    byMember: () => http.get("/api/invoices/members/me/invoices"),
+  },
 
   auditLogs: {
-    list: () => http.get('/api/audit-logs'),
+    list: () => http.get("/api/audit-logs"),
     byAccount: (accountId) => http.get(`/api/audit-logs/account/${accountId}`),
   },
 
   bookings: {
-    byMember: (memberId) => http.get(`/api/members/${memberId}/class-registrations`),
-    create: (body) => http.post('/api/class-registrations', body),
-    cancel: (bookingId, memberId) => http.del(`/api/class-registrations/${bookingId}?memberId=${memberId}`),
+    byMember: (memberId) =>
+      http.get(`/api/members/${memberId}/class-registrations`),
+    create: (body) => http.post("/api/class-registrations", body),
+    cancel: (bookingId, memberId) =>
+      http.del(`/api/class-registrations/${bookingId}?memberId=${memberId}`),
   },
 
   attendance: {
     byMember: (memberId) => http.get(`/api/members/${memberId}/attendance`),
-    record: (body) => http.post('/api/attendance', body),
+    record: (body) => http.post("/api/attendance", body),
     update: (id, body) => http.put(`/api/attendance/${id}`, body),
   },
 };

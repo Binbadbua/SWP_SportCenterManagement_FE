@@ -52,7 +52,7 @@ export default function Dashboard() {
       <header className="staff-page__head">
         <div>
           <p className="label muted">{formatDate(today)}</p>
-          <h1 className="staff-page__title display">{greeting()}, {user.FullName.split(' ').slice(-1)[0]}</h1>
+          <h1 className="staff-page__title display">{greeting()}, {user.fullName?.split(' ').slice(-1)[0] || user.username}</h1>
         </div>
       </header>
 

@@ -317,7 +317,8 @@ export const resources = {
       { key: 'email', label: 'Email' },
     ],
     fields: [
-      { name: 'fullName', label: 'Full name', type: 'select', required: true, full: true, optionsFrom: (l) => opt((l.accounts || []).filter((a) => a.role === 1 || a.role === 2), 'id', (a) => `${a.username}`) },
+      { name: 'accountId', label: 'Account ID', type: 'select', required: true, full: true, createOnly: true, optionsFrom: (l) => opt((l.accounts || []).filter((a) => a.role === 3), 'id', (a) => `${a.username}`), help: 'The account must have the Receptionist role.' },
+      { name: 'fullName', label: 'Full name', required: true, full: true },
       { name: 'phone', label: 'Phone', type: 'tel', required: true },
       { name: 'email', label: 'Email', type: 'email', required: true },
       { name: 'workingShift', label: 'Working shift', full: true, placeholder: 'Morning (06:00–14:00)' },

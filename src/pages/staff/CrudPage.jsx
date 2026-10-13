@@ -1,14 +1,22 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { useApi } from '../../hooks/useApi.js';
-import { useAuth } from '../../context/AuthContext.jsx';
-import { fromTimeInput, toDateInput, toTimeInput } from '../../lib/format.js';
-import Icon from '../../components/Icon.jsx';
-import Modal from '../../components/Modal.jsx';
-import { useToast } from '../../components/Toast.jsx';
+import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { useApi } from "../../hooks/useApi.js";
+import { useAuth } from "../../context/AuthContext.jsx";
+import { fromTimeInput, toDateInput, toTimeInput } from "../../lib/format.js";
+import Icon from "../../components/Icon.jsx";
+import Modal from "../../components/Modal.jsx";
+import { useToast } from "../../components/Toast.jsx";
 import {
-  Button, EmptyState, ErrorNotice, Field, IconButton, Loading, Notice, PreviewNotice, SampleDataNotice,
-} from '../../components/ui.jsx';
+  Button,
+  EmptyState,
+  ErrorNotice,
+  Field,
+  IconButton,
+  Loading,
+  Notice,
+  PreviewNotice,
+  SampleDataNotice,
+} from "../../components/ui.jsx";
 
 /**
  * Generic list + create/edit/delete page driven by a config object (see resources.jsx).
@@ -29,18 +37,31 @@ import {
 export default function CrudPage({ config }) {
   const { user } = useAuth();
   const toast = useToast();
-  const source = typeof config.source === 'function' ? config.source(user) : config.source;
+  const source =
+    typeof config.source === "function" ? config.source(user) : config.source;
   const lookupDefs = config.lookups ? config.lookups(user) : {};
 
-  const list = useApi(() => source.list(), [config.key, user?.accountId], { sample: config.sample });
+  const list = useApi(() => source.list(), [config.key, user?.accountId], {
+    sample: config.sample,
+  });
   const lookups = useApi(
-    async () => Object.fromEntries(await Promise.all(Object.entries(lookupDefs).map(async ([k, l]) => [k, await l.load()]))),
+    async () =>
+      Object.fromEntries(
+        await Promise.all(
+          Object.entries(lookupDefs).map(async ([k, l]) => [k, await l.load()]),
+        ),
+      ),
     [config.key, user?.accountId],
-    { sample: () => Object.fromEntries(Object.entries(lookupDefs).map(([k, l]) => [k, l.sample ?? []])) },
+    {
+      sample: () =>
+        Object.fromEntries(
+          Object.entries(lookupDefs).map(([k, l]) => [k, l.sample ?? []]),
+        ),
+    },
   );
   const lk = lookups.data ?? {};
 
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [form, setForm] = useState(null); // { mode, row, values }
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState(null);
@@ -49,8 +70,12 @@ export default function CrudPage({ config }) {
   const [detail, setDetail] = useState(null); // { action, row }
 
   const offline = list.usingSample;
-  const canWrite = !!config.fields && (config.canWrite ? config.canWrite(user) : true);
-  const canDelete = canWrite && !!source.remove && (config.canDelete ? config.canDelete(user) : true);
+  const canWrite =
+    !!config.fields && (config.canWrite ? config.canWrite(user) : true);
+  const canDelete =
+    canWrite &&
+    !!source.remove &&
+    (config.canDelete ? config.canDelete(user) : true);
   const nameOf = config.nameOf ?? ((r) => r.name ?? r.id);
 
   const rows = useMemo(() => {
@@ -58,43 +83,57 @@ export default function CrudPage({ config }) {
     const all = [...(list.data ?? [])];
     if (config.sort) all.sort(config.sort);
     if (!needle || !config.searchText) return all;
-    return all.filter((r) => config.searchText(r).toLowerCase().includes(needle));
+    return all.filter((r) =>
+      config.searchText(r).toLowerCase().includes(needle),
+    );
   }, [list.data, query, config]);
 
-  const fieldsFor = (mode) => (config.fields ?? []).filter((f) => (mode === 'create' ? !f.editOnly : !f.createOnly));
+  const fieldsFor = (mode) =>
+    (config.fields ?? []).filter((f) =>
+      mode === "create" ? !f.editOnly : !f.createOnly,
+    );
 
   const openCreate = () => {
-    const values = Object.fromEntries(fieldsFor('create').map((f) => [f.name, f.defaultValue ? f.defaultValue(user) : '']));
-    setForm({ mode: 'create', row: null, values });
+    const values = Object.fromEntries(
+      fieldsFor("create").map((f) => [
+        f.name,
+        f.defaultValue ? f.defaultValue(user) : "",
+      ]),
+    );
+    setForm({ mode: "create", row: null, values });
     setErrors({});
     setFormError(null);
   };
   const openEdit = (row) => {
     const values = Object.fromEntries(
-      fieldsFor('edit').map((f) => {
+      fieldsFor("edit").map((f) => {
         const v = row[f.name];
-        if (f.type === 'date') return [f.name, toDateInput(v)];
-        if (f.type === 'time') return [f.name, toTimeInput(v)];
-        return [f.name, v === null || v === undefined ? '' : String(v)];
+        if (f.type === "date") return [f.name, toDateInput(v)];
+        if (f.type === "time") return [f.name, toTimeInput(v)];
+        return [f.name, v === null || v === undefined ? "" : String(v)];
       }),
     );
-    setForm({ mode: 'edit', row, values });
+    setForm({ mode: "edit", row, values });
     setErrors({});
     setFormError(null);
   };
 
-  const setValue = (name, value) => setForm((f) => ({ ...f, values: { ...f.values, [name]: value } }));
+  const setValue = (name, value) =>
+    setForm((f) => ({ ...f, values: { ...f.values, [name]: value } }));
 
   const validate = (mode, values) => {
     const e = {};
     for (const f of fieldsFor(mode)) {
       const v = values[f.name];
-      if (f.required && (v === '' || v === null || v === undefined)) e[f.name] = `${f.label} is required.`;
-      else if (f.type === 'number' && v !== '') {
+      if (f.required && (v === "" || v === null || v === undefined))
+        e[f.name] = `${f.label} is required.`;
+      else if (f.type === "number" && v !== "") {
         const n = Number(v);
         if (Number.isNaN(n)) e[f.name] = `${f.label} must be a number.`;
-        else if (f.min !== undefined && n < f.min) e[f.name] = `${f.label} must be at least ${f.min}.`;
-        else if (f.max !== undefined && n > f.max) e[f.name] = `${f.label} must be at most ${f.max}.`;
+        else if (f.min !== undefined && n < f.min)
+          e[f.name] = `${f.label} must be at least ${f.min}.`;
+        else if (f.max !== undefined && n > f.max)
+          e[f.name] = `${f.label} must be at most ${f.max}.`;
       }
     }
     return { ...e, ...(config.validate ? config.validate(values, mode) : {}) };
@@ -104,12 +143,14 @@ export default function CrudPage({ config }) {
     const body = {};
     for (const f of fieldsFor(mode)) {
       const v = values[f.name];
-      if (v === '' || v === undefined) continue; // let the API use its default
-      if (f.type === 'number' || f.numeric) body[f.name] = Number(v);
-      else if (f.type === 'time') body[f.name] = fromTimeInput(v);
+      if (v === "" || v === undefined) continue; // let the API use its default
+      if (f.type === "number" || f.numeric) body[f.name] = Number(v);
+      else if (f.type === "time") body[f.name] = fromTimeInput(v);
       else body[f.name] = v;
     }
-    return config.toRequest ? config.toRequest(body, { mode, lookups: lk, user, row: form?.row }) : body;
+    return config.toRequest
+      ? config.toRequest(body, { mode, lookups: lk, user, row: form?.row })
+      : body;
   };
 
   const save = async (e) => {
@@ -121,9 +162,13 @@ export default function CrudPage({ config }) {
     setFormError(null);
     try {
       const body = toRequest(form.mode, form.values);
-      if (form.mode === 'create') await source.create(body);
+      if (form.mode === "create") await source.create(body);
       else await source.update(form.row.id, body);
-      toast.success(form.mode === 'create' ? `${config.singular} added.` : `${config.singular} saved.`);
+      toast.success(
+        form.mode === "create"
+          ? `${config.singular} added.`
+          : `${config.singular} saved.`,
+      );
       setForm(null);
       list.reload();
     } catch (err) {
@@ -154,7 +199,7 @@ export default function CrudPage({ config }) {
           <h1 className="staff-page__title display">{config.title}</h1>
           {config.description && <p className="muted">{config.description}</p>}
         </div>
-        {canWrite && config.key !== 'accounts' && (
+        {canWrite && (
           <Button icon="plus" onClick={openCreate} disabled={offline}>
             Add {config.singular.toLowerCase()}
           </Button>
@@ -177,7 +222,9 @@ export default function CrudPage({ config }) {
               aria-label={`Search ${config.title.toLowerCase()}`}
             />
           </label>
-          <span className="muted num">{rows.length} {rows.length === 1 ? 'result' : 'results'}</span>
+          <span className="muted num">
+            {rows.length} {rows.length === 1 ? "result" : "results"}
+          </span>
         </div>
       )}
 
@@ -188,27 +235,64 @@ export default function CrudPage({ config }) {
           <table className="table">
             <thead>
               <tr>
-                {config.columns.map((c) => <th key={c.key} scope="col">{c.label}</th>)}
-                {hasActions && <th scope="col"><span className="visually-hidden">Actions</span></th>}
+                {config.columns.map((c) => (
+                  <th key={c.key} scope="col">
+                    {c.label}
+                  </th>
+                ))}
+                {hasActions && (
+                  <th scope="col">
+                    <span className="visually-hidden">Actions</span>
+                  </th>
+                )}
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => (
                 <tr key={row.id ?? JSON.stringify(row)}>
                   {config.columns.map((c) => (
-                    <td key={c.key} className={c.className}>{c.render ? c.render(row, lk) : row[c.key]}</td>
+                    <td key={c.key} className={c.className}>
+                      {c.render ? c.render(row, lk) : row[c.key]}
+                    </td>
                   ))}
                   {hasActions && (
                     <td className="cell-actions">
                       {config.rowActions?.map((a) =>
                         a.to ? (
-                          <Link key={a.label} className="btn btn--secondary btn--sm" to={a.to(row)}>{a.label}</Link>
+                          <Link
+                            key={a.label}
+                            className="btn btn--secondary btn--sm"
+                            to={a.to(row)}
+                          >
+                            {a.label}
+                          </Link>
                         ) : (
-                          <Button key={a.label} variant="secondary" size="sm" onClick={() => setDetail({ action: a, row })}>{a.label}</Button>
+                          <Button
+                            key={a.label}
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => setDetail({ action: a, row })}
+                          >
+                            {a.label}
+                          </Button>
                         ),
                       )}
-                      {canWrite && <IconButton icon="edit" label={`Edit ${nameOf(row)}`} onClick={() => openEdit(row)} disabled={offline} />}
-                      {canDelete && <IconButton icon="trash" label={`Delete ${nameOf(row)}`} onClick={() => setConfirm(row)} disabled={offline} />}
+                      {canWrite && (
+                        <IconButton
+                          icon="edit"
+                          label={`Edit ${nameOf(row)}`}
+                          onClick={() => openEdit(row)}
+                          disabled={offline}
+                        />
+                      )}
+                      {canDelete && (
+                        <IconButton
+                          icon="trash"
+                          label={`Delete ${nameOf(row)}`}
+                          onClick={() => setConfirm(row)}
+                          disabled={offline}
+                        />
+                      )}
                     </td>
                   )}
                 </tr>
@@ -219,10 +303,23 @@ export default function CrudPage({ config }) {
       ) : (
         !list.error && (
           <EmptyState
-            title={query ? 'Nothing matches that search' : `No ${config.title.toLowerCase()} yet`}
-            action={!query && canWrite && <Button icon="plus" onClick={openCreate}>Add {config.singular.toLowerCase()}</Button>}
+            title={
+              query
+                ? "Nothing matches that search"
+                : `No ${config.title.toLowerCase()} yet`
+            }
+            action={
+              !query &&
+              canWrite && (
+                <Button icon="plus" onClick={openCreate}>
+                  Add {config.singular.toLowerCase()}
+                </Button>
+              )
+            }
           >
-            {query ? 'Check the spelling or clear the search.' : config.emptyHint}
+            {query
+              ? "Check the spelling or clear the search."
+              : config.emptyHint}
           </EmptyState>
         )
       )}
@@ -231,28 +328,46 @@ export default function CrudPage({ config }) {
       <Modal
         open={!!form}
         wide={(config.fields?.length ?? 0) > 4}
-        title={form?.mode === 'create' ? `Add ${config.singular.toLowerCase()}` : `Edit ${config.singular.toLowerCase()}`}
+        title={
+          form?.mode === "create"
+            ? `Add ${config.singular.toLowerCase()}`
+            : `Edit ${config.singular.toLowerCase()}`
+        }
         onClose={() => setForm(null)}
         footer={
           <>
-            <Button variant="secondary" onClick={() => setForm(null)}>Cancel</Button>
+            <Button variant="secondary" onClick={() => setForm(null)}>
+              Cancel
+            </Button>
             <Button type="submit" form="crud-form" disabled={saving}>
-              {saving ? 'Saving…' : form?.mode === 'create' ? `Add ${config.singular.toLowerCase()}` : 'Save changes'}
+              {saving
+                ? "Saving…"
+                : form?.mode === "create"
+                  ? `Add ${config.singular.toLowerCase()}`
+                  : "Save changes"}
             </Button>
           </>
         }
       >
         {form && (
           <form id="crud-form" onSubmit={save} noValidate>
-            {formError && <div className="form-error"><Notice tone="danger" title="Couldn’t save">{formError}</Notice></div>}
+            {formError && (
+              <div className="form-error">
+                <Notice tone="danger" title="Couldn’t save">
+                  {formError}
+                </Notice>
+              </div>
+            )}
             <div className="form-grid">
               {fieldsFor(form.mode).map((f) => (
                 <Field
                   key={f.name}
-                  className={f.full || f.type === 'textarea' ? 'field--full' : ''}
+                  className={
+                    f.full || f.type === "textarea" ? "field--full" : ""
+                  }
                   label={f.label}
                   name={f.name}
-                  type={f.type ?? 'text'}
+                  type={f.type ?? "text"}
                   required={f.required}
                   min={f.min}
                   max={f.max}
@@ -277,21 +392,30 @@ export default function CrudPage({ config }) {
         onClose={() => setConfirm(null)}
         footer={
           <>
-            <Button variant="secondary" onClick={() => setConfirm(null)}>Keep it</Button>
-            <Button variant="danger" onClick={remove}>Delete</Button>
+            <Button variant="secondary" onClick={() => setConfirm(null)}>
+              Keep it
+            </Button>
+            <Button variant="danger" onClick={remove}>
+              Delete
+            </Button>
           </>
         }
       >
         {confirm && (
           <p>
-            “{nameOf(confirm)}” will be removed permanently. If other records still use it, the server will refuse and
-            tell you why.
+            “{nameOf(confirm)}” will be removed permanently. If other records
+            still use it, the server will refuse and tell you why.
           </p>
         )}
       </Modal>
 
       {/* Row detail (e.g. class roster) */}
-      <Modal open={!!detail} wide title={detail ? detail.action.modal.title(detail.row) : ''} onClose={() => setDetail(null)}>
+      <Modal
+        open={!!detail}
+        wide
+        title={detail ? detail.action.modal.title(detail.row) : ""}
+        onClose={() => setDetail(null)}
+      >
         {detail && detail.action.modal.render(detail.row, lk)}
       </Modal>
     </div>
