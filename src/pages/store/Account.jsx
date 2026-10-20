@@ -487,7 +487,6 @@ function ProfileTab() {
         />
       </div>
       <div className="form-actions">
-        <PreviewTag />
         <Button type="submit">Save changes</Button>
       </div>
       <p className="muted small">

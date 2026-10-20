@@ -257,8 +257,12 @@ export default function CrudPage({ config }) {
                   ))}
                   {hasActions && (
                     <td className="cell-actions">
-                      {config.rowActions?.map((a) =>
-                        a.to ? (
+                      {config.rowActions?.map((a) => {
+                        if (a.label === 'Attendance' && user?.role === 'Receptionist') {
+                          return null;
+                        }
+
+                        return a.to ? (
                           <Link
                             key={a.label}
                             className="btn btn--secondary btn--sm"
@@ -275,8 +279,8 @@ export default function CrudPage({ config }) {
                           >
                             {a.label}
                           </Button>
-                        ),
-                      )}
+                        );
+                      })}
                       {canWrite && (
                         <IconButton
                           icon="edit"
