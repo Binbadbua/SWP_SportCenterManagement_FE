@@ -35,9 +35,9 @@ export function StatusTag({ tone = 'neutral', children }) {
 }
 
 /* "Preview" marker for UI that has no API behind it yet */
-export function PreviewTag({ children = 'Preview' }) {
+export function PreviewTag({ children = 'Bản xem trước' }) {
   return (
-    <span className="preview-tag" title="UI only — this feature has no back-end API yet">
+    <span className="preview-tag" title="Chỉ có giao diện — chức năng này chưa có API">
       {children}
     </span>
   );
@@ -60,18 +60,18 @@ export function SampleDataNotice({ onRetry }) {
   return (
     <Notice
       tone="info"
-      title="Showing sample data"
-      action={onRetry && <Button variant="secondary" size="sm" icon="refresh" onClick={onRetry}>Try again</Button>}
+      title="Đang hiện dữ liệu mẫu"
+      action={onRetry && <Button variant="secondary" size="sm" icon="refresh" onClick={onRetry}>Thử lại</Button>}
     >
-      The API isn’t reachable, so this page shows example content. Start the back-end (see README.md) to see real data.
+      Không kết nối được máy chủ nên trang đang hiện dữ liệu ví dụ. Hãy bật máy chủ (xem README.md) để xem dữ liệu thật.
     </Notice>
   );
 }
 
 export function PreviewNotice({ feature, children }) {
   return (
-    <Notice tone="preview" title="UI preview">
-      {children ?? `${feature} has no back-end API yet. Changes here are kept in the browser until you reload.`}
+    <Notice tone="preview" title="Bản xem trước giao diện">
+      {children ?? `${feature} chưa có API. Thay đổi ở đây chỉ được giữ trên trình duyệt đến khi tải lại trang.`}
     </Notice>
   );
 }
@@ -83,8 +83,8 @@ export function ErrorNotice({ error, onRetry }) {
   return (
     <Notice
       tone="danger"
-      title={isOffline ? 'Can’t reach the API' : 'Something went wrong'}
-      action={onRetry && <Button variant="secondary" size="sm" icon="refresh" onClick={onRetry}>Try again</Button>}
+      title={isOffline ? 'Không kết nối được máy chủ' : 'Đã xảy ra lỗi'}
+      action={onRetry && <Button variant="secondary" size="sm" icon="refresh" onClick={onRetry}>Thử lại</Button>}
     >
       {errorMessage}
     </Notice>
@@ -92,7 +92,7 @@ export function ErrorNotice({ error, onRetry }) {
 }
 
 /* Loading & empty ---------------------------------------------------------- */
-export function Loading({ label = 'Loading' }) {
+export function Loading({ label = 'Đang tải' }) {
   return (
     <div className="loading" role="status">
       <span className="loading__bar" />
@@ -127,7 +127,7 @@ export function Field({ label, name, type = 'text', value, onChange, options = [
     control = (
       <div className="select-wrap">
         <select className="input" {...common}>
-          <option value="">{placeholder ?? 'Select…'}</option>
+          <option value="">{placeholder ?? 'Chọn…'}</option>
           {options.map((o) => (
             <option key={o.value} value={o.value} disabled={o.disabled}>{o.label}</option>
           ))}

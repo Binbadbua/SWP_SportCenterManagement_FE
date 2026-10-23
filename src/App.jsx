@@ -9,10 +9,14 @@ import ClassDetail from './pages/store/ClassDetail.jsx';
 import Schedule from './pages/store/Schedule.jsx';
 import Memberships from './pages/store/Memberships.jsx';
 import Coaches from './pages/store/Coaches.jsx';
+import CoachDetail from './pages/store/CoachDetail.jsx';
+import Checkout from './pages/store/Checkout.jsx';
+import PaymentResult from './pages/store/PaymentResult.jsx';
 import Login from './pages/store/Login.jsx';
 import Register from './pages/store/Register.jsx';
 import Account from './pages/store/Account.jsx';
 import Help from './pages/store/Help.jsx';
+import Policy from './pages/store/Policy.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/staff/Dashboard.jsx';
 import Attendance from './pages/staff/Attendance.jsx';
@@ -55,11 +59,16 @@ export default function App() {
           <Route path="classes/:id" element={<ClassDetail />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="memberships" element={<Memberships />} />
+          <Route path="memberships/:id/checkout" element={<Checkout />} />
+          <Route path="payment/result" element={<PaymentResult />} />
           <Route path="coaches" element={<Coaches />} />
+          <Route path="coaches/:id" element={<CoachDetail />} />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
           <Route path="account" element={<Account />} />
           <Route path="help" element={<Help />} />
+          <Route path="terms" element={<Policy kind="terms" />} />
+          <Route path="privacy" element={<Policy kind="privacy" />} />
           <Route path="*" element={<NotFound />} />
         </Route>
 

@@ -22,10 +22,10 @@ export default class ErrorBoundary extends Component {
     return (
       <div className="container page">
         <div className="empty">
-          <p className="empty__title">This page hit an error</p>
+          <p className="empty__title">Trang này gặp lỗi</p>
           <p className="empty__body muted">{String(this.state.error.message || this.state.error)}</p>
           <div className="empty__action">
-            <button type="button" className="btn btn--primary" onClick={() => window.location.reload()}>Reload the page</button>
+            <button type="button" className="btn btn--primary" onClick={() => window.location.reload()}>Tải lại trang</button>
           </div>
         </div>
       </div>

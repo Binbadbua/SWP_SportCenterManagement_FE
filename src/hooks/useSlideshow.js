@@ -15,3 +15,17 @@ export function useSlideshow(count, interval) {
   }, [count, interval]);
   return step;
 }
+
+/**
+ * `value` as it was `delay` ms ago: it takes each new value only after the delay. The home hero
+ * uses it to change its headline once the old photo has faded out.
+ */
+export function useTrailing(value, delay) {
+  const [trailing, setTrailing] = useState(value);
+  useEffect(() => {
+    if (trailing === value) return undefined;
+    const timer = setTimeout(() => setTrailing(value), delay);
+    return () => clearTimeout(timer);
+  }, [value, delay, trailing]);
+  return trailing;
+}

@@ -11,11 +11,11 @@ import { Button, ErrorNotice, Field } from "../../components/ui.jsx";
 // a coach to the members booked into their classes, e.g. homework or a change of plan
 // (POST /api/notifications takes a list of account IDs and refuses a coach's send to anyone else).
 const MANAGER_AUDIENCES = [
-  { value: "role:1", label: "All members" },
-  { value: "role:2", label: "All coaches" },
-  { value: "role:3", label: "All receptionists" },
-  { value: "all", label: "Everyone" },
-  { value: "one", label: "One account…" },
+  { value: "role:1", label: "Tất cả học viên" },
+  { value: "role:2", label: "Tất cả huấn luyện viên" },
+  { value: "role:3", label: "Tất cả lễ tân" },
+  { value: "all", label: "Mọi người" },
+  { value: "one", label: "Một tài khoản…" },
 ];
 
 export default function StaffNotifications() {
@@ -25,13 +25,13 @@ export default function StaffNotifications() {
     <div className="staff-page">
       <header className="staff-page__head">
         <div>
-          <h1 className="staff-page__title display">Notifications</h1>
+          <h1 className="staff-page__title display">Thông báo</h1>
           <p className="muted">
             {user?.role === "CenterManager"
-              ? "Send a message to members or staff, and read the ones sent to you."
+              ? "Gửi tin cho học viên hoặc nhân viên, và đọc các tin gửi tới bạn."
               : user?.role === "Coach"
-                ? "Send homework or news to the members in your classes, and read the messages sent to you."
-                : "Messages sent to your account."}
+                ? "Gửi bài tập hoặc tin tức cho học viên trong lớp của bạn, và đọc các tin gửi tới bạn."
+                : "Các tin nhắn gửi tới tài khoản của bạn."}
           </p>
         </div>
       </header>
@@ -39,7 +39,7 @@ export default function StaffNotifications() {
         <div className="two-col">
           {user.role === "Coach" ? <CoachSendPanel /> : <ManagerSendPanel />}
           <section className="panel">
-            <h2 className="panel-title">Your inbox</h2>
+            <h2 className="panel-title">Hộp thư của bạn</h2>
             <NotificationInbox />
           </section>
         </div>
@@ -88,9 +88,9 @@ function CoachSendPanel() {
   return (
     <SendForm
       audiences={[
-        { value: "all", label: "All my members" },
-        ...classes.map(([id, name]) => ({ value: `class:${id}`, label: `Members of ${name}` })),
-        { value: "one", label: "One member…" },
+        { value: "all", label: "Tất cả học viên của tôi" },
+        ...classes.map(([id, name]) => ({ value: `class:${id}`, label: `Học viên lớp ${name}` })),
+        { value: "one", label: "Một học viên…" },
       ]}
       loading={roster.loading}
       error={roster.error}
@@ -119,16 +119,16 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry })
   const send = async (e) => {
     e.preventDefault();
     const found = {};
-    if (v.audience === "one" && !v.accountId) found.accountId = "Pick a person.";
-    else if (!recipients.length) found.audience = "There is no active account in this group.";
-    if (!v.title.trim()) found.title = "Enter a title.";
-    if (!v.message.trim()) found.message = "Enter a message.";
+    if (v.audience === "one" && !v.accountId) found.accountId = "Vui lòng chọn người nhận.";
+    else if (!recipients.length) found.audience = "Nhóm này không có tài khoản nào đang hoạt động.";
+    if (!v.title.trim()) found.title = "Vui lòng nhập tiêu đề.";
+    if (!v.message.trim()) found.message = "Vui lòng nhập nội dung.";
     setErrors(found);
     if (Object.keys(found).length) return;
     setSending(true);
     try {
       await api.notifications.send({ accountIds: recipients, title: v.title.trim(), message: v.message.trim() });
-      toast.success(`Sent to ${recipients.length} ${recipients.length === 1 ? "account" : "accounts"}.`);
+      toast.success(`Đã gửi tới ${recipients.length} tài khoản.`);
       setV((s) => ({ ...s, title: "", message: "" }));
     } catch (err) {
       toast.error(err.message);
@@ -139,21 +139,21 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry })
 
   return (
     <form className="panel" onSubmit={send} noValidate>
-      <h2 className="panel-title">Send a notification</h2>
+      <h2 className="panel-title">Gửi thông báo</h2>
       <ErrorNotice error={error} onRetry={onRetry} />
       <Field
-        label="Send to"
+        label="Gửi tới"
         name="audience"
         type="select"
         value={v.audience}
         onChange={set}
         options={audiences}
         error={errors.audience}
-        help={loading ? "Loading people…" : `${recipients.length} active ${recipients.length === 1 ? "account" : "accounts"}`}
+        help={loading ? "Đang tải danh sách…" : `${recipients.length} tài khoản đang hoạt động`}
       />
       {v.audience === "one" && (
         <Field
-          label="Person"
+          label="Người nhận"
           name="accountId"
           type="select"
           value={v.accountId}
@@ -162,10 +162,10 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry })
           options={people}
         />
       )}
-      <Field label="Title" name="title" required value={v.title} onChange={set} error={errors.title} />
-      <Field label="Message" name="message" type="textarea" required value={v.message} onChange={set} error={errors.message} />
+      <Field label="Tiêu đề" name="title" required value={v.title} onChange={set} error={errors.title} />
+      <Field label="Nội dung" name="message" type="textarea" required value={v.message} onChange={set} error={errors.message} />
       <Button type="submit" disabled={sending || loading}>
-        {sending ? "Sending…" : "Send"}
+        {sending ? "Đang gửi…" : "Gửi"}
       </Button>
     </form>
   );

@@ -32,30 +32,30 @@ export default function Schedule() {
   return (
     <div className="container page">
       <header className="page-head">
-        <h1 className="page-title display">Schedule</h1>
-        <p className="page-lead">Every session this week, by day. Book the class to hold your spot in all of its sessions.</p>
+        <h1 className="page-title display">Lịch học</h1>
+        <p className="page-lead">Mọi buổi học trong tuần, theo từng ngày. Đặt lớp một lần là giữ chỗ cho tất cả các buổi của lớp đó.</p>
       </header>
 
       {sessions.usingSample && <div className="section-notice"><SampleDataNotice onRetry={sessions.reload} /></div>}
       <ErrorNotice error={!sessions.usingSample ? sessions.error : null} onRetry={sessions.reload} />
 
       <div className="week-nav">
-        <button type="button" className="round-btn" onClick={() => setWeekStart(addDays(weekStart, -7))} aria-label="Previous week">
+        <button type="button" className="round-btn" onClick={() => setWeekStart(addDays(weekStart, -7))} aria-label="Tuần trước">
           <Icon name="chevronLeft" />
         </button>
         <p className="week-nav__label num">{formatDate(weekStart)} – {formatDate(addDays(weekStart, 6))}</p>
-        <button type="button" className="round-btn" onClick={() => setWeekStart(addDays(weekStart, 7))} aria-label="Next week">
+        <button type="button" className="round-btn" onClick={() => setWeekStart(addDays(weekStart, 7))} aria-label="Tuần sau">
           <Icon name="chevronRight" />
         </button>
         {weekStart !== todayUtcDateString() && (
-          <button type="button" className="plain-btn" onClick={() => setWeekStart(todayUtcDateString())}>Back to today</button>
+          <button type="button" className="plain-btn" onClick={() => setWeekStart(todayUtcDateString())}>Về hôm nay</button>
         )}
       </div>
 
       {sessions.loading ? (
         <Loading />
       ) : days.every((d) => !d.items.length) ? (
-        <EmptyState title="No sessions this week">Try the next week, or browse classes to see what’s coming up.</EmptyState>
+        <EmptyState title="Tuần này không có buổi học">Thử xem tuần sau, hoặc xem danh sách lớp để biết lớp sắp mở.</EmptyState>
       ) : (
         <div className="timetable">
           {days.map((d) => (
@@ -78,7 +78,7 @@ export default function Schedule() {
                   ))}
                 </ul>
               ) : (
-                <p className="timetable__rest muted">No sessions</p>
+                <p className="timetable__rest muted">Không có buổi học</p>
               )}
             </section>
           ))}

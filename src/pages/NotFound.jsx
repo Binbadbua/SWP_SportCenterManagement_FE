@@ -4,11 +4,11 @@ export default function NotFound() {
   return (
     <div className="container page not-found">
       <p className="display not-found__code">404</p>
-      <h1 className="not-found__title">This page is out of bounds.</h1>
-      <p className="muted">The link may be old or mistyped.</p>
+      <h1 className="not-found__title">Trang này nằm ngoài sân rồi.</h1>
+      <p className="muted">Có thể đường dẫn đã cũ hoặc bị gõ sai.</p>
       <div className="not-found__actions">
-        <Button to="/">Go to the home page</Button>
-        <Button to="/classes" variant="secondary">Browse classes</Button>
+        <Button to="/">Về trang chủ</Button>
+        <Button to="/classes" variant="secondary">Xem các lớp học</Button>
       </div>
     </div>
   );

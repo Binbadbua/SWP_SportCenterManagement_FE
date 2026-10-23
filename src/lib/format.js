@@ -1,12 +1,16 @@
 // Dates from the API are ISO strings. Date-only fields (class start, session date)
 // are stored as UTC midnight, so they are formatted in UTC to avoid showing the day before.
 
-const dayFmt = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'UTC' });
-const shortDayFmt = new Intl.DateTimeFormat('en-GB', { day: '2-digit', month: 'short', timeZone: 'UTC' });
-const weekdayFmt = new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' });
-const dateTimeFmt = new Intl.DateTimeFormat('en-GB', {
-  day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
-});
+// Dates read the Vietnamese way: 23/10/2026, 23/10, T6, 23/10/2026 08:46
+const pad2 = (n) => String(n).padStart(2, '0');
+const WEEKDAYS = ['CN', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'];
+const dayFmt = { format: (d) => `${pad2(d.getUTCDate())}/${pad2(d.getUTCMonth() + 1)}/${d.getUTCFullYear()}` };
+const shortDayFmt = { format: (d) => `${pad2(d.getUTCDate())}/${pad2(d.getUTCMonth() + 1)}` };
+const weekdayFmt = { format: (d) => WEEKDAYS[d.getUTCDay()] };
+// Timestamps (check-in, payment, audit) are shown on the visitor's clock
+const dateTimeFmt = {
+  format: (d) => `${pad2(d.getDate())}/${pad2(d.getMonth() + 1)}/${d.getFullYear()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`,
+};
 const vnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 });
 
 const toDate = (v) => (v instanceof Date ? v : new Date(v));

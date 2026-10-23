@@ -13,29 +13,29 @@ const lastSixMonths = () =>
     const d = new Date();
     d.setDate(1);
     d.setMonth(d.getMonth() - 5 + i);
-    return { label: d.toLocaleString("en-US", { month: "short" }), year: d.getFullYear(), month: d.getMonth() + 1 };
+    return { label: `T${d.getMonth() + 1}`, year: d.getFullYear(), month: d.getMonth() + 1 };
   });
 
 const greeting = () => {
   const h = new Date().getHours();
-  return h < 12 ? "Good morning" : h < 18 ? "Good afternoon" : "Good evening";
+  return h < 12 ? "Chào buổi sáng" : h < 18 ? "Chào buổi chiều" : "Chào buổi tối";
 };
 
 const QUICK = {
   CenterManager: [
-    { to: "/staff/classes", label: "Add a class", icon: "plus" },
-    { to: "/staff/schedule", label: "Schedule sessions", icon: "calendar" },
-    { to: "/staff/invoices", label: "Review invoices", icon: "grid" },
+    { to: "/staff/classes", label: "Thêm lớp học", icon: "plus" },
+    { to: "/staff/schedule", label: "Xếp lịch buổi học", icon: "calendar" },
+    { to: "/staff/invoices", label: "Xem hóa đơn", icon: "grid" },
   ],
   Receptionist: [
-    { to: "/staff/members", label: "Register a member", icon: "user" },
-    { to: "/staff/bookings", label: "Book a class", icon: "calendar" },
-    { to: "/staff/invoices", label: "Take a payment", icon: "plus" },
+    { to: "/staff/members", label: "Đăng ký học viên", icon: "user" },
+    { to: "/staff/bookings", label: "Đặt lớp cho học viên", icon: "calendar" },
+    { to: "/staff/invoices", label: "Thu tiền", icon: "plus" },
   ],
   Coach: [
-    { to: "/staff/attendance", label: "Take attendance", icon: "check" },
-    { to: "/staff/training-plans", label: "Write a plan", icon: "edit" },
-    { to: "/staff/training-results", label: "Record results", icon: "plus" },
+    { to: "/staff/attendance", label: "Điểm danh", icon: "check" },
+    { to: "/staff/training-plans", label: "Lập kế hoạch tập", icon: "edit" },
+    { to: "/staff/training-results", label: "Ghi kết quả tập", icon: "plus" },
   ],
 };
 
@@ -115,38 +115,38 @@ export default function Dashboard() {
       {user.role === "CenterManager" && (
         <section className="kpis-wrap">
           <div className="section-bar">
-            <h2 className="panel-title">This month</h2>
+            <h2 className="panel-title">Tháng này</h2>
           </div>
           <dl className="kpis">
             <div className="kpi">
-              <dt>Active members</dt>
+              <dt>Học viên đang hoạt động</dt>
               <dd className="display num">
                 {activeMembers}
               </dd>
             </div>
             <div className="kpi">
-              <dt>Active memberships</dt>
+              <dt>Thẻ còn hiệu lực</dt>
               <dd className="display num">
                 {activeMemberships}
               </dd>
             </div>
             <div className="kpi">
-              <dt>Class bookings</dt>
+              <dt>Lượt đặt lớp</dt>
               <dd className="display num">
-                {Number(bookingsThisMonth || 0).toLocaleString("en")}
+                {Number(bookingsThisMonth || 0).toLocaleString("vi-VN")}
               </dd>
             </div>
             <div className="kpi">
-              <dt>Revenue (VND)</dt>
+              <dt>Doanh thu (VND)</dt>
               <dd
                 className="display num"
                 title={formatMoney(revenueThisMonth)}
               >
                 {(Number(revenueThisMonth || 0) / 1e6).toLocaleString(
-                  "en",
+                  "vi-VN",
                   { maximumFractionDigits: 1 },
                 )}
-                M
+                tr
               </dd>
             </div>
           </dl>
@@ -154,7 +154,7 @@ export default function Dashboard() {
             <div
               className="bars"
               role="img"
-              aria-label={`Revenue by month in million VND`}
+              aria-label={`Doanh thu theo tháng, đơn vị triệu đồng`}
             >
               {Array.isArray(revenueByMonth) && revenueByMonth.map((m, i, arr) => {
                 const val = m.value ?? m.revenue ?? 0;
@@ -164,7 +164,7 @@ export default function Dashboard() {
                     key={monthLabel}
                     className={`bars__col ${i === arr.length - 1 ? "is-current" : ""}`}
                   >
-                    <span className="bars__value num">{val}M</span>
+                    <span className="bars__value num">{String(val).replace(".", ",")}tr</span>
                     <span
                       className="bars__bar"
                       style={{ height: `${Math.round((val / max) * 160)}px` }}
@@ -175,7 +175,7 @@ export default function Dashboard() {
               })}
             </div>
             <figcaption className="muted small">
-              Revenue by month (million VND)
+              Doanh thu theo tháng (triệu đồng)
             </figcaption>
           </figure>
         </section>
@@ -185,11 +185,11 @@ export default function Dashboard() {
         <div className="section-bar">
           <h2 className="panel-title">
             {user.role === "Coach"
-              ? "Your sessions today"
-              : "Today on the floor"}
+              ? "Buổi dạy hôm nay của bạn"
+              : "Hôm nay tại trung tâm"}
           </h2>
           <Button variant="secondary" size="sm" to="/staff/schedule">
-            Full schedule
+            Xem cả lịch
           </Button>
         </div>
         {sessions.loading ? (
@@ -209,14 +209,14 @@ export default function Dashboard() {
                     className="btn btn--secondary btn--sm"
                     to={`/staff/attendance?session=${s.id}`}
                   >
-                    Attendance
+                    Điểm danh
                   </Link>
                 )}
               </li>
             ))}
           </ul>
         ) : (
-          <p className="muted">No sessions today.</p>
+          <p className="muted">Hôm nay không có buổi học.</p>
         )}
       </section>
     </div>

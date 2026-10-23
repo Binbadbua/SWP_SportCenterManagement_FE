@@ -34,7 +34,7 @@ export default function Bookings() {
         .map((m) => ({ value: m.id, label: [m.fullName, realPhone(m.phone) || m.email].filter(Boolean).join(' · ') })),
     [members.data],
   );
-  const memberName = (id) => (members.data ?? []).find((m) => m.id === id)?.fullName ?? 'This member';
+  const memberName = (id) => (members.data ?? []).find((m) => m.id === id)?.fullName ?? 'Học viên này';
 
   // Classes open for booking; one that can't take this member says why and can't be picked
   const heldByMember = new Set((memberBookings.data ?? []).filter(holdsSpot).map((b) => b.classId));
@@ -46,13 +46,13 @@ export default function Bookings() {
     .map((c) => {
       const left = c.currentEnrolled == null ? null : c.maxCapacity - c.currentEnrolled;
       const blocked = heldByMember.has(c.id)
-        ? 'already booked'
+        ? 'đã đặt'
         : left !== null && left <= 0
-          ? 'full'
+          ? 'đã đủ chỗ'
           : sessionsKnown && !withSessionsLeft.has(c.id)
-            ? 'no sessions left'
+            ? 'hết buổi học'
             : null;
-      const spots = left === null ? null : `${left} ${left === 1 ? 'spot' : 'spots'} left`;
+      const spots = left === null ? null : `còn ${left} chỗ`;
       return {
         value: c.id,
         label: [c.className, c.categoryName, blocked ?? spots].filter(Boolean).join(' · '),
@@ -64,12 +64,12 @@ export default function Bookings() {
     e.preventDefault();
     setFormError(null);
     if (!memberId || !classId) {
-      setFormError('Choose a member and a class.');
+      setFormError('Vui lòng chọn học viên và lớp học.');
       return;
     }
     const who = memberName(memberId);
-    const className = (classes.data ?? []).find((c) => c.id === classId)?.className ?? 'this class';
-    const alreadyBooked = `${who} is already booked into ${className}.`;
+    const className = (classes.data ?? []).find((c) => c.id === classId)?.className ?? 'lớp này';
+    const alreadyBooked = `${who} đã đặt lớp ${className} rồi.`;
     setSaving(true);
     try {
       // Checked again here: the member may have booked online since this page loaded
@@ -80,7 +80,7 @@ export default function Bookings() {
         return;
       }
       const b = await api.bookings.create({ memberId, classId });
-      toast.success(`${b.memberName ?? who} is booked into ${b.className ?? className}.`);
+      toast.success(`Đã đặt lớp ${b.className ?? className} cho ${b.memberName ?? who}.`);
       setClassId('');
       if (lookupId === memberId) bookings.reload();
       else setLookupId(memberId);
@@ -95,10 +95,10 @@ export default function Bookings() {
   };
 
   const cancel = async (b) => {
-    if (!window.confirm(`Cancel ${b.memberName}’s booking for ${b.className}?`)) return;
+    if (!window.confirm(`Hủy lượt đặt lớp ${b.className} của ${b.memberName}?`)) return;
     try {
       await api.bookings.cancel(b.id, b.memberId);
-      toast.success(`${b.memberName}’s booking for ${b.className} was cancelled.`);
+      toast.success(`Đã hủy lượt đặt lớp ${b.className} của ${b.memberName}.`);
       bookings.reload();
       if (b.memberId === memberId) memberBookings.reload();
       classes.reload();
@@ -107,14 +107,14 @@ export default function Bookings() {
     }
   };
 
-  const memberPlaceholder = members.loading ? 'Loading members…' : 'Choose a member…';
+  const memberPlaceholder = members.loading ? 'Đang tải danh sách học viên…' : 'Chọn học viên…';
 
   return (
     <div className="staff-page">
       <header className="staff-page__head">
         <div>
-          <h1 className="staff-page__title display">Bookings</h1>
-          <p className="muted">Book a member into a class at the desk, or look up their bookings to help them cancel.</p>
+          <h1 className="staff-page__title display">Đặt lớp</h1>
+          <p className="muted">Đặt lớp cho học viên tại quầy, hoặc tra cứu các lớp họ đã đặt để hỗ trợ hủy.</p>
         </div>
       </header>
 
@@ -125,9 +125,9 @@ export default function Bookings() {
 
       <div className="two-col">
         <form className="panel" onSubmit={book} noValidate>
-          <h2 className="panel-title">Book a class</h2>
+          <h2 className="panel-title">Đặt lớp cho học viên</h2>
           <Field
-            label="Member"
+            label="Học viên"
             name="memberId"
             type="select"
             required
@@ -140,10 +140,10 @@ export default function Bookings() {
             }}
             options={memberOptions}
             placeholder={memberPlaceholder}
-            help="Everyone registered online or at the desk. Type the first letters of a name to jump to it."
+            help="Mọi học viên đã đăng ký trên web hoặc tại quầy. Gõ vài chữ đầu của tên để nhảy nhanh tới người cần tìm."
           />
           <Field
-            label="Class"
+            label="Lớp học"
             name="classId"
             type="select"
             required
@@ -153,32 +153,32 @@ export default function Bookings() {
               setFormError(null);
             }}
             options={classOptions}
-            placeholder={classes.loading ? 'Loading classes…' : 'Choose a class…'}
+            placeholder={classes.loading ? 'Đang tải danh sách lớp…' : 'Chọn lớp học…'}
             help={
               memberId
-                ? 'Classes the member already holds, full classes and classes with no sessions left can’t be picked.'
-                : 'Choose the member first to see which classes they can join.'
+                ? 'Không chọn được lớp học viên đã đặt, lớp đã đủ chỗ và lớp đã hết buổi học.'
+                : 'Chọn học viên trước để biết họ có thể vào những lớp nào.'
             }
           />
           {formError && <p className="field__error" role="alert">{formError}</p>}
-          <Button type="submit" disabled={saving}>{saving ? 'Booking…' : 'Book class'}</Button>
+          <Button type="submit" disabled={saving}>{saving ? 'Đang đặt…' : 'Đặt lớp'}</Button>
         </form>
 
         <section className="panel">
-          <h2 className="panel-title">Find a member’s bookings</h2>
+          <h2 className="panel-title">Tra cứu lớp đã đặt</h2>
           <Field
-            label="Member"
+            label="Học viên"
             name="lookupId"
             type="select"
             value={lookupId}
             onChange={(_, v) => setLookupId(v)}
             options={memberOptions}
             placeholder={memberPlaceholder}
-            help="A booking can be cancelled until the member has attended a session."
+            help="Lượt đặt chỉ hủy được khi học viên chưa tham gia buổi nào."
           />
 
           {!lookupId ? (
-            <p className="muted">Choose a member to see the classes they have booked.</p>
+            <p className="muted">Chọn một học viên để xem các lớp họ đã đặt.</p>
           ) : bookings.loading ? (
             <Loading />
           ) : (
@@ -190,16 +190,16 @@ export default function Bookings() {
                     <li key={b.id}>
                       <div>
                         <p className="cell-strong">{b.className}</p>
-                        <p className="muted small">Starts {formatDate(b.classStartDate)} · booked {formatDate(b.bookingDate)}</p>
+                        <p className="muted small">Khai giảng {formatDate(b.classStartDate)} · đặt ngày {formatDate(b.bookingDate)}</p>
                       </div>
                       <StatusTag tone={BookingStatus.tone(b.status)}>{BookingStatus.label(b.status)}</StatusTag>
-                      {b.status === 1 && <Button variant="ghost" size="sm" onClick={() => cancel(b)}>Cancel</Button>}
+                      {b.status === 1 && <Button variant="ghost" size="sm" onClick={() => cancel(b)}>Hủy</Button>}
                     </li>
                   ))}
                 </ul>
               ) : (
                 !bookings.error && (
-                  <EmptyState title="No bookings for this member">Book them into a class with the form on the left.</EmptyState>
+                  <EmptyState title="Học viên này chưa đặt lớp nào">Hãy đặt lớp cho họ bằng biểu mẫu bên trái.</EmptyState>
                 )
               )}
             </>

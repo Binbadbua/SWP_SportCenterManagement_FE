@@ -44,8 +44,8 @@ export default function Attendance() {
     return (
       <div className="staff-page">
         <EmptyState
-          title="Access Restricted"
-          action={<Button to="/staff">Back to Overview</Button>}
+          title="Không có quyền truy cập"
+          action={<Button to="/staff">Về trang Tổng quan</Button>}
         >
           Chỉ huấn luyện viên mới được điểm danh và sửa điểm danh cho các lớp
           mình dạy.
@@ -117,9 +117,12 @@ function CoachAttendance({ user }) {
   const notYet = !!session && day(session.date) > today;
 
   const byMember = Object.fromEntries((records.data ?? []).map((r) => [r.memberId, r]));
+  // Coaches mark only present or absent. Older "late" records (status 3) still show their own tag
+  // and count as present: the member did attend.
   const counts = (roster.data ?? []).reduce((acc, m) => {
     const s = byMember[m.memberId]?.status;
-    acc[s ?? 0] = (acc[s ?? 0] ?? 0) + 1;
+    const key = s === 3 ? 1 : s ?? 0;
+    acc[key] = (acc[key] ?? 0) + 1;
     return acc;
   }, {});
 
@@ -150,11 +153,11 @@ function CoachAttendance({ user }) {
     <div className="staff-page">
       <header className="staff-page__head">
         <div>
-          <h1 className="staff-page__title display">Attendance</h1>
+          <h1 className="staff-page__title display">Điểm danh</h1>
           <p className="muted">
-            Pick the sport, then the class and the session, and mark each
-            booked member. Marking someone present or late also marks their
-            booking as attended.
+            Chọn môn, rồi chọn lớp và buổi học, sau đó điểm danh từng học viên
+            đã đặt lớp. Đánh dấu có mặt sẽ chuyển lượt đặt của học viên sang "đã
+            tham gia".
           </p>
         </div>
       </header>
@@ -176,17 +179,17 @@ function CoachAttendance({ user }) {
         <Loading />
       ) : !myClasses.length ? (
         !classes.error && (
-          <EmptyState title="You don’t coach any class yet">
-            When a manager assigns you a class, it shows up here.
+          <EmptyState title="Bạn chưa phụ trách lớp nào">
+            Khi quản lý giao lớp cho bạn, lớp sẽ hiện ở đây.
           </EmptyState>
         )
       ) : (
         <div className="att-steps">
           <section className="att-step" aria-labelledby="att-step-sport">
             <h2 id="att-step-sport" className="att-step__title">
-              <span className="att-step__num">1</span> Sport
+              <span className="att-step__num">1</span> Môn thể thao
             </h2>
-            <div className="pill-row" role="group" aria-label="Sport">
+            <div className="pill-row" role="group" aria-label="Môn thể thao">
               {sports.map((name) => {
                 const n = myClasses.filter((c) => c.categoryName === name).length;
                 return (
@@ -199,7 +202,7 @@ function CoachAttendance({ user }) {
                   >
                     {name}
                     <span className="pill__count">
-                      {n} {n === 1 ? "class" : "classes"}
+                      {n} lớp
                     </span>
                   </button>
                 );
@@ -210,7 +213,7 @@ function CoachAttendance({ user }) {
           {sport && (
             <section className="att-step" aria-labelledby="att-step-class">
               <h2 id="att-step-class" className="att-step__title">
-                <span className="att-step__num">2</span> Class
+                <span className="att-step__num">2</span> Lớp học
               </h2>
               <div className="class-picks">
                 {sportClasses.map((c) => {
@@ -230,8 +233,7 @@ function CoachAttendance({ user }) {
                           {formatShortDate(c.startDate)} – {formatDate(c.endDate)}
                         </span>
                         <span className="class-pick__meta num">
-                          {c.currentEnrolled}/{c.maxCapacity} booked · {held.length}{" "}
-                          {held.length === 1 ? "session" : "sessions"}
+                          Đã đặt {c.currentEnrolled}/{c.maxCapacity} · {held.length} buổi
                         </span>
                         <StatusTag tone={ClassStatus.tone(c.status)}>
                           {ClassStatus.label(c.status)}
@@ -247,10 +249,10 @@ function CoachAttendance({ user }) {
           {cls && (
             <section className="att-step" aria-labelledby="att-step-session">
               <h2 id="att-step-session" className="att-step__title">
-                <span className="att-step__num">3</span> Session
+                <span className="att-step__num">3</span> Buổi học
               </h2>
               {classSessions.length ? (
-                <div className="session-picks" role="group" aria-label="Session">
+                <div className="session-picks" role="group" aria-label="Buổi học">
                   {classSessions.map((s) => {
                     const d = day(s.date);
                     const when = d < today ? "is-past" : d === today ? "is-today" : "";
@@ -263,7 +265,7 @@ function CoachAttendance({ user }) {
                         onClick={() => choose({ sport, class: cls.classId, session: s.id })}
                       >
                         <span className="session-pick__day">
-                          {d === today ? "Today" : `${formatWeekday(s.date)} ${formatShortDate(s.date)}`}
+                          {d === today ? "Hôm nay" : `${formatWeekday(s.date)} ${formatShortDate(s.date)}`}
                         </span>
                         <span className="session-pick__time num">
                           {formatTimeRange(s.startTime, s.endTime)}
@@ -273,7 +275,7 @@ function CoachAttendance({ user }) {
                   })}
                 </div>
               ) : (
-                <p className="muted">No sessions have been scheduled for this class yet.</p>
+                <p className="muted">Lớp này chưa được xếp buổi học.</p>
               )}
             </section>
           )}
@@ -283,7 +285,7 @@ function CoachAttendance({ user }) {
               <div className="attendance-bar">
                 <div>
                   <h2 id="att-step-mark" className="att-step__title">
-                    <span className="att-step__num">4</span> Mark attendance
+                    <span className="att-step__num">4</span> Điểm danh
                   </h2>
                   <p className="muted attendance-where">
                     {cls.className} · {session.roomName} ·{" "}
@@ -293,27 +295,23 @@ function CoachAttendance({ user }) {
                 </div>
                 <dl className="attendance-summary">
                   <div>
-                    <dt>Present</dt>
+                    <dt>Có mặt</dt>
                     <dd className="num">{counts[1] ?? 0}</dd>
                   </div>
                   <div>
-                    <dt>Late</dt>
-                    <dd className="num">{counts[3] ?? 0}</dd>
-                  </div>
-                  <div>
-                    <dt>Absent</dt>
+                    <dt>Vắng</dt>
                     <dd className="num">{counts[2] ?? 0}</dd>
                   </div>
                   <div>
-                    <dt>Not marked</dt>
+                    <dt>Chưa điểm danh</dt>
                     <dd className="num">{counts[0] ?? 0}</dd>
                   </div>
                 </dl>
               </div>
 
               {notYet && (
-                <Notice tone="info" title="This session hasn’t happened yet">
-                  You can take attendance from {formatDate(session.date)}.
+                <Notice tone="info" title="Buổi học này chưa diễn ra">
+                  Bạn có thể điểm danh từ ngày {formatDate(session.date)}.
                 </Notice>
               )}
               <ErrorNotice error={!roster.usingSample ? roster.error : null} onRetry={roster.reload} />
@@ -324,12 +322,12 @@ function CoachAttendance({ user }) {
                   <table className="table">
                     <thead>
                       <tr>
-                        <th>Member</th>
-                        <th>Phone</th>
-                        <th>Status</th>
-                        <th>Checked in</th>
+                        <th>Học viên</th>
+                        <th>Số điện thoại</th>
+                        <th>Trạng thái</th>
+                        <th>Check-in</th>
                         <th>
-                          <span className="visually-hidden">Mark</span>
+                          <span className="visually-hidden">Điểm danh</span>
                         </th>
                       </tr>
                     </thead>
@@ -346,13 +344,13 @@ function CoachAttendance({ user }) {
                                   {AttendanceStatus.label(rec.status)}
                                 </StatusTag>
                               ) : (
-                                <span className="muted">Not marked</span>
+                                <span className="muted">Chưa điểm danh</span>
                               )}
                             </td>
                             <td className="num">{rec ? formatDateTime(rec.checkInTime) : "—"}</td>
                             <td className="cell-actions">
-                              <div className="mark-group" role="group" aria-label={`Mark ${m.fullName}`}>
-                                {[1, 3, 2].map((s) => (
+                              <div className="mark-group" role="group" aria-label={`Điểm danh ${m.fullName}`}>
+                                {[1, 2].map((s) => (
                                   <button
                                     key={s}
                                     type="button"
@@ -374,8 +372,8 @@ function CoachAttendance({ user }) {
                 </div>
               ) : (
                 !roster.error && (
-                  <EmptyState title="Nobody is booked into this class">
-                    Members show up here once they book the class.
+                  <EmptyState title="Chưa có học viên nào đặt lớp này">
+                    Học viên sẽ hiện ở đây sau khi đặt lớp.
                   </EmptyState>
                 )
               )}

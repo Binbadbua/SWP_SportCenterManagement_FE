@@ -9,15 +9,15 @@ import { ClassCard } from '../../components/cards.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, SampleDataNotice } from '../../components/ui.jsx';
 
 const SORTS = {
-  soonest: { label: 'Starting soonest', fn: (a, b) => (daysUntil(a.startDate) ?? 0) - (daysUntil(b.startDate) ?? 0) },
-  name: { label: 'Name: A–Z', fn: (a, b) => a.className.localeCompare(b.className) },
-  capacity: { label: 'Largest classes', fn: (a, b) => b.maxCapacity - a.maxCapacity },
+  soonest: { label: 'Khai giảng sớm nhất', fn: (a, b) => (daysUntil(a.startDate) ?? 0) - (daysUntil(b.startDate) ?? 0) },
+  name: { label: 'Tên: A–Z', fn: (a, b) => a.className.localeCompare(b.className) },
+  capacity: { label: 'Lớp đông nhất', fn: (a, b) => b.maxCapacity - a.maxCapacity },
 };
 
 const STATUS_FILTERS = [
-  { value: '1', label: 'Open for booking' },
-  { value: '2', label: 'In progress' },
-  { value: '3', label: 'Finished' },
+  { value: '1', label: 'Đang nhận đăng ký' },
+  { value: '2', label: 'Đang diễn ra' },
+  { value: '3', label: 'Đã kết thúc' },
 ];
 
 // Multi-value URL params: ?sport=a,b
@@ -66,7 +66,7 @@ export default function Classes() {
   }, [list, sports, statuses, coachIds, q, sort]);
 
   const activeSport = sports.length === 1 ? (categories.data ?? []).find((c) => c.id === sports[0]) : null;
-  const title = q ? `Results for “${q}”` : activeSport ? `${activeSport.categoryName} classes` : 'All classes';
+  const title = q ? `Kết quả cho “${q}”` : activeSport ? `Các lớp ${activeSport.categoryName}` : 'Tất cả lớp học';
 
   return (
     <div className="plp container">
@@ -76,10 +76,10 @@ export default function Classes() {
         </h1>
         <div className="plp__tools">
           <button type="button" className="plain-btn" onClick={() => setShowFilters((s) => !s)} aria-expanded={showFilters}>
-            {showFilters ? 'Hide filters' : 'Show filters'} <Icon name="filter" size={20} />
+            {showFilters ? 'Ẩn bộ lọc' : 'Hiện bộ lọc'} <Icon name="filter" size={20} />
           </button>
           <label className="sort-select">
-            <span>Sort by</span>
+            <span>Sắp xếp</span>
             <select value={sort} onChange={(e) => setParam('sort', e.target.value)}>
               {Object.entries(SORTS).map(([k, s]) => (
                 <option key={k} value={k}>{s.label}</option>
@@ -96,7 +96,7 @@ export default function Classes() {
 
       <div className={`plp__body ${showFilters ? '' : 'plp__body--full'}`}>
         {showFilters && (
-          <aside className="filters" aria-label="Filters">
+          <aside className="filters" aria-label="Bộ lọc">
             {q && (
               <div className="filters__group">
                 <button type="button" className="chip" onClick={() => setParam('q', '')}>
@@ -105,7 +105,7 @@ export default function Classes() {
               </div>
             )}
             <fieldset className="filters__group">
-              <legend>Sport</legend>
+              <legend>Môn thể thao</legend>
               {(categories.data ?? []).map((c) => (
                 <label key={c.id} className="check">
                   <input type="checkbox" checked={sports.includes(c.id)} onChange={() => toggle('sport', c.id, sports)} />
@@ -114,7 +114,7 @@ export default function Classes() {
               ))}
             </fieldset>
             <fieldset className="filters__group">
-              <legend>Availability</legend>
+              <legend>Tình trạng</legend>
               {STATUS_FILTERS.map((s) => (
                 <label key={s.value} className="check">
                   <input type="checkbox" checked={statuses.includes(s.value)} onChange={() => toggle('status', s.value, statuses)} />
@@ -123,7 +123,7 @@ export default function Classes() {
               ))}
             </fieldset>
             <fieldset className="filters__group">
-              <legend>Coach</legend>
+              <legend>Huấn luyện viên</legend>
               {coaches.map((c) => (
                 <label key={c.id} className="check">
                   <input type="checkbox" checked={coachIds.includes(c.id)} onChange={() => toggle('coach', c.id, coachIds)} />
@@ -143,10 +143,10 @@ export default function Classes() {
             </div>
           ) : (
             <EmptyState
-              title="No classes match these filters"
-              action={<Button variant="secondary" onClick={() => setParams({}, { replace: true })}>Clear filters</Button>}
+              title="Không có lớp nào khớp bộ lọc"
+              action={<Button variant="secondary" onClick={() => setParams({}, { replace: true })}>Xóa bộ lọc</Button>}
             >
-              Try another sport or include finished classes.
+              Thử môn khác hoặc chọn thêm các lớp đã kết thúc.
             </EmptyState>
           )}
         </section>

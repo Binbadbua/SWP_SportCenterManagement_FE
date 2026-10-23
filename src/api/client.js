@@ -30,6 +30,48 @@ function messageFromText(text) {
   return firstLine.replace(/^[\w.]+Exception:\s*/, '') || null;
 }
 
+// Messages the API still writes in English, as the website shows them
+const VI_MESSAGES = {
+  'Invalid username or password': 'Sai tên đăng nhập hoặc mật khẩu.',
+  'Account is not active': 'Tài khoản đang bị khóa hoặc chưa hoạt động.',
+  'Username already exists': 'Tên đăng nhập này đã có người dùng.',
+  'Email already exists': 'Email này đã được sử dụng.',
+  'Account not found': 'Không tìm thấy tài khoản.',
+  'Invalid account identity': 'Phiên đăng nhập không hợp lệ, vui lòng đăng nhập lại.',
+  'Account ID not found in token': 'Phiên đăng nhập không hợp lệ, vui lòng đăng nhập lại.',
+  'Member not found': 'Không tìm thấy học viên.',
+  'Member profile not found': 'Không tìm thấy hồ sơ học viên.',
+  'Membership not found': 'Không tìm thấy thẻ thành viên.',
+  'Membership package not found': 'Không tìm thấy gói tập.',
+  'Class not found': 'Không tìm thấy lớp học.',
+  'Class session not found': 'Không tìm thấy buổi học.',
+  'Coach not found': 'Không tìm thấy huấn luyện viên.',
+  'Center manager not found': 'Không tìm thấy quản lý.',
+  'Training plan not found': 'Không tìm thấy kế hoạch tập luyện.',
+  'Training result not found': 'Không tìm thấy kết quả tập luyện.',
+  'Invoice not found': 'Không tìm thấy hóa đơn.',
+  'Booking not found': 'Không tìm thấy lượt đặt lớp.',
+  'Attendance not found': 'Không tìm thấy điểm danh.',
+  'Audit log not found': 'Không tìm thấy nhật ký.',
+  'Package name is required': 'Vui lòng nhập tên gói.',
+  'Price cannot be negative': 'Giá không được âm.',
+  'Duration must be greater than 0': 'Số ngày phải lớn hơn 0.',
+  'Training plan title is required': 'Vui lòng nhập tiêu đề kế hoạch.',
+  'Coach comment is required': 'Vui lòng nhập nhận xét.',
+  'Member does not belong to this training plan': 'Học viên này không thuộc kế hoạch tập luyện đã chọn.',
+  'StartDate must be before or equal to EndDate': 'Ngày bắt đầu phải trước hoặc bằng ngày kết thúc.',
+  'PageSize and PageIndex must be greater than 0': 'Tham số phân trang không hợp lệ.',
+};
+const toVietnamese = (message) => {
+  const key = String(message ?? '').trim().replace(/\.$/, '');
+  if (VI_MESSAGES[key]) return VI_MESSAGES[key];
+  if (/^You can only .* your own training (plan|result)$/.test(key)) return 'Bạn chỉ được thao tác trên kế hoạch và kết quả của chính mình.';
+  const required = key.match(/^The (\w+) field is required$/);
+  if (required) return `Vui lòng nhập ${required[1]}.`;
+  if (/^The JSON value could not be converted/.test(key)) return 'Dữ liệu gửi lên không hợp lệ.';
+  return message;
+};
+
 // ASP.NET Core returns ProblemDetails: { title, detail } or validation { errors: { Field: [msg] } },
 // some actions return a plain string (NotFound("...")) or { message }.
 function messageFrom(body, status, text) {
@@ -43,10 +85,10 @@ function messageFrom(body, status, text) {
   if (body?.title) return body.title;
   const fromText = body === null ? messageFromText(text) : null;
   if (fromText) return fromText;
-  if (status === 401) return 'Please sign in to see this.';
-  if (status === 403) return 'Your account is not allowed to do this (HTTP 403).';
-  if (status === 404) return 'Not found.';
-  return `Request failed (HTTP ${status}).`;
+  if (status === 401) return 'Vui lòng đăng nhập để xem nội dung này.';
+  if (status === 403) return 'Tài khoản của bạn không có quyền thực hiện thao tác này (HTTP 403).';
+  if (status === 404) return 'Không tìm thấy dữ liệu.';
+  return `Yêu cầu thất bại (HTTP ${status}).`;
 }
 
 export async function request(method, path, body) {
@@ -71,7 +113,7 @@ export async function request(method, path, body) {
       body: body !== undefined ? JSON.stringify(body) : undefined,
     });
   } catch {
-    throw new ApiError('The API could not be reached. Start the back-end and try again.', { offline: true });
+    throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra máy chủ rồi thử lại.', { offline: true });
   }
 
   if (res.status === 204) return null;
@@ -84,9 +126,9 @@ export async function request(method, path, body) {
     // A 500 comes from the API itself (see messageFromText), so it is a real error, not "offline".
     const offline = [502, 503, 504].includes(res.status);
     if (offline) {
-      throw new ApiError('The API could not be reached. Start the back-end and try again.', { status: res.status, offline: true });
+      throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra máy chủ rồi thử lại.', { status: res.status, offline: true });
     }
-    throw new ApiError(messageFrom(data, res.status, text), { status: res.status, details: data });
+    throw new ApiError(toVietnamese(messageFrom(data, res.status, text)), { status: res.status, details: data });
   }
   return data;
 }

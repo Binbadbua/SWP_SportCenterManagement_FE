@@ -8,9 +8,9 @@ import Icon from '../../components/Icon.jsx';
 import { Button, Field, ErrorNotice, Notice } from '../../components/ui.jsx';
 
 const PERKS = [
-  'Book any class in a few taps',
-  'Follow your attendance, plans and coach feedback',
-  'Keep your membership and invoices in one place',
+  'Đặt lớp chỉ với vài thao tác',
+  'Theo dõi điểm danh, kế hoạch tập và nhận xét của huấn luyện viên',
+  'Quản lý thẻ thành viên và hóa đơn ở một nơi',
 ];
 
 export default function Login() {
@@ -35,7 +35,7 @@ export default function Login() {
   const submit = async (e) => {
     e.preventDefault();
     if (!values.username || !values.password) {
-      setErrorMsg('Please enter your full account details and password.');
+      setErrorMsg('Vui lòng nhập đầy đủ tài khoản và mật khẩu.');
       return;
     }
 
@@ -88,9 +88,9 @@ export default function Login() {
         ))}
         <div className="login__shade" />
         <div className="login__pitch">
-          <p className="label">SportCenter members</p>
+          <p className="label">Thành viên SportCenter</p>
           <p className="login__headline display">
-            Back<br />to it.
+            Trở lại<br />sân tập.
           </p>
           <ul className="login__perks">
             {PERKS.map((p) => (
@@ -107,23 +107,23 @@ export default function Login() {
         <form className="login__form" onSubmit={submit} noValidate>
           <Logo compact />
           <div>
-            <p className="login__eyebrow label">Sign in</p>
-            <h1 className="login__title">Welcome back</h1>
+            <p className="login__eyebrow label">Đăng nhập</p>
+            <h1 className="login__title">Chào mừng bạn trở lại</h1>
             <p className="muted">
-              {next ? 'Sign in to continue where you left off.' : 'Use the email or username you joined with.'}
+              {next ? 'Đăng nhập để tiếp tục từ chỗ bạn đang dừng.' : 'Dùng email hoặc tên đăng nhập bạn đã đăng ký.'}
             </p>
           </div>
 
           {params.get('registered') && (
-            <Notice tone="success" title="Your account is ready">
-              Sign in with the email and password you just chose.
+            <Notice tone="success" title="Tài khoản đã sẵn sàng">
+              Đăng nhập bằng email và mật khẩu bạn vừa tạo.
             </Notice>
           )}
           {/* Hiển thị lỗi nếu sai tài khoản/mật khẩu */}
           {errorMsg && <ErrorNotice error={{ message: errorMsg }} />}
 
           <Field
-            label="Email or username"
+            label="Email hoặc tên đăng nhập"
             name="username"
             type="text"
             required
@@ -135,7 +135,7 @@ export default function Login() {
 
           <div className="login__password">
             <Field
-              label="Password"
+              label="Mật khẩu"
               name="password"
               type={showPassword ? 'text' : 'password'}
               required
@@ -150,20 +150,20 @@ export default function Login() {
               aria-pressed={showPassword}
               aria-controls="f-password"
             >
-              {showPassword ? 'Hide' : 'Show'}
+              {showPassword ? 'Ẩn' : 'Hiện'}
             </button>
           </div>
 
           <Button type="submit" size="lg" block disabled={isSubmitting} iconAfter={isSubmitting ? undefined : 'arrowRight'}>
-            {isSubmitting ? 'Signing in…' : 'Sign in'}
+            {isSubmitting ? 'Đang đăng nhập…' : 'Đăng nhập'}
           </Button>
 
-          <div className="login__divider"><span>New to SportCenter?</span></div>
+          <div className="login__divider"><span>Lần đầu đến SportCenter?</span></div>
           <Button to="/register" variant="secondary" size="lg" block>
-            Create an account
+            Tạo tài khoản
           </Button>
           <p className="login__foot muted small">
-            Coaches, reception and managers sign in here too and go straight to the staff area.
+            Huấn luyện viên, lễ tân và quản lý cũng đăng nhập ở đây và được chuyển thẳng vào khu vực nhân viên.
           </p>
         </form>
       </section>

@@ -3,21 +3,22 @@ import { sportImage } from '../lib/images.js';
 import { daysUntil, formatDateRange, formatMoney, initials } from '../lib/format.js';
 import { ClassStatus } from '../lib/enums.js';
 import { Button } from './ui.jsx';
+import { sportsOf } from './CoachFacts.jsx';
 
-/* Like a product's "Just In" line: the most useful fact about the class right now */
+/* The most useful fact about the class right now, shown above its name */
 export function classEyebrow(c, spotsLeft) {
-  if (c.status === 4) return { text: 'Cancelled', tone: 'muted' };
-  if (c.status === 3) return { text: 'Finished', tone: 'muted' };
-  if (spotsLeft !== undefined && spotsLeft <= 0) return { text: 'Full', tone: 'muted' };
+  if (c.status === 4) return { text: 'Đã hủy', tone: 'muted' };
+  if (c.status === 3) return { text: 'Đã kết thúc', tone: 'muted' };
+  if (spotsLeft !== undefined && spotsLeft <= 0) return { text: 'Đã đủ chỗ', tone: 'muted' };
   if (spotsLeft !== undefined && spotsLeft <= Math.max(3, Math.round(c.maxCapacity * 0.2))) {
-    return { text: `Only ${spotsLeft} ${spotsLeft === 1 ? 'spot' : 'spots'} left`, tone: 'signal' };
+    return { text: `Chỉ còn ${spotsLeft} chỗ`, tone: 'signal' };
   }
-  if (c.status === 2) return { text: 'In progress · join anytime', tone: 'ink' };
+  if (c.status === 2) return { text: 'Đang diễn ra · vào học bất cứ lúc nào', tone: 'ink' };
   const d = daysUntil(c.startDate);
-  if (d === 0) return { text: 'Starts today', tone: 'signal' };
-  if (d === 1) return { text: 'Starts tomorrow', tone: 'signal' };
-  if (d > 1 && d <= 14) return { text: `Starts in ${d} days`, tone: 'signal' };
-  return { text: 'Open for booking', tone: 'ink' };
+  if (d === 0) return { text: 'Khai giảng hôm nay', tone: 'signal' };
+  if (d === 1) return { text: 'Khai giảng ngày mai', tone: 'signal' };
+  if (d > 1 && d <= 14) return { text: `Khai giảng sau ${d} ngày`, tone: 'signal' };
+  return { text: 'Đang nhận đăng ký', tone: 'ink' };
 }
 
 export function ClassCard({ item, spotsLeft }) {
@@ -34,7 +35,7 @@ export function ClassCard({ item, spotsLeft }) {
         <h3 className="class-card__title">{item.className}</h3>
         <p className="muted">{item.categoryName} · {item.coachName}</p>
         <p className="muted num">{formatDateRange(item.startDate, item.endDate)}</p>
-        <p className="class-card__cap num">Up to {item.maxCapacity} people</p>
+        <p className="class-card__cap num">Tối đa {item.maxCapacity} người</p>
       </div>
     </Link>
   );
@@ -47,7 +48,7 @@ export function CategoryTile({ category, count }) {
       <img src={sportImage(category.categoryName)} alt="" loading="lazy" />
       <span className="category-tile__label">
         <span className="boxed boxed--title">{category.categoryName}</span>
-        {count !== undefined && <span className="boxed boxed--sub">{count} {count === 1 ? 'class' : 'classes'}</span>}
+        {count !== undefined && <span className="boxed boxed--sub">{count} lớp</span>}
       </span>
     </Link>
   );
@@ -65,18 +66,23 @@ export function CoachPortrait({ coach, size = 'md' }) {
   );
 }
 
-export function CoachCard({ coach }) {
+/* Opens the coach's page. `classes` (the coach's own, optional) adds the sports they teach. */
+export function CoachCard({ coach, classes }) {
+  const sports = sportsOf(classes).map(([, name]) => name);
   return (
-    <article className="coach-card">
-      <CoachPortrait coach={coach} />
+    <Link to={`/coaches/${coach.id}`} className="coach-card">
+      <div className="coach-card__media">
+        <CoachPortrait coach={coach} />
+      </div>
       <div className="coach-card__body">
         <h3 className="coach-card__name">{coach.fullName}</h3>
-        <p className="muted">{coach.specialization || 'Coach'}</p>
+        <p className="muted">{coach.specialization || 'Huấn luyện viên'}</p>
+        {sports.length > 0 && <p className="coach-card__sports">{sports.join(' · ')}</p>}
         <p className="coach-card__years num">
-          <strong>{coach.experienceYears}</strong> {coach.experienceYears === 1 ? 'year' : 'years'} coaching
+          <strong>{coach.experienceYears}</strong> năm kinh nghiệm
         </p>
       </div>
-    </article>
+    </Link>
   );
 }
 
@@ -85,16 +91,16 @@ export function PackageCard({ pkg, onChoose, featured = false }) {
   const perMonth = Math.round((months > 0 ? pkg.price / months : pkg.price) / 1000) * 1000;
   return (
     <article className={`package-card ${featured ? 'package-card--featured' : ''}`}>
-      {featured && <p className="package-card__flag">Most chosen</p>}
+      {featured && <p className="package-card__flag">Được chọn nhiều nhất</p>}
       <h3 className="package-card__name display">{pkg.packageName}</h3>
       <p className="package-card__duration">
-        {pkg.durationDays} days{months > 1 ? ` · about ${formatMoney(perMonth)}/month` : ''}
+        {pkg.durationDays} ngày{months > 1 ? ` · khoảng ${formatMoney(perMonth)}/tháng` : ''}
       </p>
       <p className="package-card__price num">{formatMoney(pkg.price)}</p>
       <p className="package-card__desc">{pkg.description}</p>
       <div className="package-card__cta">
         <Button variant={featured ? 'inverse' : 'primary'} block onClick={() => onChoose?.(pkg)}>
-          Choose {pkg.packageName}
+          Chọn {pkg.packageName}
         </Button>
       </div>
     </article>

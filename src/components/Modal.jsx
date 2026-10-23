@@ -29,7 +29,7 @@ export default function Modal({ open, title, onClose, children, footer, wide = f
         <div className="modal__inner">
           <header className="modal__head">
             <h2 id="modal-title" className="modal__title">{title}</h2>
-            <button type="button" className="icon-btn" onClick={onClose} aria-label="Close">
+            <button type="button" className="icon-btn" onClick={onClose} aria-label="Đóng">
               <Icon name="close" />
             </button>
           </header>

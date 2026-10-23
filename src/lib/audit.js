@@ -5,23 +5,44 @@
 // summary, sometimes prefixed "[client]") are still read.
 
 const VERBS = {
-  CREATE: { label: 'Create', tone: 'success' },
-  UPDATE: { label: 'Update', tone: 'info' },
-  DELETE: { label: 'Delete', tone: 'danger' },
-  RENEW: { label: 'Renew', tone: 'info' },
-  CANCEL: { label: 'Cancel', tone: 'warning' },
-  LOCK: { label: 'Lock', tone: 'warning' },
-  UNLOCK: { label: 'Unlock', tone: 'success' },
-  SEND: { label: 'Send', tone: 'neutral' },
+  CREATE: { label: 'Thêm', tone: 'success' },
+  UPDATE: { label: 'Sửa', tone: 'info' },
+  DELETE: { label: 'Xóa', tone: 'danger' },
+  RENEW: { label: 'Gia hạn', tone: 'info' },
+  CANCEL: { label: 'Hủy', tone: 'warning' },
+  LOCK: { label: 'Khóa', tone: 'warning' },
+  UNLOCK: { label: 'Mở khóa', tone: 'success' },
+  SEND: { label: 'Gửi', tone: 'neutral' },
 };
 
 export const AUDIT_VERBS = Object.entries(VERBS).map(([value, v]) => ({ value, label: v.label }));
 
 const SERVER_VERBS = { Added: 'CREATE', Modified: 'UPDATE', Deleted: 'DELETE' };
-// Entity class names that read better under another word
+// Entity class names (server entries) and English entity words (older FE entries) in Vietnamese
 const ENTITIES = {
-  ClassBooking: 'booking', ClassSession: 'session', CenterManager: 'manager',
-  MembershipPackage: 'package', SportCategory: 'sport',
+  Account: 'tài khoản', Attendance: 'điểm danh', Class: 'lớp học', ClassBooking: 'lượt đặt lớp',
+  ClassSession: 'buổi học', Coach: 'huấn luyện viên', CenterManager: 'quản lý', Invoice: 'hóa đơn',
+  Member: 'học viên', Membership: 'thẻ thành viên', MembershipPackage: 'gói tập', Notification: 'thông báo',
+  Receptionist: 'lễ tân', Room: 'phòng tập', SportCategory: 'môn thể thao', SupportRequest: 'yêu cầu hỗ trợ',
+  TrainingPlan: 'kế hoạch tập luyện', TrainingResult: 'kết quả tập luyện',
+};
+const OLD_ENTITIES = {
+  account: 'tài khoản', class: 'lớp học', session: 'buổi học', room: 'phòng tập', sport: 'môn thể thao',
+  package: 'gói tập', membership: 'thẻ thành viên', invoice: 'hóa đơn', member: 'học viên', coach: 'huấn luyện viên',
+  receptionist: 'lễ tân', manager: 'quản lý', notification: 'thông báo', plan: 'kế hoạch tập luyện', result: 'kết quả tập luyện',
+};
+// Column names the server reports as changed
+const FIELDS = {
+  FullName: 'họ tên', Phone: 'số điện thoại', Email: 'email', Dob: 'ngày sinh', Gender: 'giới tính',
+  TrainingGoal: 'mục tiêu tập luyện', Avatar: 'ảnh', Status: 'trạng thái', Role: 'vai trò', Username: 'tên đăng nhập',
+  Password: 'mật khẩu', ClassName: 'tên lớp', CategoryId: 'môn', CoachId: 'huấn luyện viên', MaxCapacity: 'sĩ số tối đa',
+  StartDate: 'ngày bắt đầu', EndDate: 'ngày kết thúc', ClassId: 'lớp', RoomId: 'phòng', Date: 'ngày',
+  StartTime: 'giờ bắt đầu', EndTime: 'giờ kết thúc', RoomName: 'tên phòng', Capacity: 'sức chứa',
+  CategoryName: 'tên môn', Description: 'mô tả', PackageName: 'tên gói', DurationDays: 'số ngày', Price: 'giá',
+  Amount: 'số tiền', PaymentMethod: 'hình thức thanh toán', PaymentDate: 'ngày thanh toán', IsRead: 'đã đọc',
+  Title: 'tiêu đề', Message: 'nội dung', Specialization: 'chuyên môn', ExperienceYears: 'số năm kinh nghiệm',
+  WorkingShift: 'ca làm', Resolution: 'câu trả lời', Content: 'nội dung', CheckInTime: 'giờ check-in',
+  RecordedBy: 'người ghi', PerformanceScore: 'điểm', CoachComment: 'nhận xét', ContentDescription: 'nội dung tập',
 };
 // Bookkeeping columns every save touches
 const QUIET_FIELDS = ['UpdatedAt', 'CreatedAt', 'IsDeleted'];
@@ -48,14 +69,15 @@ export function readEntry(row) {
     const entity = ENTITIES[type] ?? words(type);
     return {
       verb, entity, type, label: `${VERBS[verb].label} ${entity}`, tone: VERBS[verb].tone,
-      entityId: d.entityId, fields: changed.filter((f) => !QUIET_FIELDS.includes(f)).map(words),
+      entityId: d.entityId, fields: changed.filter((f) => !QUIET_FIELDS.includes(f)).map((f) => FIELDS[f] ?? words(f)),
       summary: '', lines: [], source: 'server',
     };
   }
   const [verb, ...rest] = String(row.actionType ?? '').split('_');
   const [summary, ...lines] = String(row.description ?? '').replace(/^\[client\]\s*/, '').split('\n');
   const known = VERBS[verb];
-  const entity = known && rest.length ? rest.join(' ').toLowerCase() : '';
+  const old = rest.join(' ').toLowerCase();
+  const entity = known && rest.length ? OLD_ENTITIES[old] ?? old : '';
   return {
     verb: entity ? verb : 'OTHER', entity, type: '', label: entity ? `${known.label} ${entity}` : row.actionType || '—',
     tone: entity ? known.tone : 'neutral', entityId: null, fields: [], summary, lines, source: 'client',

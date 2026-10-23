@@ -94,10 +94,10 @@ export function AuthProvider({ children }) {
           username:
             tokenPayload[
               "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-            ] || "User",
+            ] || "Người dùng",
 
           fullName:
-            tokenPayload.FullName || "User",
+            tokenPayload.FullName || "Người dùng",
           email:
             tokenPayload[
               "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
@@ -154,7 +154,7 @@ export function AuthProvider({ children }) {
       .load()
       .then((id) => {
         if (cancelled) return;
-        if (!id) throw new Error("Profile not found.");
+        if (!id) throw new Error("Không tìm thấy hồ sơ.");
         updateUser({ [def.key]: id });
         setProfile({ status: "ready", error: null });
       })

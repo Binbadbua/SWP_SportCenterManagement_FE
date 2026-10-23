@@ -95,10 +95,10 @@ export default function Rail({ title, action, children, label, autoScroll = fals
         <h2 className="section-title">{title}</h2>
         <div className="rail__controls">
           {action}
-          <button type="button" className="round-btn" onClick={() => scroll(-1)} aria-label="Scroll left">
+          <button type="button" className="round-btn" onClick={() => scroll(-1)} aria-label="Cuộn sang trái">
             <Icon name="chevronLeft" />
           </button>
-          <button type="button" className="round-btn" onClick={() => scroll(1)} aria-label="Scroll right">
+          <button type="button" className="round-btn" onClick={() => scroll(1)} aria-label="Cuộn sang phải">
             <Icon name="chevronRight" />
           </button>
         </div>

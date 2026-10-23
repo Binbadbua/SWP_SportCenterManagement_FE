@@ -12,7 +12,7 @@ export default function StoreLayout() {
 
   return (
     <div className="store">
-      <a href="#main" className="skip-link">Skip to content</a>
+      <a href="#main" className="skip-link">Bỏ qua, tới nội dung chính</a>
       <Header />
       <PromoStrip />
       <main id="main">

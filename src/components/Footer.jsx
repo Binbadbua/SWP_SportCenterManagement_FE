@@ -7,38 +7,40 @@ export default function Footer() {
       <div className="container site-footer__grid">
         <div className="site-footer__brand">
           <Logo inverse />
-          <p>Classes, courts and coaches under one roof.</p>
+          <p>Lớp học, sân tập và huấn luyện viên dưới một mái nhà.</p>
         </div>
         <div>
-          <h2 className="site-footer__title">Train</h2>
+          <h2 className="site-footer__title">Tập luyện</h2>
           <ul>
-            <li><Link to="/classes">All classes</Link></li>
-            <li><Link to="/schedule">Weekly schedule</Link></li>
-            <li><Link to="/coaches">Coaches</Link></li>
+            <li><Link to="/classes">Tất cả lớp học</Link></li>
+            <li><Link to="/schedule">Lịch học trong tuần</Link></li>
+            <li><Link to="/coaches">Huấn luyện viên</Link></li>
           </ul>
         </div>
         <div>
-          <h2 className="site-footer__title">Membership</h2>
+          <h2 className="site-footer__title">Thành viên</h2>
           <ul>
-            <li><Link to="/memberships">Plans &amp; prices</Link></li>
-            <li><Link to="/register">Join us</Link></li>
-            <li><Link to="/account">My account</Link></li>
+            <li><Link to="/memberships">Gói tập &amp; bảng giá</Link></li>
+            <li><Link to="/register">Đăng ký</Link></li>
+            <li><Link to="/account">Tài khoản của tôi</Link></li>
           </ul>
         </div>
         <div>
-          <h2 className="site-footer__title">Find us</h2>
+          <h2 className="site-footer__title">Liên hệ</h2>
           <address>
             SportCenter<br />
-            Open daily 05:30–22:30<br />
-            Reception: 0900 000 000
+            Mở cửa hằng ngày 05:30–22:30<br />
+            Lễ tân: 0900 000 000
           </address>
         </div>
       </div>
       <div className="container site-footer__base">
-        <span>© {new Date().getFullYear()} SportCenter · SWP project</span>
+        <span>© {new Date().getFullYear()} SportCenter · Dự án SWP</span>
         <span>
-          <Link to="/help">Help</Link>
-          <Link to="/staff">Staff sign-in</Link>
+          <Link to="/terms">Điều khoản</Link>
+          <Link to="/privacy">Bảo mật</Link>
+          <Link to="/help">Trợ giúp</Link>
+          <Link to="/staff">Nhân viên đăng nhập</Link>
         </span>
       </div>
     </footer>

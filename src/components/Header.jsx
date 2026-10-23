@@ -5,10 +5,10 @@ import Logo from './Logo.jsx';
 import { isStaff, useAuth } from '../context/AuthContext.jsx';
 
 const NAV = [
-  { to: '/classes', label: 'Classes' },
-  { to: '/schedule', label: 'Schedule' },
-  { to: '/memberships', label: 'Memberships' },
-  { to: '/coaches', label: 'Coaches' },
+  { to: '/classes', label: 'Lớp học' },
+  { to: '/schedule', label: 'Lịch học' },
+  { to: '/memberships', label: 'Gói tập' },
+  { to: '/coaches', label: 'Huấn luyện viên' },
 ];
 
 export default function Header() {
@@ -44,27 +44,27 @@ export default function Header() {
     <>
       <div className="utility-bar">
         <div className="utility-bar__inner">
-          <a href="#find-us">Find us</a>
+          <a href="#find-us">Liên hệ</a>
           <span aria-hidden="true">|</span>
-          <Link to="/help">Help</Link>
+          <Link to="/help">Trợ giúp</Link>
           <span aria-hidden="true">|</span>
           {user ? (
             <>
               {isStaff(user) && (
                 <>
-                  <Link to="/staff">Staff area</Link>
+                  <Link to="/staff">Khu vực nhân viên</Link>
                   <span aria-hidden="true">|</span>
                 </>
               )}
-              <Link to={isStaff(user) ? '/staff' : '/account'}>Hi, {user.fullName.split(' ').slice(-1)[0]}</Link>
+              <Link to={isStaff(user) ? '/staff' : '/account'}>Chào, {user.fullName.split(' ').slice(-1)[0]}</Link>
               <span aria-hidden="true">|</span>
-              <button type="button" className="link-btn" onClick={() => { signOut(); navigate('/'); }}>Sign out</button>
+              <button type="button" className="link-btn" onClick={() => { signOut(); navigate('/'); }}>Đăng xuất</button>
             </>
           ) : (
             <>
-              <Link to="/register">Join us</Link>
+              <Link to="/register">Đăng ký</Link>
               <span aria-hidden="true">|</span>
-              <Link to="/login">Sign in</Link>
+              <Link to="/login">Đăng nhập</Link>
             </>
           )}
         </div>
@@ -74,7 +74,7 @@ export default function Header() {
         <div className="site-header__inner">
           <Logo />
 
-          <nav className="main-nav" aria-label="Main">
+          <nav className="main-nav" aria-label="Điều hướng chính">
             {NAV.map((item) => (
               <NavLink key={item.to} to={item.to} className="main-nav__link">
                 {item.label}
@@ -84,21 +84,21 @@ export default function Header() {
 
           <div className="site-header__tools">
             <form className="search-pill" role="search" onSubmit={submitSearch}>
-              <button type="submit" className="search-pill__btn" aria-label="Search classes">
+              <button type="submit" className="search-pill__btn" aria-label="Tìm lớp học">
                 <Icon name="search" />
               </button>
               <input
                 type="search"
-                placeholder="Search classes"
-                aria-label="Search classes"
+                placeholder="Tìm lớp học"
+                aria-label="Tìm lớp học"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
               />
             </form>
-            <Link className="icon-btn" to="/account?tab=bookings" aria-label="My bookings" title="My bookings">
+            <Link className="icon-btn" to="/account?tab=bookings" aria-label="Lớp tôi đã đặt" title="Lớp tôi đã đặt">
               <Icon name="calendar" />
             </Link>
-            <Link className="icon-btn" to={user ? (isStaff(user) ? '/staff' : '/account') : '/login'} aria-label="Account" title="Account">
+            <Link className="icon-btn" to={user ? (isStaff(user) ? '/staff' : '/account') : '/login'} aria-label="Tài khoản" title="Tài khoản">
               <Icon name="user" />
             </Link>
             <button type="button" className="icon-btn menu-toggle" aria-label="Menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(true)}>
@@ -112,7 +112,7 @@ export default function Header() {
         <div className="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="mobile-menu__head">
             <Logo />
-            <button type="button" className="icon-btn" aria-label="Close menu" onClick={() => setMenuOpen(false)}>
+            <button type="button" className="icon-btn" aria-label="Đóng menu" onClick={() => setMenuOpen(false)}>
               <Icon name="close" />
             </button>
           </div>
@@ -124,14 +124,14 @@ export default function Header() {
               </NavLink>
             ))}
           </nav>
-          <p className="mobile-menu__lead">Book classes, track your sessions and manage your membership in one place.</p>
+          <p className="mobile-menu__lead">Đặt lớp, theo dõi buổi tập và quản lý gói tập ở cùng một nơi.</p>
           <div className="mobile-menu__actions">
             {user ? (
-              <button type="button" className="btn btn--secondary" onClick={() => { signOut(); navigate('/'); }}>Sign out</button>
+              <button type="button" className="btn btn--secondary" onClick={() => { signOut(); navigate('/'); }}>Đăng xuất</button>
             ) : (
               <>
-                <Link className="btn btn--primary" to="/register">Join us</Link>
-                <Link className="btn btn--secondary" to="/login">Sign in</Link>
+                <Link className="btn btn--primary" to="/register">Đăng ký</Link>
+                <Link className="btn btn--secondary" to="/login">Đăng nhập</Link>
               </>
             )}
           </div>
@@ -145,10 +145,10 @@ export function PromoStrip() {
   const { user } = useAuth();
   return (
     <div className="promo-strip">
-      <p>{user ? 'New classes open every week' : 'Your first class is on us'}</p>
+      <p>{user ? 'Lớp mới mở mỗi tuần' : 'Buổi tập đầu tiên miễn phí'}</p>
       <p className="promo-strip__links">
-        {!user && <Link to="/register">Join now</Link>}
-        <Link to="/classes">Find a class</Link>
+        {!user && <Link to="/register">Đăng ký ngay</Link>}
+        <Link to="/classes">Tìm lớp học</Link>
       </p>
     </div>
   );

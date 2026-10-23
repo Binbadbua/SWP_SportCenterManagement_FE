@@ -40,7 +40,7 @@ export default function ClassDetail() {
   const sessions = useApi(() => api.schedules.byClass(id), [id], {
     sample: () => mock.sessions.filter((s) => s.classId === id),
   });
-  // The roster and coach profile are staff-only on the API, so other users don't request them.
+  // The roster is staff-only on the API, so other users don't request it.
   const roster = useApi(() => api.classes.members(id), [id], {
     skip: !["CenterManager", "Coach"].includes(role),
     sample: () =>
@@ -82,10 +82,10 @@ export default function ClassDetail() {
           onRetry={cls.reload}
         />
         <EmptyState
-          title="We couldn’t find that class"
-          action={<Button to="/classes">Browse classes</Button>}
+          title="Không tìm thấy lớp học này"
+          action={<Button to="/classes">Xem các lớp học</Button>}
         >
-          It may have been removed or the link is wrong.
+          Có thể lớp đã bị xóa hoặc đường dẫn không đúng.
         </EmptyState>
       </div>
     );
@@ -121,8 +121,8 @@ export default function ClassDetail() {
     if (!memberId) {
       setActionError(
         profile.status === "loading"
-          ? "Still loading your member profile — try again in a moment."
-          : `We couldn’t find your member profile, so the booking can’t be made. ${profile.error?.message ?? ""}`.trim(),
+          ? "Đang tải hồ sơ học viên của bạn — vui lòng thử lại sau giây lát."
+          : `Không tìm thấy hồ sơ học viên của bạn nên chưa đặt lớp được. ${profile.error?.message ?? ""}`.trim(),
       );
       return;
     }
@@ -160,9 +160,9 @@ export default function ClassDetail() {
   if (user && !member) {
     cta = (
       <p className="pdp__note">
-        Signed in as staff. Book members in from the{" "}
+        Bạn đang đăng nhập bằng tài khoản nhân viên. Hãy đặt lớp cho học viên trong{" "}
         <Link className="text-link" to="/staff/bookings">
-          staff area
+          khu vực nhân viên
         </Link>
         .
       </p>
@@ -171,8 +171,8 @@ export default function ClassDetail() {
     cta = (
       <>
         <div className="pdp__booked">
-          <Icon name="check" size={20} strokeWidth={2} /> You’re booked into
-          this class
+          <Icon name="check" size={20} strokeWidth={2} /> Bạn đã đặt lớp
+          này
         </div>
         <Button
           variant="secondary"
@@ -181,7 +181,7 @@ export default function ClassDetail() {
           onClick={cancel}
           disabled={busy}
         >
-          Cancel booking
+          Hủy đặt lớp
         </Button>
       </>
     );
@@ -195,22 +195,22 @@ export default function ClassDetail() {
           disabled={busy || closed || spotsLeft === 0 || sessions.loading || noSessionsLeft}
         >
           {closed
-            ? "Booking closed"
+            ? "Đã đóng đăng ký"
             : noSessionsLeft
-              ? "No upcoming sessions"
+              ? "Không còn buổi học sắp tới"
               : spotsLeft === 0
-                ? "Class is full"
+                ? "Lớp đã đủ chỗ"
                 : busy
-                  ? "Booking…"
+                  ? "Đang đặt…"
                   : user
-                    ? "Book this class"
-                    : "Sign in to book"}
+                    ? "Đặt lớp này"
+                    : "Đăng nhập để đặt lớp"}
         </Button>
         {!closed && noSessionsLeft && (
           <p className="muted small">
             {allSessions.length
-              ? "Every session of this class has already taken place, so it can’t be booked."
-              : "No sessions have been scheduled yet. Booking opens once the class has sessions."}
+              ? "Tất cả các buổi của lớp này đã diễn ra nên không thể đặt nữa."
+              : "Lớp chưa được xếp buổi học. Lớp sẽ mở đăng ký khi có lịch học."}
           </p>
         )}
       </>
@@ -235,14 +235,14 @@ export default function ClassDetail() {
           <img
             className="pdp__main-img"
             src={sportImage(c.categoryName, c.className)}
-            alt={`${c.categoryName} class`}
+            alt={`Lớp ${c.categoryName}`}
           />
           <div className="pdp__thumbs">
             {classThumbnails(c.categoryName, c.className).map((imgSrc, idx) => (
               <img
                 key={idx}
                 src={imgSrc}
-                alt={`Facility view ${idx + 1}`}
+                alt={`Ảnh cơ sở vật chất ${idx + 1}`}
                 loading="lazy"
                 onError={(e) => {
                   const img = e.target;
@@ -265,15 +265,15 @@ export default function ClassDetail() {
         </div>
 
         <div className="pdp__info">
-          <nav className="crumbs" aria-label="Breadcrumb">
-            <Link to="/classes">Classes</Link> /{" "}
+          <nav className="crumbs" aria-label="Đường dẫn">
+            <Link to="/classes">Lớp học</Link> /{" "}
             <Link to={`/classes?sport=${c.categoryId}`}>{c.categoryName}</Link>
           </nav>
           <h1 className="pdp__title">{c.className}</h1>
           <p className="pdp__sub">
-            {c.categoryName} class · with {c.coachName}
+            Lớp {c.categoryName} · cùng {c.coachName}
           </p>
-          <p className="pdp__price">Included in every membership</p>
+          <p className="pdp__price">Đã bao gồm trong mọi thẻ thành viên</p>
           <p className={`pdp__eyebrow eyebrow--${eyebrow.tone}`}>
             {eyebrow.text}
           </p>
@@ -281,11 +281,11 @@ export default function ClassDetail() {
           {/* Spots meter */}
           <div className="spots">
             <div className="spots__row">
-              <span className="spots__label">Spots</span>
+              <span className="spots__label">Số chỗ</span>
               <span className="num">
                 {knownTaken
-                  ? `${taken} of ${c.maxCapacity} taken`
-                  : `Up to ${c.maxCapacity}`}
+                  ? `Đã đặt ${taken}/${c.maxCapacity}`
+                  : `Tối đa ${c.maxCapacity}`}
               </span>
             </div>
             <div className="spots__bar" aria-hidden="true">
@@ -300,9 +300,9 @@ export default function ClassDetail() {
           {/* Session grid, styled like a size chart */}
           <div className="sessions">
             <div className="sessions__head">
-              <h2 className="sessions__title">Sessions</h2>
+              <h2 className="sessions__title">Các buổi học</h2>
               <span className="muted num">
-                {allSessions.length} in this class ·{" "}
+                {allSessions.length} buổi ·{" "}
                 {formatDateRange(c.startDate, c.endDate)}
               </span>
             </div>
@@ -319,7 +319,7 @@ export default function ClassDetail() {
                         className={`size-grid__cell ${past ? "is-past" : ""}`}
                         title={
                           past
-                            ? "This session has already happened"
+                            ? "Buổi học này đã diễn ra"
                             : s.roomName
                         }
                       >
@@ -340,16 +340,16 @@ export default function ClassDetail() {
                     onClick={() => setShowAll((v) => !v)}
                   >
                     {showAll
-                      ? "Show fewer"
-                      : `Show all ${allSessions.length} sessions`}
+                      ? "Thu gọn"
+                      : `Xem tất cả ${allSessions.length} buổi`}
                   </button>
                 )}
                 <p className="sessions__hint muted">
-                  One booking covers every session in the class.
+                  Đặt một lần là tham gia mọi buổi của lớp.
                 </p>
               </>
             ) : (
-              <p className="muted">Sessions haven’t been scheduled yet.</p>
+              <p className="muted">Lớp chưa được xếp buổi học.</p>
             )}
           </div>
 
@@ -364,53 +364,56 @@ export default function ClassDetail() {
 
           <div className="accordions">
             <details open>
-              <summary>About {c.categoryName}</summary>
+              <summary>Giới thiệu {c.categoryName}</summary>
               <p>
                 {category?.description ||
-                  "Details for this sport are coming soon."}
+                  "Thông tin về môn này sẽ sớm được cập nhật."}
               </p>
               <ul className="facts">
                 <li>
-                  <span>Status</span>
+                  <span>Trạng thái</span>
                   {ClassStatus.label(c.status)}
                 </li>
                 <li>
-                  <span>Runs</span>
+                  <span>Thời gian</span>
                   {formatDate(c.startDate)} – {formatDate(c.endDate)}
                 </li>
                 <li>
-                  <span>Class size</span>Up to {c.maxCapacity} people
+                  <span>Sĩ số</span>Tối đa {c.maxCapacity} người
                 </li>
                 {firstRoom && (
                   <li>
-                    <span>Room</span>
+                    <span>Phòng</span>
                     {firstRoom}
                   </li>
                 )}
               </ul>
             </details>
-            <details>
-              <summary>Your coach</summary>
-              {coach.data ? (
-                <div className="mini-coach">
-                  <CoachPortrait coach={coach.data} size="sm" />
+            <details open>
+              <summary>Huấn luyện viên của bạn</summary>
+              {/* A short card only: the full profile (sports, contact, schedule) is on the coach's page */}
+              <div className="class-coach">
+                <Link to={`/coaches/${c.coachId}`} className="mini-coach mini-coach--link">
+                  <CoachPortrait coach={coach.data ?? { fullName: c.coachName }} size="sm" />
                   <div>
-                    <p className="cell-strong">{coach.data.fullName}</p>
+                    <p className="cell-strong">{coach.data?.fullName ?? c.coachName}</p>
                     <p className="muted">
-                      {coach.data.specialization || "Coach"} ·{" "}
-                      {coach.data.experienceYears} years coaching
+                      {coach.data
+                        ? `${coach.data.specialization || "Huấn luyện viên"} · ${coach.data.experienceYears} năm kinh nghiệm`
+                        : "Huấn luyện viên phụ trách lớp"}
                     </p>
                   </div>
-                </div>
-              ) : (
-                <p>{c.coachName}</p>
-              )}
+                </Link>
+                <Link className="text-link" to={`/coaches/${c.coachId}`}>
+                  Xem hồ sơ và lịch dạy của huấn luyện viên
+                </Link>
+              </div>
             </details>
             <details>
-              <summary>Cancelling</summary>
+              <summary>Hủy đặt lớp</summary>
               <p>
-                You can cancel your booking online until you’ve attended your
-                first session. After that, ask reception.
+                Bạn có thể tự hủy trên web cho đến khi học buổi đầu tiên. Sau đó, hãy
+                nhờ lễ tân hỗ trợ.
               </p>
             </details>
           </div>
@@ -421,13 +424,13 @@ export default function ClassDetail() {
         <div className="booked-panel" role="status">
           <div className="booked-panel__head">
             <span>
-              <Icon name="check" size={18} strokeWidth={2.2} /> Booked
+              <Icon name="check" size={18} strokeWidth={2.2} /> Đã đặt lớp
             </span>
             <button
               type="button"
               className="icon-btn"
               onClick={() => setBooked(null)}
-              aria-label="Close"
+              aria-label="Đóng"
             >
               <Icon name="close" size={20} />
             </button>
@@ -437,15 +440,15 @@ export default function ClassDetail() {
             <div>
               <p className="cell-strong">{booked.className}</p>
               <p className="muted">
-                Starts {formatDate(booked.classStartDate)}
+                Khai giảng {formatDate(booked.classStartDate)}
               </p>
             </div>
           </div>
           <div className="booked-panel__actions">
             <Button variant="secondary" to="/account?tab=bookings">
-              View my bookings
+              Xem lớp đã đặt
             </Button>
-            <Button onClick={() => setBooked(null)}>Keep browsing</Button>
+            <Button onClick={() => setBooked(null)}>Xem tiếp</Button>
           </div>
         </div>
       )}

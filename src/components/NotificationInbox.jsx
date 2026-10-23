@@ -33,9 +33,9 @@ export default function NotificationInbox() {
     <div className="inbox">
       <ErrorNotice error={rows.error} onRetry={rows.reload} />
       <div className="panel-bar">
-        <p className="muted">{unread ? `${unread} unread` : 'All caught up'}</p>
+        <p className="muted">{unread ? `${unread} chưa đọc` : 'Đã đọc hết'}</p>
         <Button variant="secondary" size="sm" onClick={markAll} disabled={!unread || busy}>
-          Mark all as read
+          Đánh dấu đã đọc tất cả
         </Button>
       </div>
       {list.length ? (
@@ -47,7 +47,7 @@ export default function NotificationInbox() {
                 onClick={() => markOne(n)}
                 className="notif__btn"
                 disabled={busy}
-                title={n.isRead ? undefined : 'Mark as read'}
+                title={n.isRead ? undefined : 'Đánh dấu đã đọc'}
               >
                 <span className="notif__dot" aria-hidden="true" />
                 <span>
@@ -56,14 +56,14 @@ export default function NotificationInbox() {
                   <span className="muted notif__time">{formatDateTime(n.createdAt)}</span>
                 </span>
               </button>
-              <IconButton icon="trash" label={`Delete “${n.title}”`} onClick={() => remove(n)} disabled={busy} />
+              <IconButton icon="trash" label={`Xóa “${n.title}”`} onClick={() => remove(n)} disabled={busy} />
             </li>
           ))}
         </ul>
       ) : (
         !rows.error && (
-          <EmptyState title="No notifications">
-            Messages from the center — schedule changes, reminders — show up here.
+          <EmptyState title="Chưa có thông báo">
+            Tin từ trung tâm — đổi lịch, nhắc lịch — sẽ hiện ở đây.
           </EmptyState>
         )
       )}

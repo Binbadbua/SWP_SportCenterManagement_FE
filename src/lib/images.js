@@ -47,20 +47,23 @@ export function sportImage(...names) {
   return `/images/${file}.jpg`;
 }
 
-// Home page hero ("YOUR MOVE.") background slideshow, shown in this order and then looped.
+// Home page hero background slideshow, shown in this order and then looped. The headline changes
+// with the photo; the rest of the hero text stays the same.
 // To add a photo: put the file in public/images/ and add one line here.
 //   src       path from public/ (always starts with /images/)
 //   alt       short description for screen readers
 //   position  which part of the photo stays in view when it is cropped (CSS object-position),
 //             e.g. "center", "60% 40%" (60% from the left, 40% from the top)
+//   title     the headline shown with this photo, one string per line (keep lines to ~9 letters:
+//             the headline is huge and must fit a phone screen)
 // Best results: landscape JPG/WebP, at least 1920×1080, under ~400 KB, subject away from the
 // bottom-left corner where the headline sits.
 export const HERO_SLIDES = [
-  { src: "/images/tennis.jpg", alt: "Aerial view of a tennis player serving on a clay court", position: "60% 40%" },
-  { src: "/images/yoga.jpg", alt: "Lớp yoga lúc bình minh", position: "center 40%" },
-  { src: "/images/swimming.jpg", alt: "Swimmer doing butterfly stroke in a pool lane", position: "center 45%" },
-  { src: "/images/hiit-ropes.jpg", alt: "Athlete training with battle ropes", position: "70% center" },
-  { src: "/images/basketball.jpg", alt: "Basketball dropping through the hoop", position: "center 30%" },
+  { src: "/images/tennis.jpg", alt: "Nhìn từ trên cao một người chơi tennis đang giao bóng trên sân đất nện", position: "60% 40%", title: ["Đến lượt", "bạn."] },
+  { src: "/images/yoga.jpg", alt: "Lớp yoga lúc bình minh", position: "center 40%", title: ["Hít thở", "thật sâu."] },
+  { src: "/images/swimming.jpg", alt: "Vận động viên bơi bướm trong làn bơi", position: "center 45%", title: ["Bơi xa", "hơn nữa."] },
+  { src: "/images/hiit-ropes.jpg", alt: "Vận động viên tập với dây thừng chiến đấu", position: "70% center", title: ["Đốt cháy", "giới hạn."] },
+  { src: "/images/basketball.jpg", alt: "Quả bóng rổ rơi qua vành rổ", position: "center 30%", title: ["Ghi điểm", "mỗi ngày."] },
 ];
 
 // Milliseconds. `interval` = how long each photo stays (fade included), `fade` = length of the

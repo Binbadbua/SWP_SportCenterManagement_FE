@@ -15,110 +15,109 @@ import { Button, EmptyState } from "../components/ui.jsx";
 // Sidebar navigation by role. `preview: true` = UI only, no back-end API yet.
 export const STAFF_NAV = [
   {
-    group: "Today",
+    group: "Hôm nay",
     items: [
       {
         to: "/staff",
-        label: "Overview",
+        label: "Tổng quan",
         roles: ["CenterManager", "Receptionist", "Coach"],
         end: true,
       },
       {
         to: "/staff/notifications",
-        label: "Notifications",
+        label: "Thông báo",
         roles: ["CenterManager", "Receptionist", "Coach"],
       },
     ],
   },
   {
-    group: "Front desk",
+    group: "Quầy lễ tân",
     items: [
       {
         to: "/staff/bookings",
-        label: "Bookings",
+        label: "Đặt lớp",
         roles: ["Receptionist"],
       },
       {
         to: "/staff/attendance",
-        label: "Attendance",
+        label: "Điểm danh",
         roles: ["Coach"],
       },
       {
         to: "/staff/members",
-        label: "Members",
+        label: "Học viên",
         roles: ["CenterManager", "Receptionist"],
       },
       {
         to: "/staff/memberships",
-        label: "Memberships",
+        label: "Thẻ thành viên",
         roles: ["CenterManager", "Receptionist"],
       },
       {
         to: "/staff/invoices",
-        label: "Invoices",
+        label: "Hóa đơn",
         roles: ["CenterManager", "Receptionist"],
       },
       {
         to: "/staff/support-requests",
-        label: "Support requests",
+        label: "Yêu cầu hỗ trợ",
         roles: ["CenterManager", "Receptionist"],
       },
     ],
   },
   {
-    group: "Coaching",
+    group: "Huấn luyện",
     items: [
-      { to: "/staff/my-classes", label: "My classes", roles: ["Coach"] },
-      { to: "/staff/my-members", label: "My members", roles: ["Coach"] },
+      { to: "/staff/my-classes", label: "Lớp của tôi", roles: ["Coach"] },
+      { to: "/staff/my-members", label: "Học viên của tôi", roles: ["Coach"] },
       {
         to: "/staff/training-plans",
-        label: "Training plans",
+        label: "Kế hoạch tập luyện",
         roles: ["Coach"],
       },
       {
         to: "/staff/training-results",
-        label: "Training results",
+        label: "Kết quả tập luyện",
         roles: ["Coach"],
       },
     ],
   },
   {
-    group: "Programme",
+    group: "Chương trình",
     items: [
       {
         to: "/staff/classes",
-        label: "Classes",
+        label: "Lớp học",
         roles: ["CenterManager", "Receptionist"],
       },
       {
         to: "/staff/schedule",
-        label: "Schedule",
+        label: "Lịch học",
         roles: ["CenterManager", "Receptionist", "Coach"],
       },
-      { to: "/staff/rooms", label: "Rooms", roles: ["CenterManager"] },
-      { to: "/staff/sports", label: "Sports", roles: ["CenterManager"] },
-      { to: "/staff/packages", label: "Packages", roles: ["CenterManager"] },
+      { to: "/staff/rooms", label: "Phòng tập", roles: ["CenterManager"] },
+      { to: "/staff/sports", label: "Môn thể thao", roles: ["CenterManager"] },
+      { to: "/staff/packages", label: "Gói tập", roles: ["CenterManager"] },
     ],
   },
   {
-    group: "Team",
+    group: "Nhân sự",
     items: [
-      { to: "/staff/coaches", label: "Coaches", roles: ["CenterManager"] },
+      { to: "/staff/coaches", label: "Huấn luyện viên", roles: ["CenterManager"] },
       {
         to: "/staff/receptionists",
-        label: "Receptionists",
+        label: "Lễ tân",
         roles: ["CenterManager"],
       },
-      { to: "/staff/managers", label: "Managers", roles: ["CenterManager"] },
-      { to: "/staff/accounts", label: "Accounts", roles: ["CenterManager"] },
-      { to: "/staff/audit-log", label: "Audit log", roles: ["CenterManager"] },
+      { to: "/staff/managers", label: "Quản lý", roles: ["CenterManager"] },
+      { to: "/staff/accounts", label: "Tài khoản", roles: ["CenterManager"] },
+      { to: "/staff/audit-log", label: "Nhật ký hoạt động", roles: ["CenterManager"] },
     ],
   },
 ];
 
-// The token carries the C# enum name ("CenterManager"); show its label ("Center manager")
-const roleLabel = (role) =>
-  AccountRole.options.find((o) => o.label.replace(/\s+/g, "").toLowerCase() === String(role).toLowerCase())?.label ?? role;
+// The token carries the C# enum name ("CenterManager"); show its label ("Quản lý trung tâm")
+const roleLabel = (role) => AccountRole.options.find((o) => o.name === role)?.label ?? role;
 
 export default function StaffLayout() {
   const { user, signOut } = useAuth();
@@ -134,13 +133,13 @@ export default function StaffLayout() {
       <div className="staff-gate">
         <Logo />
         <EmptyState
-          title="Staff sign-in required"
-          action={<Button to="/login?next=/staff">Sign in as staff</Button>}
+          title="Cần đăng nhập tài khoản nhân viên"
+          action={<Button to="/login?next=/staff">Đăng nhập nhân viên</Button>}
         >
-          Sign in as a manager, receptionist or coach to open the staff area.
+          Đăng nhập bằng tài khoản quản lý, lễ tân hoặc huấn luyện viên để vào khu vực nhân viên.
         </EmptyState>
         <Link className="text-link" to="/">
-          Back to the website
+          Về trang web
         </Link>
       </div>
     );
@@ -164,14 +163,14 @@ export default function StaffLayout() {
           <Icon name="menu" />
         </button>
         <Logo to="/staff" inverse />
-        <span className="staff-top__tag label">Staff</span>
+        <span className="staff-top__tag label">Nhân viên</span>
         <div className="staff-top__right">
           <Link to="/" className="staff-top__link">
-            View website
+            Xem trang web
           </Link>
           <span className="staff-top__user">
             <span className="staff-top__name">
-              {user?.username || "STAFF"}
+              {user?.username || "NHÂN VIÊN"}
             </span>
             <span className="staff-top__role">
               {roleLabel(user?.role || user?.Role)}
@@ -180,8 +179,8 @@ export default function StaffLayout() {
           <button
             type="button"
             className="icon-btn staff-top__icon"
-            aria-label="Sign out"
-            title="Sign out"
+            aria-label="Đăng xuất"
+            title="Đăng xuất"
             onClick={() => {
               signOut();
               navigate("/");
@@ -195,7 +194,7 @@ export default function StaffLayout() {
       <div className="staff__body">
         <nav
           className={`staff-nav ${navOpen ? "is-open" : ""}`}
-          aria-label="Staff"
+          aria-label="Menu nhân viên"
         >
           {groups.map((g) => (
             <div key={g.group} className="staff-nav__group">
@@ -211,9 +210,9 @@ export default function StaffLayout() {
                   {i.preview && (
                     <span
                       className="staff-nav__preview"
-                      title="UI preview — no API yet"
+                      title="Bản xem trước — chưa có API"
                     >
-                      Preview
+                      Xem trước
                     </span>
                   )}
                 </NavLink>

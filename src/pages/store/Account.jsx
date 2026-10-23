@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { api } from "../../api/endpoints.js";
+import { api, isMissingRoute } from "../../api/endpoints.js";
 import * as mock from "../../api/mockData.js";
 import { useApi } from "../../hooks/useApi.js";
 import { isStaff, useAuth } from "../../context/AuthContext.jsx";
@@ -9,6 +9,7 @@ import {
   AttendanceStatus,
   BookingStatus,
   InvoiceStatus,
+  Gender,
   MembershipStatus,
   PaymentMethod,
   SupportRequestStatus,
@@ -39,21 +40,17 @@ import {
 } from "../../components/ui.jsx";
 
 const TABS = [
-  { key: "bookings", label: "Bookings" },
-  { key: "attendance", label: "Attendance" },
-  { key: "membership", label: "Membership" },
-  { key: "training", label: "Training" },
-  { key: "invoices", label: "Invoices" },
-  { key: "notifications", label: "Notifications" },
-  { key: "support", label: "Support" },
-  { key: "profile", label: "Profile" },
+  { key: "bookings", label: "Lớp đã đặt" },
+  { key: "attendance", label: "Điểm danh" },
+  { key: "membership", label: "Thẻ thành viên" },
+  { key: "training", label: "Tập luyện" },
+  { key: "invoices", label: "Hóa đơn" },
+  { key: "notifications", label: "Thông báo" },
+  { key: "support", label: "Hỗ trợ" },
+  { key: "profile", label: "Hồ sơ" },
 ];
 
-const GENDERS = [
-  { value: "Male", label: "Male" },
-  { value: "Female", label: "Female" },
-  { value: "Other", label: "Other" },
-];
+const GENDERS = Gender.options;
 
 
 export default function Account() {
@@ -67,10 +64,10 @@ export default function Account() {
     return (
       <div className="container page">
         <EmptyState
-          title="Sign in to see your bookings"
-          action={<Button to="/login?next=/account">Sign in</Button>}
+          title="Đăng nhập để xem lớp đã đặt"
+          action={<Button to="/login?next=/account">Đăng nhập</Button>}
         >
-          Your classes, attendance and invoices live here.
+          Lớp học, điểm danh và hóa đơn của bạn đều ở đây.
         </EmptyState>
       </div>
     );
@@ -79,11 +76,11 @@ export default function Account() {
     return (
       <div className="container page">
         <EmptyState
-          title="You’re signed in as staff"
-          action={<Button to="/staff">Go to the staff area</Button>}
+          title="Bạn đang đăng nhập bằng tài khoản nhân viên"
+          action={<Button to="/staff">Vào khu vực nhân viên</Button>}
         >
-          Member accounts are for members. Sign out and sign in as a member to
-          preview this page.
+          Trang này dành cho học viên. Hãy đăng xuất rồi đăng nhập bằng tài khoản
+          học viên để xem.
         </EmptyState>
       </div>
     );
@@ -92,10 +89,10 @@ export default function Account() {
   return (
     <div className="container page account">
       {params.get("welcome") && (
-        <Notice tone="success" title={`Welcome, ${user.fullName}`}>
-          Your account is ready. Pick a class to book your first session.
+        <Notice tone="success" title={`Chào mừng, ${user.fullName}`}>
+          Tài khoản của bạn đã sẵn sàng. Hãy chọn một lớp để đặt buổi tập đầu tiên.
           {params.get("profile") === "incomplete" &&
-            " We couldn’t save your phone, date of birth, gender and training goal yet — add them under Profile."}
+            " Chưa lưu được số điện thoại, ngày sinh, giới tính và mục tiêu tập — bạn hãy bổ sung ở mục Hồ sơ."}
         </Notice>
       )}
       <header className="account__head">
@@ -108,7 +105,7 @@ export default function Account() {
         </div>
       </header>
 
-      <nav className="tabs" aria-label="Account sections">
+      <nav className="tabs" aria-label="Các mục tài khoản">
         {TABS.map((t) => (
           <button
             key={t.key}
@@ -139,9 +136,9 @@ export default function Account() {
 /* The API answers 403 when a member asks for data only staff may read */
 function StaffOnlyNotice({ what }) {
   return (
-    <Notice tone="info" title={`Your ${what} can’t be shown here yet`}>
-      The server only lets staff look up {what} (HTTP 403). Ask reception to
-      check them for you.
+    <Notice tone="info" title={`Chưa xem được ${what} ở đây`}>
+      Máy chủ chỉ cho nhân viên tra cứu {what} (HTTP 403). Bạn hãy nhờ lễ tân
+      kiểm tra giúp.
     </Notice>
   );
 }
@@ -161,11 +158,11 @@ function BookingsTab({ memberId }) {
   const [busyId, setBusyId] = useState(null);
 
   const cancel = async (b) => {
-    if (!window.confirm(`Cancel your booking for ${b.className}?`)) return;
+    if (!window.confirm(`Hủy đặt lớp ${b.className}?`)) return;
     setBusyId(b.id);
     try {
       await api.bookings.cancel(b.id, b.memberId ?? memberId);
-      toast.success(`Booking for ${b.className} cancelled.`);
+      toast.success(`Đã hủy đặt lớp ${b.className}.`);
       bookings.reload();
     } catch (e) {
       toast.error(e.message);
@@ -175,7 +172,7 @@ function BookingsTab({ memberId }) {
   };
 
   if (bookings.loading) return <Loading />;
-  if (bookings.error?.status === 403) return <StaffOnlyNotice what="bookings" />;
+  if (bookings.error?.status === 403) return <StaffOnlyNotice what="lớp đã đặt" />;
   return (
     <>
       {bookings.usingSample && <SampleDataNotice onRetry={bookings.reload} />}
@@ -186,10 +183,10 @@ function BookingsTab({ memberId }) {
       {!bookings.data?.length ? (
         !bookings.error && (
           <EmptyState
-            title="No bookings yet"
-            action={<Button to="/classes">Find a class</Button>}
+            title="Bạn chưa đặt lớp nào"
+            action={<Button to="/classes">Tìm lớp học</Button>}
           >
-            When you book a class, it shows up here with its start date.
+            Lớp bạn đặt sẽ hiện ở đây kèm ngày khai giảng.
           </EmptyState>
         )
       ) : (
@@ -207,7 +204,7 @@ function BookingsTab({ memberId }) {
                 </StatusTag>
                 <p className="order__title">{b.className}</p>
                 <p className="muted">
-                  Starts {formatDate(b.classStartDate)} · booked{" "}
+                  Khai giảng {formatDate(b.classStartDate)} · đặt ngày{" "}
                   {formatDate(b.bookingDate)}
                 </p>
               </div>
@@ -217,7 +214,7 @@ function BookingsTab({ memberId }) {
                   size="sm"
                   to={`/classes/${b.classId}`}
                 >
-                  View class
+                  Xem lớp
                 </Button>
                 {b.status === 1 && (
                   <Button
@@ -226,7 +223,7 @@ function BookingsTab({ memberId }) {
                     onClick={() => cancel(b)}
                     disabled={busyId === b.id}
                   >
-                    {busyId === b.id ? "Cancelling…" : "Cancel"}
+                    {busyId === b.id ? "Đang hủy…" : "Hủy"}
                   </Button>
                 )}
               </div>
@@ -244,7 +241,7 @@ function AttendanceTab({ memberId }) {
     sample: () => mock.attendance.filter((a) => a.memberId === memberId),
   });
   if (rows.loading) return <Loading />;
-  if (rows.error?.status === 403) return <StaffOnlyNotice what="attendance records" />;
+  if (rows.error?.status === 403) return <StaffOnlyNotice what="lịch sử điểm danh" />;
   const list = rows.data ?? [];
   const present = list.filter((a) => a.status !== 2).length;
   return (
@@ -260,16 +257,16 @@ function AttendanceTab({ memberId }) {
             <span className="display stat-line__num">
               {present}/{list.length}
             </span>
-            <span className="muted">sessions attended</span>
+            <span className="muted">buổi đã tham gia</span>
           </p>
           <div className="table-wrap">
             <table className="table">
               <thead>
                 <tr>
-                  <th>Session</th>
-                  <th>Start</th>
-                  <th>Checked in</th>
-                  <th>Status</th>
+                  <th>Buổi học</th>
+                  <th>Bắt đầu</th>
+                  <th>Check-in</th>
+                  <th>Trạng thái</th>
                 </tr>
               </thead>
               <tbody>
@@ -291,8 +288,8 @@ function AttendanceTab({ memberId }) {
         </>
       ) : (
         !rows.error && (
-          <EmptyState title="No attendance yet">
-            Your coach marks attendance at each session.
+          <EmptyState title="Chưa có điểm danh">
+            Huấn luyện viên sẽ điểm danh bạn ở mỗi buổi học.
           </EmptyState>
         )
       )}
@@ -317,8 +314,8 @@ function MembershipTab() {
         <p className="stat-line">
           <span className="display stat-line__num">{current.packageName}</span>
           <span className="muted">
-            active until {formatDate(current.endDate)}
-            {left !== null && ` · ${left} ${left === 1 ? "day" : "days"} left`}
+            còn hiệu lực đến {formatDate(current.endDate)}
+            {left !== null && ` · còn ${left} ngày`}
           </span>
         </p>
       )}
@@ -327,10 +324,10 @@ function MembershipTab() {
           <table className="table">
             <thead>
               <tr>
-                <th>Package</th>
-                <th>From</th>
-                <th>Until</th>
-                <th>Status</th>
+                <th>Gói tập</th>
+                <th>Từ ngày</th>
+                <th>Đến ngày</th>
+                <th>Trạng thái</th>
               </tr>
             </thead>
             <tbody>
@@ -352,10 +349,10 @@ function MembershipTab() {
       ) : (
         !rows.error && (
           <EmptyState
-            title="No membership yet"
-            action={<Button to="/memberships">See plans</Button>}
+            title="Bạn chưa có thẻ thành viên"
+            action={<Button to="/memberships">Xem gói tập</Button>}
           >
-            Pay for a plan at reception and it shows up here with its end date.
+            Chọn một gói ở trang Gói tập để đăng ký và thanh toán (hoặc thanh toán tại quầy lễ tân), thẻ sẽ hiện ở đây kèm ngày hết hạn.
           </EmptyState>
         )
       )}
@@ -376,7 +373,7 @@ function TrainingTab() {
   if (plans.loading || results.loading) return <Loading />;
   return (
     <>
-      <h2 className="panel-title">Plans from your coach</h2>
+      <h2 className="panel-title">Kế hoạch từ huấn luyện viên</h2>
       <ErrorNotice error={plans.error} onRetry={plans.reload} />
       {plans.data?.length ? (
         <div className="plan-list">
@@ -385,11 +382,11 @@ function TrainingTab() {
             return (
               <article key={p.id} className="plan">
                 <p className="label muted">
-                  {cls?.className ?? "Class"} · {formatDate(p.createdDate)}
+                  {cls?.className ?? "Lớp học"} · {formatDate(p.createdDate)}
                 </p>
                 <h3 className="plan__title">{p.title}</h3>
                 <p>{p.contentDescription}</p>
-                {cls?.coachName && <p className="muted">From {cls.coachName}</p>}
+                {cls?.coachName && <p className="muted">Từ {cls.coachName}</p>}
               </article>
             );
           })}
@@ -397,11 +394,11 @@ function TrainingTab() {
       ) : (
         !plans.error && (
           <p className="muted">
-            No plans yet. Your coach writes one for you after you join a class.
+            Chưa có kế hoạch. Huấn luyện viên sẽ lập kế hoạch cho bạn sau khi bạn vào lớp.
           </p>
         )
       )}
-      <h2 className="panel-title">Results</h2>
+      <h2 className="panel-title">Kết quả</h2>
       <ErrorNotice error={results.error} onRetry={results.reload} />
       {results.data?.length ? (
         <ul className="result-list">
@@ -415,7 +412,7 @@ function TrainingTab() {
                   <span className="muted">/10</span>
                 </div>
                 <div>
-                  <p className="cell-strong">{plan?.title ?? "Training result"}</p>
+                  <p className="cell-strong">{plan?.title ?? "Kết quả tập luyện"}</p>
                   <p>{r.coachComment}</p>
                   <p className="muted">
                     {coachName ? `${coachName} · ` : ""}
@@ -428,7 +425,7 @@ function TrainingTab() {
         </ul>
       ) : (
         !results.error && (
-          <p className="muted">No results yet. Your coach scores your progress against your plan.</p>
+          <p className="muted">Chưa có kết quả. Huấn luyện viên sẽ chấm tiến độ của bạn theo kế hoạch.</p>
         )
       )}
     </>
@@ -450,11 +447,11 @@ function InvoicesTab() {
           <table className="table">
             <thead>
               <tr>
-                <th>Date</th>
-                <th>Membership</th>
-                <th>Method</th>
-                <th>Amount</th>
-                <th>Status</th>
+                <th>Ngày</th>
+                <th>Gói tập</th>
+                <th>Hình thức</th>
+                <th>Số tiền</th>
+                <th>Trạng thái</th>
               </tr>
             </thead>
             <tbody>
@@ -476,8 +473,8 @@ function InvoicesTab() {
         </div>
       ) : (
         !rows.error && (
-          <EmptyState title="No invoices yet">
-            Reception creates an invoice when you pay for a membership.
+          <EmptyState title="Chưa có hóa đơn">
+            Lễ tân sẽ xuất hóa đơn khi bạn thanh toán gói tập.
           </EmptyState>
         )
       )}
@@ -502,13 +499,13 @@ function SupportTab() {
   const send = async (e) => {
     e.preventDefault();
     const text = content.trim();
-    if (!text) return setError("Write what you need help with.");
-    if (text.length > 2000) return setError("Keep it under 2000 characters.");
+    if (!text) return setError("Hãy viết điều bạn cần hỗ trợ.");
+    if (text.length > 2000) return setError("Nội dung tối đa 2000 ký tự.");
     setError(null);
     setSending(true);
     try {
       await api.supportRequests.create({ content: text });
-      toast.success("Sent. Reception will answer here.");
+      toast.success("Đã gửi. Lễ tân sẽ trả lời tại đây.");
       setContent("");
       requests.reload();
     } catch (err) {
@@ -522,17 +519,17 @@ function SupportTab() {
     <>
       <form className="support-form" onSubmit={send} noValidate>
         <Field
-          label="Ask reception"
+          label="Gửi câu hỏi cho lễ tân"
           name="content"
           type="textarea"
           value={content}
           onChange={(_, v) => setContent(v)}
           error={error}
-          help="A question about a class, your membership, a payment or anything else. The answer shows up below."
+          help="Câu hỏi về lớp học, thẻ thành viên, thanh toán hay bất cứ điều gì. Câu trả lời sẽ hiện bên dưới."
         />
-        <Button type="submit" disabled={sending}>{sending ? "Sending…" : "Send request"}</Button>
+        <Button type="submit" disabled={sending}>{sending ? "Đang gửi…" : "Gửi yêu cầu"}</Button>
       </form>
-      <h2 className="panel-title">Your requests</h2>
+      <h2 className="panel-title">Yêu cầu của bạn</h2>
       {requests.loading ? (
         <Loading />
       ) : (
@@ -549,14 +546,14 @@ function SupportTab() {
                   <p className="pre-wrap">{r.content}</p>
                   {r.resolution && (
                     <p className="support-item__answer pre-wrap">
-                      <strong>Reception:</strong> {r.resolution}
+                      <strong>Lễ tân:</strong> {r.resolution}
                     </p>
                   )}
                 </li>
               ))}
             </ul>
           ) : (
-            !requests.error && <p className="muted">No requests yet.</p>
+            !requests.error && <p className="muted">Bạn chưa gửi yêu cầu nào.</p>
           )}
         </>
       )}
@@ -567,12 +564,12 @@ function SupportTab() {
 /* ---- Profile (API) ------------------------------------------------------ */
 function validateProfile(v) {
   const e = {};
-  if (!v.fullName.trim()) e.fullName = "Enter your full name.";
+  if (!v.fullName.trim()) e.fullName = "Vui lòng nhập họ tên.";
   if (!/^\S+@\S+\.\S+$/.test(v.email.trim()))
-    e.email = "Enter a valid email, like name@example.com.";
+    e.email = "Email chưa đúng định dạng, ví dụ ten@example.com.";
   if (!/^0\d{9}$/.test(v.phone.replace(/\s/g, "")))
-    e.phone = "Enter a 10-digit phone number starting with 0.";
-  if (!v.dob) e.dob = "Enter your date of birth.";
+    e.phone = "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0.";
+  if (!v.dob) e.dob = "Vui lòng nhập ngày sinh.";
   return e;
 }
 
@@ -624,11 +621,11 @@ function ProfileTab() {
         avatar: p.avatar ?? "",
       });
       updateUser({ fullName: v.fullName.trim(), email: v.email.trim() });
-      toast.success("Profile saved.");
+      toast.success("Đã lưu hồ sơ.");
       setEditing(false);
       me.reload();
     } catch (err) {
-      toast.error(err.message || "Failed to save profile");
+      toast.error(err.message || "Không lưu được hồ sơ");
     } finally {
       setSaving(false);
     }
@@ -641,12 +638,12 @@ function ProfileTab() {
     return (
       <>
         <ErrorNotice
-          error={me.error ?? "Your profile could not be loaded."}
+          error={me.error ?? "Không tải được hồ sơ của bạn."}
           onRetry={me.reload}
         />
         <dl className="profile-view">
           <div>
-            <dt>Full name</dt>
+            <dt>Họ và tên</dt>
             <dd>{user.fullName || "—"}</dd>
           </div>
           <div>
@@ -654,6 +651,7 @@ function ProfileTab() {
             <dd>{user.email || "—"}</dd>
           </div>
         </dl>
+        <PasswordSection />
       </>
     );
   }
@@ -663,7 +661,7 @@ function ProfileTab() {
       <div className="profile-form">
         <dl className="profile-view">
           <div>
-            <dt>Full name</dt>
+            <dt>Họ và tên</dt>
             <dd>{p.fullName || "—"}</dd>
           </div>
           <div>
@@ -671,27 +669,28 @@ function ProfileTab() {
             <dd>{p.email || "—"}</dd>
           </div>
           <div>
-            <dt>Phone</dt>
+            <dt>Số điện thoại</dt>
             <dd className="num">{realPhone(p.phone) || "—"}</dd>
           </div>
           <div>
-            <dt>Date of birth</dt>
+            <dt>Ngày sinh</dt>
             <dd className="num">{formatDate(p.dob)}</dd>
           </div>
           <div>
-            <dt>Gender</dt>
-            <dd>{GENDERS.find((g) => g.value === p.gender)?.label ?? (p.gender || "—")}</dd>
+            <dt>Giới tính</dt>
+            <dd>{p.gender ? Gender.label(p.gender) : "—"}</dd>
           </div>
           <div className="profile-view__full">
-            <dt>Training goal</dt>
+            <dt>Mục tiêu tập luyện</dt>
             <dd>{p.trainingGoal || "—"}</dd>
           </div>
         </dl>
         <div className="form-actions">
           <Button variant="secondary" icon="edit" onClick={startEdit}>
-            Edit profile
+            Sửa hồ sơ
           </Button>
         </div>
+        <PasswordSection />
       </div>
     );
   }
@@ -701,7 +700,7 @@ function ProfileTab() {
       <div className="form-grid">
         <Field
           className="field--full"
-          label="Full name"
+          label="Họ và tên"
           name="fullName"
           required
           value={v.fullName}
@@ -720,7 +719,7 @@ function ProfileTab() {
           autoComplete="email"
         />
         <Field
-          label="Phone"
+          label="Số điện thoại"
           name="phone"
           type="tel"
           required
@@ -730,7 +729,7 @@ function ProfileTab() {
           autoComplete="tel"
         />
         <Field
-          label="Date of birth"
+          label="Ngày sinh"
           name="dob"
           type="date"
           required
@@ -739,7 +738,7 @@ function ProfileTab() {
           error={errors.dob}
         />
         <Field
-          label="Gender"
+          label="Giới tính"
           name="gender"
           type="select"
           value={v.gender}
@@ -748,7 +747,7 @@ function ProfileTab() {
         />
         <Field
           className="field--full"
-          label="Training goal"
+          label="Mục tiêu tập luyện"
           name="trainingGoal"
           type="textarea"
           value={v.trainingGoal}
@@ -757,12 +756,143 @@ function ProfileTab() {
       </div>
       <div className="form-actions">
         <Button variant="ghost" onClick={() => setEditing(false)} disabled={saving}>
-          Cancel
+          Hủy
         </Button>
         <Button type="submit" disabled={saving}>
-          {saving ? "Saving…" : "Save changes"}
+          {saving ? "Đang lưu…" : "Lưu thay đổi"}
         </Button>
       </div>
     </form>
+  );
+}
+
+/* ---- Password (planned API) --------------------------------------------- */
+// POST /api/auth/change-password is not in the API yet (CHANGELOG Part B, B36). Until it is, saving
+// says so and nothing changes; once it exists this works as is.
+const NO_PASSWORDS = { currentPassword: "", newPassword: "", confirmPassword: "" };
+
+function validatePassword(v) {
+  const e = {};
+  if (!v.currentPassword) e.currentPassword = "Vui lòng nhập mật khẩu hiện tại.";
+  if (v.newPassword.length < 8) e.newPassword = "Mật khẩu mới cần ít nhất 8 ký tự.";
+  else if (v.newPassword === v.currentPassword)
+    e.newPassword = "Mật khẩu mới phải khác mật khẩu hiện tại.";
+  if (v.confirmPassword !== v.newPassword) e.confirmPassword = "Mật khẩu nhập lại không khớp.";
+  return e;
+}
+
+function PasswordSection() {
+  const toast = useToast();
+  const [open, setOpen] = useState(false);
+  const [v, setV] = useState(NO_PASSWORDS);
+  const [show, setShow] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [formError, setFormError] = useState(null);
+  const [unavailable, setUnavailable] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const set = (n, val) => setV((s) => ({ ...s, [n]: val }));
+
+  const close = () => {
+    setOpen(false);
+    setV(NO_PASSWORDS);
+    setErrors({});
+    setFormError(null);
+    setUnavailable(false);
+  };
+
+  const save = async (e) => {
+    e.preventDefault();
+    const found = validatePassword(v);
+    setErrors(found);
+    setFormError(null);
+    if (Object.keys(found).length) return;
+    setSaving(true);
+    try {
+      await api.auth.changePassword({
+        currentPassword: v.currentPassword,
+        newPassword: v.newPassword,
+      });
+      toast.success("Đã đổi mật khẩu. Lần sau hãy đăng nhập bằng mật khẩu mới.");
+      close();
+    } catch (err) {
+      if (isMissingRoute(err)) setUnavailable(true);
+      else setFormError(err.message || "Không đổi được mật khẩu.");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const type = show ? "text" : "password";
+  return (
+    <section className="password-box" aria-labelledby="password-title">
+      <h2 id="password-title" className="panel-title">Mật khẩu</h2>
+      {!open ? (
+        <div className="password-box__row">
+          <p className="muted">
+            Đổi mật khẩu bạn dùng để đăng nhập. Mật khẩu mới cần ít nhất 8 ký tự.
+          </p>
+          <Button variant="secondary" onClick={() => setOpen(true)}>
+            Đổi mật khẩu
+          </Button>
+        </div>
+      ) : (
+        <form onSubmit={save} className="password-form" noValidate>
+          {unavailable && (
+            <Notice tone="info" title="Máy chủ chưa hỗ trợ đổi mật khẩu">
+              Mật khẩu của bạn chưa thay đổi. Chức năng sẽ hoạt động ngay khi máy chủ có
+              API đổi mật khẩu.
+            </Notice>
+          )}
+          <Field
+            label="Mật khẩu hiện tại"
+            name="currentPassword"
+            type={type}
+            required
+            value={v.currentPassword}
+            onChange={set}
+            error={errors.currentPassword}
+            autoComplete="current-password"
+          />
+          <Field
+            label="Mật khẩu mới"
+            name="newPassword"
+            type={type}
+            required
+            value={v.newPassword}
+            onChange={set}
+            error={errors.newPassword}
+            help="Ít nhất 8 ký tự, khác mật khẩu hiện tại."
+            autoComplete="new-password"
+          />
+          <Field
+            label="Nhập lại mật khẩu mới"
+            name="confirmPassword"
+            type={type}
+            required
+            value={v.confirmPassword}
+            onChange={set}
+            error={errors.confirmPassword}
+            autoComplete="new-password"
+          />
+          <label className="check">
+            <input type="checkbox" checked={show} onChange={(e) => setShow(e.target.checked)} />
+            <span>Hiện mật khẩu</span>
+          </label>
+          {formError && (
+            <p className="field__error" role="alert">
+              {formError}
+            </p>
+          )}
+          <div className="form-actions">
+            <Button variant="ghost" onClick={close} disabled={saving}>
+              Hủy
+            </Button>
+            <Button type="submit" disabled={saving}>
+              {saving ? "Đang lưu…" : "Lưu mật khẩu mới"}
+            </Button>
+          </div>
+        </form>
+      )}
+    </section>
   );
 }

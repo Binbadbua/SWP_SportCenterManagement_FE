@@ -1,6 +1,10 @@
-// Every endpoint that exists in SWP_SportCenter.Api today (routes checked against the API's swagger.json).
-// Features without a back-end yet use src/api/previewStore.js instead (UI-only).
+// Every endpoint that exists in SWP_SportCenter.Api today (routes checked against the API's swagger.json),
+// plus two the BE has not built yet: auth.changePassword and payments (see CHANGELOG_AND_BE_ISSUES.md,
+// Part B). Pages call those as if they existed and explain the gap when isMissingRoute() says so.
 import { http } from "./client.js";
+
+// A route the API does not have answers 404/405 with an empty body; a real "not found" carries a message
+export const isMissingRoute = (e) => (e?.status === 404 || e?.status === 405) && !e.details;
 
 // Paged endpoints return { data, totalItems, pageSize, pageIndex } and default to 10 rows,
 // so lists ask for one large page. Plain list endpoints return an array.
@@ -34,6 +38,8 @@ export const api = {
   auth: {
     login: (data) => http.post("/api/auth/login", data),
     register: (data) => http.post("/api/auth/register", data),
+    // Not built yet (B36): { currentPassword, newPassword } for the signed-in account
+    changePassword: (body) => http.post("/api/auth/change-password", body),
   },
 
   accounts: {
@@ -88,7 +94,7 @@ export const api = {
           /* try the next source */
         }
       }
-      throw firstError ?? new Error("Your member profile could not be found.");
+      throw firstError ?? new Error("Không tìm thấy hồ sơ học viên của bạn.");
     },
   },
 
@@ -193,5 +199,14 @@ export const api = {
   // Center manager only; paged, newest first, at most 500 a page. The API writes the entries itself (lib/audit.js).
   auditLogs: {
     list: listOf("/api/audit-logs?pageSize=500"),
+  },
+
+  // Not built yet (B38). A member buys a package online:
+  //   checkout { membershipPackageId, startDate, paymentMethod, returnUrl }
+  //     → { paymentId, membershipId, invoiceId, amount, status, paymentUrl? } — paymentUrl = the gateway page
+  //   get(paymentId) → { paymentId, status, amount, packageName, membershipId, invoiceId, paidAt }
+  payments: {
+    checkout: (body) => http.post("/api/payments/checkout", body),
+    get: (id) => http.get(`/api/payments/${id}`),
   },
 };

@@ -2,32 +2,30 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { api } from "../../api/endpoints.js";
+import { Gender } from "../../lib/enums.js";
 import { fromDateInput } from "../../lib/format.js";
 import Logo from "../../components/Logo.jsx";
+import { AgreeToPolicies } from "../../components/Policies.jsx";
 import { Button, Field, ErrorNotice } from "../../components/ui.jsx";
 
-const GENDERS = [
-  { value: "Male", label: "Male" },
-  { value: "Female", label: "Female" },
-  { value: "Other", label: "Other" },
-];
+const GENDERS = Gender.options;
 
 function validate(v) {
   const e = {};
-  if (!v.username.trim()) e.username = "Enter a username.";
-  if (!v.fullName.trim()) e.fullName = "Enter your full name.";
+  if (!v.username.trim()) e.username = "Vui lòng nhập tên đăng nhập.";
+  if (!v.fullName.trim()) e.fullName = "Vui lòng nhập họ tên.";
   if (!/^\S+@\S+\.\S+$/.test(v.email))
-    e.email = "Enter a valid email, like name@example.com.";
+    e.email = "Email chưa đúng định dạng, ví dụ ten@example.com.";
   if (!/^0\d{9}$/.test(v.phone.replace(/\s/g, "")))
-    e.phone = "Enter a 10-digit phone number starting with 0.";
-  if (!v.dob) e.dob = "Enter your date of birth.";
-  if (v.password.length < 8) e.password = "Use at least 8 characters.";
+    e.phone = "Số điện thoại phải có 10 chữ số và bắt đầu bằng 0.";
+  if (!v.dob) e.dob = "Vui lòng nhập ngày sinh.";
+  if (v.password.length < 8) e.password = "Mật khẩu cần ít nhất 8 ký tự.";
   if (!v.confirmPassword) {
-    e.confirmPassword = "Please confirm your password.";
+    e.confirmPassword = "Vui lòng nhập lại mật khẩu.";
   } else if (v.password !== v.confirmPassword) {
-    e.confirmPassword = "Passwords do not match.";
+    e.confirmPassword = "Mật khẩu nhập lại không khớp.";
   }
-  if (!v.terms) e.terms = "Accept the terms to create an account.";
+  if (!v.terms) e.terms = "Bạn cần đồng ý với điều khoản để tạo tài khoản.";
   return e;
 }
 
@@ -105,7 +103,7 @@ export default function Register() {
       }
     } catch (err) {
       // Bắt lỗi từ Backend (VD: Trùng email, lỗi validation server...)
-      setApiError(err.message || "Registration failed. Please try again.");
+      setApiError(err.message || "Đăng ký không thành công. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);
     }
@@ -120,7 +118,7 @@ export default function Register() {
         noValidate
       >
         <Logo compact />
-        <h1 className="auth__title">Now let’s make you a member.</h1>
+        <h1 className="auth__title">Cùng trở thành thành viên nhé.</h1>
 
         {/* Khung báo lỗi từ Backend (nếu có) */}
         {apiError && <ErrorNotice error={{ message: apiError }} />}
@@ -128,7 +126,7 @@ export default function Register() {
         <div className="form-grid">
           <Field
             className="field--full"
-            label="Full name"
+            label="Họ và tên"
             name="fullName"
             required
             value={v.fullName}
@@ -138,7 +136,7 @@ export default function Register() {
           />
           <Field
             className="field--full"
-            label="Username"
+            label="Tên đăng nhập"
             name="username"
             required
             value={v.username}
@@ -157,7 +155,7 @@ export default function Register() {
             autoComplete="email"
           />
           <Field
-            label="Phone"
+            label="Số điện thoại"
             name="phone"
             type="tel"
             required
@@ -167,7 +165,7 @@ export default function Register() {
             autoComplete="tel"
           />
           <Field
-            label="Date of birth"
+            label="Ngày sinh"
             name="dob"
             type="date"
             required
@@ -176,7 +174,7 @@ export default function Register() {
             error={errors.dob}
           />
           <Field
-            label="Gender"
+            label="Giới tính"
             name="gender"
             type="select"
             options={GENDERS}
@@ -185,26 +183,26 @@ export default function Register() {
           />
           <Field
             className="field--full"
-            label="What do you want to work on?"
+            label="Bạn muốn cải thiện điều gì?"
             name="trainingGoal"
             type="textarea"
             value={v.trainingGoal}
             onChange={set}
-            help="Optional. Your coach sees this when they plan your training."
+            help="Không bắt buộc. Huấn luyện viên sẽ xem mục này khi lên kế hoạch tập cho bạn."
           />
           <Field
-            label="Password"
+            label="Mật khẩu"
             name="password"
             type="password"
             required
             value={v.password}
             onChange={set}
             error={errors.password}
-            help="At least 8 characters."
+            help="Ít nhất 8 ký tự."
             autoComplete="new-password"
           />
           <Field
-            label="Confirm password"
+            label="Nhập lại mật khẩu"
             name="confirmPassword"
             type="password"
             required
@@ -224,18 +222,18 @@ export default function Register() {
             onChange={(e) => set("terms", e.target.checked)}
           />
           <span>
-            I agree to the center’s membership terms and privacy policy.
+            <AgreeToPolicies />
           </span>
         </label>
         {errors.terms && <p className="field__error">{errors.terms}</p>}
 
         <Button type="submit" size="lg" block disabled={isSubmitting}>
-          {isSubmitting ? "Creating account..." : "Create account"}
+          {isSubmitting ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
         </Button>
         <p className="auth__foot muted">
-          Already a member?{" "}
+          Đã là thành viên?{" "}
           <Link className="text-link" to="/login">
-            Sign in
+            Đăng nhập
           </Link>
         </p>
       </form>

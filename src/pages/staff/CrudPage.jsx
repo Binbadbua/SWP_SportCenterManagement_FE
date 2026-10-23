@@ -33,12 +33,12 @@ function Pager({ page, pageCount, total, onPage }) {
   const from = (page - 1) * PAGE_SIZE + 1;
   const to = Math.min(total, page * PAGE_SIZE);
   return (
-    <nav className="pager" aria-label="Pages">
+    <nav className="pager" aria-label="Phân trang">
       <span className="muted num">
-        {from}–{to} of {total}
+        {from}–{to} / {total}
       </span>
       <div className="pager__pages">
-        <IconButton icon="chevronLeft" label="Previous page" disabled={page === 1} onClick={() => onPage(page - 1)} />
+        <IconButton icon="chevronLeft" label="Trang trước" disabled={page === 1} onClick={() => onPage(page - 1)} />
         {pageNumbers(page, pageCount).map((n, i) =>
           n === null ? (
             <span key={`gap-${i}`} className="pager__gap" aria-hidden="true">…</span>
@@ -54,7 +54,7 @@ function Pager({ page, pageCount, total, onPage }) {
             </button>
           ),
         )}
-        <IconButton icon="chevronRight" label="Next page" disabled={page === pageCount} onClick={() => onPage(page + 1)} />
+        <IconButton icon="chevronRight" label="Trang sau" disabled={page === pageCount} onClick={() => onPage(page + 1)} />
       </div>
     </nav>
   );
@@ -215,14 +215,14 @@ export default function CrudPage({ config }) {
     for (const f of fieldsFor(mode)) {
       const v = values[f.name];
       if (f.required && (v === "" || v === null || v === undefined))
-        e[f.name] = `${f.label} is required.`;
+        e[f.name] = `${f.type === "select" ? "Vui lòng chọn" : "Vui lòng nhập"} ${f.label.charAt(0).toLowerCase()}${f.label.slice(1)}.`;
       else if (f.type === "number" && v !== "") {
         const n = Number(v);
-        if (Number.isNaN(n)) e[f.name] = `${f.label} must be a number.`;
+        if (Number.isNaN(n)) e[f.name] = `${f.label} phải là số.`;
         else if (f.min !== undefined && n < f.min)
-          e[f.name] = `${f.label} must be at least ${f.min}.`;
+          e[f.name] = `${f.label} tối thiểu là ${f.min}.`;
         else if (f.max !== undefined && n > f.max)
-          e[f.name] = `${f.label} must be at most ${f.max}.`;
+          e[f.name] = `${f.label} tối đa là ${f.max}.`;
       }
     }
     return { ...e, ...(config.validate ? config.validate(values, mode) : {}) };
@@ -255,8 +255,8 @@ export default function CrudPage({ config }) {
       else await source.update(form.row.id, body);
       toast.success(
         form.mode === "create"
-          ? `${config.singular} added.`
-          : `${config.singular} saved.`,
+          ? `Đã thêm ${config.singular.toLowerCase()}.`
+          : `Đã lưu ${config.singular.toLowerCase()}.`,
       );
       setForm(null);
       list.reload();
@@ -296,7 +296,7 @@ export default function CrudPage({ config }) {
     setConfirm(null);
     try {
       await source.remove(row.id);
-      toast.success(`${config.singular} “${nameOf(row)}” deleted.`);
+      toast.success(`Đã xóa ${config.singular.toLowerCase()} “${nameOf(row)}”.`);
       list.reload();
     } catch (err) {
       toast.error(err.message);
@@ -310,7 +310,7 @@ export default function CrudPage({ config }) {
     setRunningId(row.id);
     try {
       await action.run(row);
-      toast.success(action.done?.(row) ?? `${action.label}: done.`);
+      toast.success(action.done?.(row) ?? `${action.label}: xong.`);
       list.reload();
     } catch (err) {
       toast.error(err.message);
@@ -330,7 +330,7 @@ export default function CrudPage({ config }) {
         </div>
         {canCreate && (
           <Button icon="plus" onClick={openCreate} disabled={offline}>
-            Add {config.singular.toLowerCase()}
+            Thêm {config.singular.toLowerCase()}
           </Button>
         )}
       </header>
@@ -347,13 +347,13 @@ export default function CrudPage({ config }) {
                 <Icon name="search" size={20} />
                 <input
                   type="search"
-                  placeholder={`Search ${config.title.toLowerCase()}`}
+                  placeholder={`Tìm ${config.title.toLowerCase()}`}
                   value={query}
                   onChange={(e) => {
                     setQuery(e.target.value);
                     setPage(1);
                   }}
-                  aria-label={`Search ${config.title.toLowerCase()}`}
+                  aria-label={`Tìm ${config.title.toLowerCase()}`}
                 />
               </label>
             )}
@@ -380,7 +380,7 @@ export default function CrudPage({ config }) {
             ))}
           </div>
           <span className="muted num">
-            {rows.length} {rows.length === 1 ? "result" : "results"}
+            {rows.length} kết quả
           </span>
         </div>
       )}
@@ -400,7 +400,7 @@ export default function CrudPage({ config }) {
                 ))}
                 {hasActions && (
                   <th scope="col">
-                    <span className="visually-hidden">Actions</span>
+                    <span className="visually-hidden">Thao tác</span>
                   </th>
                 )}
               </tr>
@@ -453,7 +453,7 @@ export default function CrudPage({ config }) {
                       {canUpdate && (
                         <IconButton
                           icon="edit"
-                          label={`Edit ${nameOf(row)}`}
+                          label={`Sửa ${nameOf(row)}`}
                           onClick={() => openEdit(row)}
                           disabled={offline}
                         />
@@ -461,7 +461,7 @@ export default function CrudPage({ config }) {
                       {canDelete && (
                         <IconButton
                           icon="trash"
-                          label={`Delete ${nameOf(row)}`}
+                          label={`Xóa ${nameOf(row)}`}
                           onClick={() => setConfirm(row)}
                           disabled={offline}
                         />
@@ -480,21 +480,21 @@ export default function CrudPage({ config }) {
           <EmptyState
             title={
               query || filtered
-                ? "Nothing matches that search"
-                : `No ${config.title.toLowerCase()} yet`
+                ? "Không có kết quả phù hợp"
+                : `Chưa có ${config.title.toLowerCase()} nào`
             }
             action={
               !query &&
               !filtered &&
               canCreate && (
                 <Button icon="plus" onClick={openCreate}>
-                  Add {config.singular.toLowerCase()}
+                  Thêm {config.singular.toLowerCase()}
                 </Button>
               )
             }
           >
             {query || filtered
-              ? "Check the spelling, or clear the search and filters."
+              ? "Kiểm tra lại từ khóa, hoặc xóa ô tìm kiếm và bộ lọc."
               : config.emptyHint}
           </EmptyState>
         )
@@ -506,21 +506,21 @@ export default function CrudPage({ config }) {
         wide={(config.fields?.length ?? 0) > 4}
         title={
           form?.mode === "create"
-            ? `Add ${config.singular.toLowerCase()}`
-            : `Edit ${config.singular.toLowerCase()}`
+            ? `Thêm ${config.singular.toLowerCase()}`
+            : `Sửa ${config.singular.toLowerCase()}`
         }
         onClose={() => setForm(null)}
         footer={
           <>
             <Button variant="secondary" onClick={() => setForm(null)}>
-              Cancel
+              Hủy
             </Button>
             <Button type="submit" form="crud-form" disabled={saving}>
               {saving
-                ? "Saving…"
+                ? "Đang lưu…"
                 : form?.mode === "create"
-                  ? `Add ${config.singular.toLowerCase()}`
-                  : "Save changes"}
+                  ? `Thêm ${config.singular.toLowerCase()}`
+                  : "Lưu thay đổi"}
             </Button>
           </>
         }
@@ -529,7 +529,7 @@ export default function CrudPage({ config }) {
           <form id="crud-form" onSubmit={save} noValidate>
             {formError && (
               <div className="form-error">
-                <Notice tone="danger" title="Couldn’t save">
+                <Notice tone="danger" title="Không lưu được">
                   {formError}
                 </Notice>
               </div>
@@ -564,23 +564,23 @@ export default function CrudPage({ config }) {
       {/* Delete confirmation */}
       <Modal
         open={!!confirm}
-        title={`Delete ${config.singular.toLowerCase()}?`}
+        title={`Xóa ${config.singular.toLowerCase()}?`}
         onClose={() => setConfirm(null)}
         footer={
           <>
             <Button variant="secondary" onClick={() => setConfirm(null)}>
-              Keep it
+              Giữ lại
             </Button>
             <Button variant="danger" onClick={remove}>
-              Delete
+              Xóa
             </Button>
           </>
         }
       >
         {confirm && (
           <p>
-            “{nameOf(confirm)}” will be removed permanently. If other records
-            still use it, the server will refuse and tell you why.
+            “{nameOf(confirm)}” sẽ bị xóa vĩnh viễn. Nếu dữ liệu khác vẫn đang dùng
+            mục này, máy chủ sẽ từ chối và cho biết lý do.
           </p>
         )}
       </Modal>

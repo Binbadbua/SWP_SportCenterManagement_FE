@@ -92,11 +92,12 @@ p {
 }
 
 /* ---- Type roles ---------------------------------------------------------- */
+/* Vietnamese capitals carry stacked marks above (Ế, Ở) and below (Ạ, Ợ): the lines need room for them */
 .display {
   font-family: var(--font-display);
   font-weight: 400;
   text-transform: uppercase;
-  line-height: 0.9;
+  line-height: 1.1;
   letter-spacing: -0.005em;
 }
 
