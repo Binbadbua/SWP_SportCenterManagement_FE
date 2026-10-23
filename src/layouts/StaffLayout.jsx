@@ -23,6 +23,11 @@ export const STAFF_NAV = [
         roles: ["CenterManager", "Receptionist", "Coach"],
         end: true,
       },
+      {
+        to: "/staff/notifications",
+        label: "Notifications",
+        roles: ["CenterManager", "Receptionist", "Coach"],
+      },
     ],
   },
   {
@@ -41,19 +46,17 @@ export const STAFF_NAV = [
       {
         to: "/staff/members",
         label: "Members",
-        roles: ["Receptionist"],
-        preview: true,
+        roles: ["CenterManager", "Receptionist"],
       },
       {
         to: "/staff/memberships",
         label: "Memberships",
-        roles: ["Receptionist"],
-        preview: true,
+        roles: ["CenterManager", "Receptionist"],
       },
       {
         to: "/staff/invoices",
         label: "Invoices",
-        roles: ["Receptionist"],
+        roles: ["CenterManager", "Receptionist"],
       },
     ],
   },
@@ -66,13 +69,11 @@ export const STAFF_NAV = [
         to: "/staff/training-plans",
         label: "Training plans",
         roles: ["Coach"],
-        preview: true,
       },
       {
         to: "/staff/training-results",
         label: "Training results",
         roles: ["Coach"],
-        preview: true,
       },
     ],
   },
@@ -110,8 +111,9 @@ export const STAFF_NAV = [
   },
 ];
 
+// The token carries the C# enum name ("CenterManager"); show its label ("Center manager")
 const roleLabel = (role) =>
-  AccountRole.options.find((o) => o.key === role)?.label ?? role;
+  AccountRole.options.find((o) => o.label.replace(/\s+/g, "").toLowerCase() === String(role).toLowerCase())?.label ?? role;
 
 export default function StaffLayout() {
   const { user, signOut } = useAuth();
@@ -164,7 +166,7 @@ export default function StaffLayout() {
           </Link>
           <span className="staff-top__user">
             <span className="staff-top__name">
-              {user?.FullName || user?.fullName || "STAFF"}
+              {user?.username || "STAFF"}
             </span>
             <span className="staff-top__role">
               {roleLabel(user?.role || user?.Role)}

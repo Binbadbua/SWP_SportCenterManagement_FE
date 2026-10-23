@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+let isHandlingUnauthorized = false;
 /**
  * Loads data with loading / error state.
  * If the back-end is unreachable and `sample` is given, the sample data is shown
@@ -21,6 +22,24 @@ export function useApi(loader, deps = [], { sample, skip = false } = {}) {
       const data = await loaderRef.current();
       setState({ data, loading: false, error: null, usingSample: false });
     } catch (error) {
+      // 401 with a saved token = the session expired. Without a token the visitor is simply
+      // not signed in, so the page shows the error instead of being sent to the sign-in page.
+      const hasToken = !!localStorage.getItem('sportcenter.token');
+      if (error?.status === 401 && hasToken) {
+        if (!isHandlingUnauthorized) {
+          isHandlingUnauthorized = true;
+          localStorage.removeItem('sportcenter.token');
+          localStorage.removeItem('sportcenter.session');
+          const currentPath = window.location.pathname + window.location.search;
+          alert('Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại.');
+          if (!currentPath.includes('/login')) {
+            window.location.href = `/login?from=${encodeURIComponent(currentPath)}`;
+          } else {
+            isHandlingUnauthorized = false;
+          }
+        }
+        return; 
+      }
       const fallback = typeof sampleRef.current === 'function' ? sampleRef.current() : sampleRef.current;
       if (error?.offline && fallback !== undefined) {
         setState({ data: fallback, loading: false, error, usingSample: true });

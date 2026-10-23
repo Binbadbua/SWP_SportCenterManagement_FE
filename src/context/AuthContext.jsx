@@ -2,6 +2,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -21,8 +22,18 @@ const read = () => {
 
 const AuthContext = createContext(null);
 
+// The login token only carries the account ID. Pages also need the ID of the profile behind it
+// (bookings use memberId, training plans use coachId, invoices use receptionistId).
+const PROFILE = {
+  Member: { key: "memberId", load: () => api.members.myId() },
+  Coach: { key: "coachId", load: async () => (await api.coaches.me()).id },
+  Receptionist: { key: "receptionistId", load: async () => (await api.receptionists.me()).id },
+};
+
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(read);
+  // idle | loading | ready | error — whether user[PROFILE[role].key] could be found
+  const [profile, setProfile] = useState({ status: "idle", error: null });
 
   const save = useCallback((nextUser, token) => {
     setUser(nextUser);
@@ -80,14 +91,13 @@ export function AuthProvider({ children }) {
             tokenPayload[
               "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
             ],
-          fullName:
+          username:
             tokenPayload[
               "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
             ] || "User",
-          FullName:
-            tokenPayload[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-            ] || "User", // Đề phòng code cũ dùng FullName
+
+          fullName:
+            tokenPayload.FullName || "User",
           email:
             tokenPayload[
               "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
@@ -108,7 +118,8 @@ export function AuthProvider({ children }) {
         console.error("Đăng nhập thất bại:", error);
         return {
           success: false,
-          error: error.response?.data?.message || "Sai tài khoản hoặc mật khẩu",
+          // ApiError carries the server's message ("Invalid username or password", "Account is not active"…)
+          error: error.status || error.offline ? error.message : "Sai tài khoản hoặc mật khẩu",
         };
       }
     },
@@ -122,19 +133,57 @@ export function AuthProvider({ children }) {
     [save],
   );
 
+  // Look up the profile ID once per sign-in; it is saved with the session afterwards.
+  const role = user?.role;
+  const accountId = user?.accountId;
+  const hasProfileId = !!(PROFILE[role] && user?.[PROFILE[role].key]);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    const def = PROFILE[role];
+    if (!accountId || !def) {
+      setProfile({ status: "idle", error: null });
+      return undefined;
+    }
+    if (hasProfileId) {
+      setProfile({ status: "ready", error: null });
+      return undefined;
+    }
+    let cancelled = false;
+    setProfile({ status: "loading", error: null });
+    def
+      .load()
+      .then((id) => {
+        if (cancelled) return;
+        if (!id) throw new Error("Profile not found.");
+        updateUser({ [def.key]: id });
+        setProfile({ status: "ready", error: null });
+      })
+      .catch((error) => {
+        if (!cancelled) setProfile({ status: "error", error });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [accountId, role, hasProfileId, attempt, updateUser]);
+  const retryProfile = useCallback(() => setAttempt((n) => n + 1), []);
+
   const value = useMemo(
-    () => ({ user, signIn, signOut, updateUser }),
-    [user, signIn, signOut, updateUser],
+    () => ({ user, signIn, signOut, updateUser, profile, retryProfile }),
+    [user, signIn, signOut, updateUser, profile, retryProfile],
   );
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);
 
+// Roles come from the JWT as the enum names of AccountRole: "Member", "Coach", "Receptionist", "CenterManager".
+const roleOf = (user) => user?.role ?? user?.Role;
+
 export const isStaff = (user) => {
   if (!user) return false;
-  const currentRole = user.role || user.Role;
   return [2, 3, 4, "Coach", "Receptionist", "CenterManager"].includes(
-    currentRole,
+    roleOf(user),
   );
 };
+
+export const isMember = (user) => [1, "Member"].includes(roleOf(user));

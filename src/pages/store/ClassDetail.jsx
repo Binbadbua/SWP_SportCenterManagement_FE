@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api } from "../../api/endpoints.js";
 import * as mock from "../../api/mockData.js";
 import { useApi } from "../../hooks/useApi.js";
-import { useAuth } from "../../context/AuthContext.jsx";
+import { isMember, useAuth } from "../../context/AuthContext.jsx";
 import { sportImage, IMAGES, classThumbnails } from "../../lib/images.js";
 import {
   formatDate,
@@ -11,7 +11,7 @@ import {
   formatShortDate,
   formatTimeRange,
   formatWeekday,
-  todayUtcDateString,
+  isSessionOver,
 } from "../../lib/format.js";
 import { ClassStatus } from "../../lib/enums.js";
 import Icon from "../../components/Icon.jsx";
@@ -28,16 +28,21 @@ const SESSIONS_SHOWN = 12;
 
 export default function ClassDetail() {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const sampleClass = () => mock.classes.find((c) => c.id === id) ?? null;
+  const role = user?.role;
+  const member = isMember(user);
+  const memberId = member ? user.memberId : undefined;
 
   const cls = useApi(() => api.classes.get(id), [id], { sample: sampleClass });
   const sessions = useApi(() => api.schedules.byClass(id), [id], {
     sample: () => mock.sessions.filter((s) => s.classId === id),
   });
+  // The roster and coach profile are staff-only on the API, so other users don't request them.
   const roster = useApi(() => api.classes.members(id), [id], {
+    skip: !["CenterManager", "Coach"].includes(role),
     sample: () =>
       Array.from(
         { length: sampleClass()?._enrolled ?? 0 },
@@ -52,20 +57,16 @@ export default function ClassDetail() {
     skip: !coachId,
     sample: () => mock.coaches.find((c) => c.id === coachId),
   });
-  const isMember = user?.role === "member" && user.memberId;
-  const myBookings = useApi(
-    () => api.bookings.byMember(user.memberId),
-    [user?.memberId],
-    {
-      skip: !isMember,
-      sample: () => mock.bookings.filter((b) => b.memberId === user?.memberId),
-    },
-  );
+  const myBookings = useApi(() => api.bookings.mine(), [user?.accountId], {
+    skip: !member,
+    sample: () => mock.bookings.filter((b) => b.memberId === memberId),
+  });
 
   const [showAll, setShowAll] = useState(false);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState(null);
   const [booked, setBooked] = useState(null); // confirmation panel
+  const [newBooking, setNewBooking] = useState(null); // booking made on this page
 
   if (cls.loading)
     return (
@@ -91,18 +92,25 @@ export default function ClassDetail() {
   }
 
   const c = cls.data;
-  const taken = roster.data?.length ?? 0;
+  // Staff see the roster; everyone else gets the count the class itself carries (currentEnrolled)
+  const enrolled = roster.data ? roster.data.length : c.currentEnrolled;
+  const knownTaken = enrolled !== undefined && enrolled !== null;
+  const taken = knownTaken ? enrolled : 0;
   const spotsLeft = Math.max(0, c.maxCapacity - taken);
-  const eyebrow = classEyebrow(c, roster.data ? spotsLeft : undefined);
+  const eyebrow = classEyebrow(c, knownTaken ? spotsLeft : undefined);
   const category = (categories.data ?? []).find((x) => x.id === c.categoryId);
-  const today = todayUtcDateString();
   const allSessions = sessions.data ?? [];
   const shownSessions = showAll
     ? allSessions
     : allSessions.slice(0, SESSIONS_SHOWN);
   const firstRoom = allSessions[0]?.roomName;
-  const myBooking = (myBookings.data ?? []).find((b) => b.classId === c.id);
+  const myBooking =
+    (myBookings.data ?? []).find((b) => b.classId === c.id && b.status !== 3) ??
+    (newBooking?.classId === c.id ? newBooking : undefined);
   const closed = c.status === 3 || c.status === 4;
+  // A booking covers the class's remaining sessions, so a class with none left can't be booked
+  const upcoming = allSessions.filter((s) => !isSessionOver(s));
+  const noSessionsLeft = !sessions.loading && upcoming.length === 0;
   const usingSample = cls.usingSample || sessions.usingSample;
 
   const book = async () => {
@@ -110,14 +118,20 @@ export default function ClassDetail() {
       navigate(`/login?next=${encodeURIComponent(location.pathname)}`);
       return;
     }
+    if (!memberId) {
+      setActionError(
+        profile.status === "loading"
+          ? "Still loading your member profile — try again in a moment."
+          : `We couldn’t find your member profile, so the booking can’t be made. ${profile.error?.message ?? ""}`.trim(),
+      );
+      return;
+    }
     setBusy(true);
     setActionError(null);
     try {
-      const result = await api.bookings.create({
-        memberId: user.memberId,
-        classId: c.id,
-      });
+      const result = await api.bookings.create({ memberId, classId: c.id });
       setBooked(result);
+      setNewBooking(result);
       roster.reload();
       myBookings.reload();
     } catch (e) {
@@ -131,7 +145,8 @@ export default function ClassDetail() {
     setBusy(true);
     setActionError(null);
     try {
-      await api.bookings.cancel(myBooking.id, user.memberId);
+      await api.bookings.cancel(myBooking.id, myBooking.memberId ?? memberId);
+      setNewBooking(null);
       roster.reload();
       myBookings.reload();
     } catch (e) {
@@ -142,7 +157,7 @@ export default function ClassDetail() {
   };
 
   let cta;
-  if (user && user.role !== "member") {
+  if (user && !member) {
     cta = (
       <p className="pdp__note">
         Signed in as staff. Book members in from the{" "}
@@ -172,22 +187,33 @@ export default function ClassDetail() {
     );
   } else {
     cta = (
-      <Button
-        size="lg"
-        block
-        onClick={book}
-        disabled={busy || closed || spotsLeft === 0}
-      >
-        {closed
-          ? "Booking closed"
-          : spotsLeft === 0
-            ? "Class is full"
-            : busy
-              ? "Booking…"
-              : user
-                ? "Book this class"
-                : "Sign in to book"}
-      </Button>
+      <>
+        <Button
+          size="lg"
+          block
+          onClick={book}
+          disabled={busy || closed || spotsLeft === 0 || sessions.loading || noSessionsLeft}
+        >
+          {closed
+            ? "Booking closed"
+            : noSessionsLeft
+              ? "No upcoming sessions"
+              : spotsLeft === 0
+                ? "Class is full"
+                : busy
+                  ? "Booking…"
+                  : user
+                    ? "Book this class"
+                    : "Sign in to book"}
+        </Button>
+        {!closed && noSessionsLeft && (
+          <p className="muted small">
+            {allSessions.length
+              ? "Every session of this class has already taken place, so it can’t be booked."
+              : "No sessions have been scheduled yet. Booking opens once the class has sessions."}
+          </p>
+        )}
+      </>
     );
   }
 
@@ -257,7 +283,7 @@ export default function ClassDetail() {
             <div className="spots__row">
               <span className="spots__label">Spots</span>
               <span className="num">
-                {roster.data
+                {knownTaken
                   ? `${taken} of ${c.maxCapacity} taken`
                   : `Up to ${c.maxCapacity}`}
               </span>
@@ -286,7 +312,7 @@ export default function ClassDetail() {
               <>
                 <ul className="size-grid">
                   {shownSessions.map((s) => {
-                    const past = s.date.slice(0, 10) < today;
+                    const past = isSessionOver(s);
                     return (
                       <li
                         key={s.id}
@@ -323,10 +349,7 @@ export default function ClassDetail() {
                 </p>
               </>
             ) : (
-              <p className="muted">
-                Sessions haven’t been scheduled yet. You can still book to hold
-                your spot.
-              </p>
+              <p className="muted">Sessions haven’t been scheduled yet.</p>
             )}
           </div>
 

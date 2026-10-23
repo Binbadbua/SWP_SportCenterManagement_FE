@@ -1,8 +1,16 @@
 // The API has no image fields for classes or sports, so the UI picks a photo
 // from /public/images by matching the sport/class name (English or Vietnamese).
-// Photos: Unsplash (free to use, https://unsplash.com/license).
+// Each base name has <name>.jpg (the sport) and <name>-Room-1.jpg / -Room-2.jpg (its rooms).
+// Photos: Unsplash (https://unsplash.com/license) and Wikimedia Commons — see public/images/CREDITS.md.
 
+// The first rule that matches wins, so specific sports come before the broad ones below
+// (the Gym rule's "t[ạa]" would otherwise catch "Taekwondo", the Boxing rule "võ"/"muay").
 const RULES = [
+  [/b[óo]ng chuy[ềe]n|volley/i, "volleyball"],
+  [/taekwondo|karate|vovinam/i, "taekwondo"],
+  [/muay/i, "muay-thai"],
+  [/pickleball/i, "pickleball"],
+  [/leo n[úu]i|climb|boulder/i, "climbing"],
   [/yoga/i, "yoga"],
   [/pilates|core|bụng|giãn cơ|stretch/i, "core-pilates"],
   [/b[ơo]i|swim|pool/i, "swimming"],
@@ -39,8 +47,40 @@ export function sportImage(...names) {
   return `/images/${file}.jpg`;
 }
 
+// Home page hero ("YOUR MOVE.") background slideshow, shown in this order and then looped.
+// To add a photo: put the file in public/images/ and add one line here.
+//   src       path from public/ (always starts with /images/)
+//   alt       short description for screen readers
+//   position  which part of the photo stays in view when it is cropped (CSS object-position),
+//             e.g. "center", "60% 40%" (60% from the left, 40% from the top)
+// Best results: landscape JPG/WebP, at least 1920×1080, under ~400 KB, subject away from the
+// bottom-left corner where the headline sits.
+export const HERO_SLIDES = [
+  { src: "/images/tennis.jpg", alt: "Aerial view of a tennis player serving on a clay court", position: "60% 40%" },
+  { src: "/images/yoga.jpg", alt: "Lớp yoga lúc bình minh", position: "center 40%" },
+  { src: "/images/swimming.jpg", alt: "Swimmer doing butterfly stroke in a pool lane", position: "center 45%" },
+  { src: "/images/hiit-ropes.jpg", alt: "Athlete training with battle ropes", position: "70% center" },
+  { src: "/images/basketball.jpg", alt: "Basketball dropping through the hoop", position: "center 30%" },
+];
+
+// Milliseconds. `interval` = how long each photo stays (fade included), `fade` = length of the
+// fade-out and of the fade-in that follows it. Keep interval at least 3 × fade.
+export const HERO_TIMING = { interval: 7000, fade: 1200 };
+
+// Sign-in page photo panel: each photo pans slowly from left to right, then the next one fades
+// in. Same fields as HERO_SLIDES; keep these different from the hero photos and use at least 3.
+export const LOGIN_SLIDES = [
+  { src: "/images/deadlift.jpg", position: "55% 40%" },
+  { src: "/images/climbing.jpg", position: "65% 40%" },
+  { src: "/images/running.jpg", position: "45% 50%" },
+  { src: "/images/muay-thai.jpg", position: "50% 40%" },
+];
+
+// Milliseconds: how long each photo stays, and the cross-fade to the next one.
+export const LOGIN_TIMING = { interval: 7000, fade: 1500 };
+
 export const IMAGES = {
-  hero: "/images/tennis.jpg",
+  hero: HERO_SLIDES[0].src,
   groupTraining: "/images/group-fitness.jpg",
   coaching: "/images/coach-overhead.jpg",
   memberships: "/images/dumbbell-rack.jpg",

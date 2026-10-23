@@ -1,6 +1,18 @@
-// Every endpoint that exists in SWP_SportCenter.Api today.
+// Every endpoint that exists in SWP_SportCenter.Api today (routes checked against the API's swagger.json).
 // Features without a back-end yet use src/api/previewStore.js instead (UI-only).
 import { http } from "./client.js";
+
+// Paged endpoints return { data, totalItems, pageSize, pageIndex } and default to 10 rows,
+// so lists ask for one large page. Plain list endpoints return an array.
+const ALL = "pageSize=500";
+const itemsOf = (response) =>
+  Array.isArray(response) ? response : (response?.items ?? response?.data ?? []);
+// Some responses name their key membershipId / trainingPlanId…; the UI always uses `id`.
+const withId = (key) => (row) => ({ ...row, id: row[key] ?? row.id });
+const listOf = (path, key) => async () => {
+  const rows = itemsOf(await http.get(path));
+  return key ? rows.map(withId(key)) : rows;
+};
 
 const crud = (base) => ({
   list: () => http.get(base),
@@ -16,14 +28,7 @@ export const api = {
 
   packages: {
     ...crud("/api/membership-packages"),
-    list: async () => {
-      const response = await http.get("/api/membership-packages");
-      let items = response.items || response.data || response;
-      return items.map((item) => ({
-        ...item,
-        id: item.membershipPackageId,
-      }));
-    },
+    list: listOf(`/api/membership-packages?${ALL}`, "membershipPackageId"),
   },
 
   auth: {
@@ -33,53 +38,83 @@ export const api = {
 
   accounts: {
     ...crud("/api/accounts"),
-    list: async () => {
-      const response = await http.get("/api/accounts");
-      let data = response.items || response.data || response;
-      return data.map((item) => ({ ...item, id: item.id || item.accountId }));
-    },
+    list: listOf(`/api/accounts?${ALL}`, "accountId"),
   },
 
   receptionists: {
     ...crud("/api/receptionists"),
-    list: async () => {
-      const response = await http.get("/api/receptionists");
-      let data = response.items || response.data || response;
-      return data.map((item) => ({ ...item, id: item.id || item.accountId }));
-    },
+    list: listOf("/api/receptionists"),
+    me: () => http.get("/api/receptionists/me"),
   },
 
   memberships: {
-    ...crud("/api/memberships"),
-    list: async () => {
-      const response = await http.get("/api/memberships");
-      let data = response.items || response.data || response;
-      return data.map((item) => ({
-        ...item,
-        id: item.membershipId || item.id,
-      }));
-    },
+    list: listOf(`/api/memberships?${ALL}`, "membershipId"),
+    get: (id) => http.get(`/api/memberships/${id}`),
+    create: (body) => http.post("/api/memberships", body),
+    // PUT takes { startDate, endDate, status } only
+    update: (id, body) => http.put(`/api/memberships/${id}`, body),
+    remove: (id) => http.del(`/api/memberships/${id}`),
+    renew: (id) => http.post(`/api/memberships/${id}/renew`),
+    cancel: (id) => http.post(`/api/memberships/${id}/cancel`),
+    mine: listOf("/api/members/me/memberships?pageSize=50", "membershipId"),
   },
 
   members: {
     ...crud("/api/members"),
-    list: async () => {
-      const response = await http.get("/api/members");
-      let data = response.items || response.data || response;
-      return data.map((item) => ({
-        ...item,
-        id: item.memberId || item.id,
-      }));
-    },
+    list: listOf(`/api/members?${ALL}`, "memberId"),
     me: {
       get: () => http.get("/api/members/me"),
       update: (data) => http.put("/api/members/me", data),
+    },
+    // The member ID of the signed-in member. GET /api/members/me is the real source; while it fails
+    // (see CHANGELOG_AND_BE_ISSUES.md) the ID is read from the member's own memberships or plans.
+    myId: async () => {
+      let firstError;
+      try {
+        const me = await http.get("/api/members/me");
+        if (me?.memberId) return me.memberId;
+      } catch (e) {
+        firstError = e;
+      }
+      for (const path of [
+        "/api/members/me/memberships?pageSize=1",
+        "/api/members/me/training-plans?pageSize=1",
+        "/api/members/me/training-results?pageSize=1",
+      ]) {
+        try {
+          const id = itemsOf(await http.get(path))[0]?.memberId;
+          if (id) return id;
+        } catch {
+          /* try the next source */
+        }
+      }
+      throw firstError ?? new Error("Your member profile could not be found.");
     },
   },
 
   classes: {
     ...crud("/api/classes"),
     members: (classId) => http.get(`/api/classes/${classId}/members`),
+    // Reception may not read /api/classes/{id}/members (managers and coaches only) but may read
+    // every member's bookings, so the same roster rows are rebuilt from those, a few members at a time.
+    membersFromBookings: async (classId) => {
+      const members = itemsOf(await http.get(`/api/members?${ALL}`));
+      const roster = [];
+      for (let i = 0; i < members.length; i += 6) {
+        const chunk = members.slice(i, i + 6);
+        const lists = await Promise.all(
+          chunk.map((m) => http.get(`/api/class-bookings/member/${m.memberId}`).then(itemsOf)),
+        );
+        lists.forEach((bookings, j) => {
+          const b = bookings.find((x) => x.classId === classId && x.status !== 3);
+          if (b) {
+            const m = chunk[j];
+            roster.push({ memberId: m.memberId, fullName: m.fullName, phone: m.phone, email: m.email, bookingStatus: b.status, bookingDate: b.bookingDate });
+          }
+        });
+      }
+      return roster;
+    },
   },
 
   schedules: {
@@ -87,46 +122,87 @@ export const api = {
     byClass: (classId) => http.get(`/api/class-sessions/class/${classId}`),
     attendance: (sessionId) =>
       http.get(`/api/attendances/session/${sessionId}`),
+    // The API has no "my sessions" endpoint: a coach's sessions are those of the classes they teach
+    forCoach: async () => {
+      const [sessions, mine] = await Promise.all([
+        http.get("/api/class-sessions"),
+        http.get("/api/coaches/me/classes"),
+      ]);
+      const ids = new Set(itemsOf(mine).map((c) => c.classId));
+      return itemsOf(sessions).filter((s) => ids.has(s.classId));
+    },
   },
 
   coaches: {
     ...crud("/api/coaches"),
-    byAccount: (accountId) => http.get(`/api/coaches/me`),
-    classes: (coachId) => http.get(`/api/coaches/me/classes`),
-    members: (coachId) => http.get(`/api/coaches/me/members`),
+    // The /me endpoints read the coach from the token; the arguments are kept for older callers.
+    me: () => http.get("/api/coaches/me"),
+    classes: () => http.get("/api/coaches/me/classes"),
+    members: () => http.get("/api/coaches/me/members"),
   },
 
   managers: crud("/api/center-managers"),
 
   trainingPlans: {
-    listForMember: () => http.get("/api/members/me/training-plans"),
+    get: (id) => http.get(`/api/training-plans/${id}`),
+    create: (body) => http.post("/api/training-plans", body),
+    update: (id, body) => http.put(`/api/training-plans/${id}`, body),
+    remove: (id) => http.del(`/api/training-plans/${id}`),
+    mine: listOf("/api/members/me/training-plans?pageSize=100", "trainingPlanId"),
+    forCoach: listOf(`/api/coaches/me/training-plans?${ALL}`, "trainingPlanId"),
   },
 
   trainingResults: {
-    listForMember: () => http.get("/api/members/me/training-results"),
+    get: (id) => http.get(`/api/training-results/${id}`),
+    create: (body) => http.post("/api/training-results", body),
+    update: (id, body) => http.put(`/api/training-results/${id}`, body),
+    remove: (id) => http.del(`/api/training-results/${id}`),
+    mine: listOf("/api/members/me/training-results?pageSize=100", "trainingResultId"),
+    forCoach: listOf(`/api/coaches/me/training-results?${ALL}`, "trainingResultId"),
+    byMember: (memberId) =>
+      listOf(`/api/coaches/me/members/${memberId}/training-results?${ALL}`, "trainingResultId")(),
   },
 
   invoices: {
     ...crud("/api/invoices"),
-    byMember: () => http.get("/api/invoices/members/me/invoices"),
+    mine: listOf("/api/members/me/invoices"),
   },
 
-  auditLogs: {
-    list: () => http.get("/api/audit-logs"),
-    byAccount: (accountId) => http.get(`/api/audit-logs/account/${accountId}`),
+  notifications: {
+    mine: listOf("/api/notifications/me?pageSize=100"),
+    markRead: (id) => http.put(`/api/notifications/${id}/read`),
+    markAllRead: () => http.put("/api/notifications/read-all"),
+    remove: (id) => http.del(`/api/notifications/${id}`),
+    // Center manager: { accountIds: [], title, message }
+    send: (body) => http.post("/api/notifications", body),
   },
 
   bookings: {
-    byMember: (memberId) =>
-      http.get(`/api/members/${memberId}/class-registrations`),
-    create: (body) => http.post("/api/class-registrations", body),
+    mine: listOf("/api/members/me/class-bookings"),
+    byMember: (memberId) => listOf(`/api/class-bookings/member/${memberId}`)(),
+    create: (body) => http.post("/api/class-bookings", body),
     cancel: (bookingId, memberId) =>
-      http.del(`/api/class-registrations/${bookingId}?memberId=${memberId}`),
+      http.del(`/api/class-bookings/${bookingId}/member/${memberId}`),
   },
 
   attendance: {
-    byMember: (memberId) => http.get(`/api/members/${memberId}/attendance`),
-    record: (body) => http.post("/api/attendance", body),
-    update: (id, body) => http.put(`/api/attendance/${id}`, body),
+    mine: listOf("/api/members/me/attendances"),
+    byMember: (memberId) => http.get(`/api/attendances/member/${memberId}`),
+    record: (body) => http.post("/api/attendances", body),
+    update: (id, body) => http.put(`/api/attendances/${id}`, body),
+  },
+
+  dashboard: {
+    revenue: (from, to) =>
+      http.get(`/api/dashboard/revenue?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`),
+    membersSummary: () => http.get("/api/dashboard/members/summary"),
+    membershipsSummary: () => http.get("/api/dashboard/memberships/summary"),
+    classesSummary: () => http.get("/api/dashboard/classes/summary"),
+  },
+
+  // Center manager only. GET returns every entry, newest first; the API writes none itself (lib/audit.js).
+  auditLogs: {
+    list: listOf("/api/audit-logs"),
+    log: (body) => http.post("/api/audit-logs", body),
   },
 };

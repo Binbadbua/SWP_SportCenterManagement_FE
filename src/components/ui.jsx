@@ -78,13 +78,15 @@ export function PreviewNotice({ feature, children }) {
 
 export function ErrorNotice({ error, onRetry }) {
   if (!error) return null;
+  const errorMessage = typeof error === 'string' ? error : (error.message || 'Đã xảy ra lỗi hệ thống.');
+  const isOffline = typeof error === 'object' && error.offline;
   return (
     <Notice
       tone="danger"
-      title={error.offline ? 'Can’t reach the API' : 'Something went wrong'}
+      title={isOffline ? 'Can’t reach the API' : 'Something went wrong'}
       action={onRetry && <Button variant="secondary" size="sm" icon="refresh" onClick={onRetry}>Try again</Button>}
     >
-      {error.message}
+      {errorMessage}
     </Notice>
   );
 }
@@ -111,7 +113,8 @@ export function EmptyState({ title, children, action }) {
 
 /* Form field ----------------------------------------------------------------
    type: text | email | number | date | time | password | tel | url | textarea | select */
-export function Field({ label, name, type = 'text', value, onChange, options = [], error, help, required, className = '', ...rest }) {
+// options = [{ value, label, disabled? }]; for a select, placeholder is the text of its empty choice
+export function Field({ label, name, type = 'text', value, onChange, options = [], error, help, required, className = '', placeholder, ...rest }) {
   const id = `f-${name}`;
   const describedBy = [help && `${id}-help`, error && `${id}-err`].filter(Boolean).join(' ') || undefined;
   const common = {
@@ -119,20 +122,57 @@ export function Field({ label, name, type = 'text', value, onChange, options = [
     value: value ?? '', onChange: (e) => onChange?.(name, e.target.value), ...rest,
   };
   let control;
-  if (type === 'textarea') control = <textarea className="input input--area" rows={4} {...common} />;
+  if (type === 'textarea') control = <textarea className="input input--area" rows={4} placeholder={placeholder} {...common} />;
   else if (type === 'select') {
     control = (
       <div className="select-wrap">
         <select className="input" {...common}>
-          <option value="">Select…</option>
+          <option value="">{placeholder ?? 'Select…'}</option>
           {options.map((o) => (
-            <option key={o.value} value={o.value}>{o.label}</option>
+            <option key={o.value} value={o.value} disabled={o.disabled}>{o.label}</option>
           ))}
         </select>
         <Icon name="chevronDown" size={18} className="select-wrap__icon" />
       </div>
     );
-  } else control = <input className="input" type={type} {...common} />;
+  }
+  else if (type === 'file') {
+    control = (
+      <div className="flex items-center gap-3 p-2 border border-gray-200 rounded-xl bg-white">
+        {/* Nút bấm gọi hộp thoại chọn file độc lập */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // Tạo input file trực tiếp bằng JS ngoài cây DOM của Modal
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+
+            fileInput.onchange = (event) => {
+              const file = event.target.files?.[0];
+              if (file) {
+                onChange?.(name, file);
+              }
+            };
+
+            fileInput.click();
+          }}
+          className="px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium text-gray-700 bg-gray-50 hover:bg-gray-100 cursor-pointer"
+        >
+          📁 Chọn ảnh...
+        </button>
+
+        {/* Hiển thị tên file đã chọn */}
+        <span className="text-xs text-gray-500 truncate max-w-[220px]">
+          {value instanceof File ? value.name : (value ? String(value) : "Chưa có file nào được chọn")}
+        </span>
+      </div>
+    );
+  }
+  else control = <input className="input" type={type} placeholder={placeholder} {...common} />;
 
   return (
     <div className={`field ${error ? 'field--error' : ''} ${className}`}>

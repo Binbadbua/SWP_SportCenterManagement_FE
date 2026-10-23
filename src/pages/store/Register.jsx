@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { api } from "../../api/endpoints.js";
+import { fromDateInput } from "../../lib/format.js";
 import Logo from "../../components/Logo.jsx";
 import { Button, Field, ErrorNotice } from "../../components/ui.jsx";
 
@@ -69,7 +70,7 @@ export default function Register() {
         fullName: v.fullName.trim(),
         email: v.email.trim(),
         phone: v.phone.trim(),
-        dob: v.dob,
+        dob: fromDateInput(v.dob),
         gender: v.gender,
         trainingGoal: v.trainingGoal.trim(),
         password: v.password,
@@ -79,7 +80,25 @@ export default function Register() {
       const loginResult = await signIn(v.email.trim(), v.password);
 
       if (loginResult.success) {
-        navigate("/account?welcome=1"); // Đưa thẳng vào trang cá nhân của Member
+        // 3. POST /api/auth/register only stores username, email, password (and full name), so the
+        //    rest of the form is saved on the new member profile with PUT /api/members/me.
+        let profileSaved = true;
+        try {
+          await api.members.me.update({
+            fullName: v.fullName.trim(),
+            email: v.email.trim(),
+            phone: v.phone.replace(/\s/g, ""),
+            dob: fromDateInput(v.dob),
+            gender: v.gender,
+            trainingGoal: v.trainingGoal.trim(),
+            avatar: "",
+          });
+        } catch (profileError) {
+          console.error("Could not save the member profile:", profileError);
+          profileSaved = false;
+        }
+        // Đưa thẳng vào trang cá nhân của Member
+        navigate(profileSaved ? "/account?welcome=1" : "/account?welcome=1&profile=incomplete");
       } else {
         // Nếu lỗi quá trình auto-login thì đẩy ra trang đăng nhập
         navigate("/login?registered=1");

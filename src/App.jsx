@@ -17,6 +17,7 @@ import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/staff/Dashboard.jsx';
 import Attendance from './pages/staff/Attendance.jsx';
 import Bookings from './pages/staff/Bookings.jsx';
+import StaffNotifications from './pages/staff/Notifications.jsx';
 import CrudPage from './pages/staff/CrudPage.jsx';
 import { resources } from './pages/staff/resources.jsx';
 
@@ -29,7 +30,6 @@ const CRUD_ROUTES = {
   coaches: 'coaches',
   managers: 'managers',
   invoices: 'invoices',
-  'audit-log': 'auditLog',
   'my-classes': 'myClasses',
   'my-members': 'myMembers',
   members: 'members',
@@ -39,6 +39,7 @@ const CRUD_ROUTES = {
   accounts: 'accounts',
   'training-plans': 'trainingPlans',
   'training-results': 'trainingResults',
+  'audit-log': 'auditLog',
 };
 
 export default function App() {
@@ -65,6 +66,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="bookings" element={<Bookings />} />
+          <Route path="notifications" element={<StaffNotifications />} />
           {Object.entries(CRUD_ROUTES).map(([path, key]) => (
             // key= forces a fresh page (and fresh hooks) when moving between list pages
             <Route key={path} path={path} element={<CrudPage key={key} config={resources[key]} />} />

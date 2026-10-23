@@ -203,11 +203,12 @@ export const accounts = [
   { id: id('ac', 25), username: 'thinh.vo', role: 1, status: 3, createdAt: stamp(-30) },
 ];
 
+// AuditLogResponse; the description is a summary line, then one line per field (lib/audit.js)
 export const auditLogs = [
-  { id: id('al', 1), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'CREATE_CLASS', description: 'Created class "Track Tuesdays".', timestamp: stamp(-1, 10) },
-  { id: id('al', 2), accountId: DEMO_IDS.receptionistAccountId, username: 'reception.tam', actionType: 'CREATE_INVOICE', description: 'Invoice for Everyday membership – Phạm Mai Linh.', timestamp: stamp(-2, 9) },
-  { id: id('al', 3), accountId: DEMO_IDS.coachAccountId, username: 'coach.khoa', actionType: 'RECORD_ATTENDANCE', description: 'Marked 12 members present in Barbell Basics.', timestamp: stamp(-3, 19) },
-  { id: id('al', 4), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'UPDATE_ROOM', description: 'Court 2 set to Unavailable (floor repair).', timestamp: stamp(-4, 8) },
+  { id: id('al', 1), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'UPDATE_SESSION', description: 'Edited session\nStarts: 18:00 → 18:45', timestamp: stamp(0, 8) },
+  { id: id('al', 2), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'SEND_NOTIFICATION', description: 'Sent “Session moved” to All members (3 accounts)\nMessage: Track Tuesdays moves to 18:45 this week.', timestamp: stamp(0, 7) },
+  { id: id('al', 3), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'LOCK_ACCOUNT', description: 'Locked account “thinh.vo”\nStatus: Active → Locked', timestamp: stamp(-1, 16) },
+  { id: id('al', 4), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'CREATE_PACKAGE', description: 'Added package “Everyday”\nDuration (days): 30\nPrice (VND): 900000\nStatus: Active', timestamp: stamp(-2, 10) },
 ];
 
 // Report preview (no report API yet)

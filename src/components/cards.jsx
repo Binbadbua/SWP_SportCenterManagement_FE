@@ -21,7 +21,9 @@ export function classEyebrow(c, spotsLeft) {
 }
 
 export function ClassCard({ item, spotsLeft }) {
-  const eyebrow = classEyebrow(item, spotsLeft ?? (item._enrolled !== undefined ? item.maxCapacity - item._enrolled : undefined));
+  // spotsLeft comes with each class from the API; the sample data carries _enrolled instead
+  const left = spotsLeft ?? item.spotsLeft ?? (item._enrolled !== undefined ? item.maxCapacity - item._enrolled : undefined);
+  const eyebrow = classEyebrow(item, left);
   return (
     <Link to={`/classes/${item.id}`} className="class-card">
       <div className="class-card__media">
@@ -52,7 +54,8 @@ export function CategoryTile({ category, count }) {
 }
 
 export function CoachPortrait({ coach, size = 'md' }) {
-  if (coach.avatar) {
+  // Older coach rows hold a bare file name instead of a link; those fall back to initials
+  if (/^(https?:\/\/|\/)/i.test(coach.avatar ?? '')) {
     return <img className={`coach-portrait coach-portrait--${size}`} src={coach.avatar} alt="" loading="lazy" />;
   }
   return (

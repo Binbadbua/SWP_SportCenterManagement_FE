@@ -52,6 +52,7 @@ export const MembershipStatus = enumOf([
   { value: 1, label: 'Active', tone: 'success' },
   { value: 2, label: 'Inactive', tone: 'neutral' },
   { value: 3, label: 'Expired', tone: 'danger' },
+  { value: 4, label: 'Cancelled', tone: 'neutral' },
 ]);
 
 export const PaymentMethod = enumOf([

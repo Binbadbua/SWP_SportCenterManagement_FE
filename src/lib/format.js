@@ -26,12 +26,42 @@ export const formatDateRange = (a, b) => `${formatShortDate(a)} – ${formatDate
 
 // Value for <input type="date"> from an ISO string
 export const toDateInput = (v) => (v ? String(v).slice(0, 10) : '');
+// "2026-10-22" -> "2026-10-22T00:00:00Z". Date columns are timestamptz, so the API only accepts UTC values.
+export const fromDateInput = (v) => (v ? `${String(v).slice(0, 10)}T00:00:00Z` : v);
+// "2026-10-22" + 30 days -> "2026-11-20" (a 30-day plan ends on its 30th day)
+export const addDaysToDateInput = (v, days) => {
+  const d = new Date(`${v}T00:00:00Z`);
+  if (!v || Number.isNaN(d.getTime())) return '';
+  d.setUTCDate(d.getUTCDate() + days);
+  return d.toISOString().slice(0, 10);
+};
 // Value for <input type="time"> from "HH:mm:ss"
 export const toTimeInput = (v) => (v ? String(v).slice(0, 5) : '');
 // "07:30" -> "07:30:00" (TimeSpan format expected by the API)
 export const fromTimeInput = (v) => (v && v.length === 5 ? `${v}:00` : v);
 
 export const todayUtcDateString = () => new Date().toISOString().slice(0, 10);
+
+// The API stores "pending-…" / "legacy-…" as the phone of members who never entered one
+// (the phone column must be unique). Show those as empty.
+export const realPhone = (p) => (/^(pending|legacy)-/i.test(p ?? '') ? '' : (p ?? ''));
+
+// Today on the visitor's clock, "YYYY-MM-DD" — the calendar day the center's sessions use
+export const todayLocalDateString = (now = new Date()) => {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+};
+
+// A session has ended once its date (stored as UTC midnight) is before today, or it is today and
+// its end time ("HH:mm:ss", the center's local time) has passed. Compared on the visitor's clock.
+export const isSessionOver = (s, now = new Date()) => {
+  const pad = (n) => String(n).padStart(2, '0');
+  const today = todayLocalDateString(now);
+  const day = String(s.date).slice(0, 10);
+  if (day !== today) return day < today;
+  const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  return String(s.endTime ?? '').padEnd(8, ':00').slice(0, 8) <= time;
+};
 
 export const initials = (name = '') =>
   name

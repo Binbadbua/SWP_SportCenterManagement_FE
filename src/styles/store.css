@@ -237,6 +237,14 @@
   background: #2b1510;
   color: var(--paper);
 }
+/* Background slideshow (HERO_SLIDES in src/lib/images.js). Only the active photo is visible.
+   When the slide changes, the old photo fades out first and the new one fades in after it
+   (transition-delay = the fade time), each new photo settling with a slow zoom that ends
+   just as the next change starts. Home.jsx sets both times from HERO_TIMING. */
+.hero {
+  --hero-fade: 1.2s;
+  --hero-zoom: 5.8s;
+}
 .hero__img {
   position: absolute;
   inset: 0;
@@ -244,7 +252,20 @@
   height: 100%;
   object-fit: cover;
   object-position: 60% 40%;
+  opacity: 0;
+  transition: opacity var(--hero-fade) ease-in-out;
+}
+.hero__img.is-active {
+  opacity: 1;
+  transition-delay: var(--hero-fade);
+}
+/* First load: the first photo is shown at once with the original zoom-in */
+.hero:not(.hero--cycled) .hero__img.is-active {
+  transition: none;
   animation: hero-zoom 1.6s var(--ease) both;
+}
+.hero--cycled .hero__img.is-active {
+  animation: hero-zoom var(--hero-zoom) var(--hero-fade) ease-out both;
 }
 @keyframes hero-zoom {
   from { transform: scale(1.06); }
@@ -331,6 +352,11 @@
 }
 .rail__track::-webkit-scrollbar { display: none; }
 .rail__track > * { scroll-snap-align: start; }
+/* Auto-scrolling rail (Rail autoScroll): snapping would pull the slow drift back to a tile edge */
+.rail__track--auto { scroll-snap-type: none; }
+/* Second copy of the items for the seamless loop; its children sit in the track's grid */
+.rail__copy { display: contents; }
+.rail__copy[hidden] { display: none; }
 
 .category-tile {
   position: relative;
@@ -503,7 +529,15 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
-.package-card__name { font-size: 44px; }
+/* Vietnamese names wrap and carry stacked marks (Ẻ, Ổ): .display's 0.9 line-height makes the
+   lines collide, so package names get room between lines and a size that keeps them to ~2 lines */
+.package-card__name {
+  font-size: clamp(30px, 2.6vw, 38px);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
 .package-card__duration {
   margin-top: 6px;
   opacity: 0.8;
@@ -1062,6 +1096,135 @@
 }
 .auth__advanced p { font-size: 14px; }
 .auth__foot { text-align: center; }
+
+/* Sign-in: photo + pitch on the left, the form on the right (stacked on small screens) */
+.login {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  min-height: calc(100vh - 160px);
+}
+.login__media {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+  background: #151515;
+  color: var(--paper);
+}
+/* Slideshow (LOGIN_SLIDES in src/lib/images.js): the photo on screen pans slowly from left to
+   right — scaled 1.2× so the 7% slide each way never shows an edge — and keeps panning while
+   it cross-fades into the next one (Login.jsx sets both times from LOGIN_TIMING) */
+.login__media {
+  --login-fade: 1.5s;
+  --login-pan: 8.5s;
+}
+.login__slide {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 55% 40%;
+  opacity: 0;
+  transform: scale(1.2) translateX(-7%);
+  transition: opacity var(--login-fade) ease-in-out;
+}
+.login__slide.is-active { opacity: 1; }
+.login__slide.is-active,
+.login__slide.is-leaving {
+  animation: login-pan var(--login-pan) linear both;
+}
+@keyframes login-pan {
+  from { transform: scale(1.2) translateX(-7%); }
+  to { transform: scale(1.2) translateX(7%); }
+}
+.login__shade {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.05) 30%, rgba(0, 0, 0, 0.75) 100%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0) 60%);
+}
+.login__pitch {
+  position: relative;
+  padding: clamp(28px, 4vw, 56px);
+  animation: rise 0.8s 0.2s var(--ease) both;
+}
+.login__headline {
+  margin: 10px 0 22px;
+  font-size: clamp(64px, 8vw, 128px);
+}
+.login__perks {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 17px;
+}
+.login__perks li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.login__perks svg { flex: none; color: var(--signal); }
+.login__panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(32px, 5vw, 72px) var(--gutter);
+}
+.login__form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(420px, 100%);
+  animation: rise 0.7s 0.1s var(--ease) both;
+}
+.login__eyebrow { color: var(--signal-text); }
+.login__title {
+  margin: 4px 0 6px;
+  font-size: clamp(30px, 3vw, 38px);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.login__password { position: relative; }
+.login__reveal {
+  position: absolute;
+  right: 6px;
+  bottom: 8px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  font-size: 14px;
+  font-weight: 600;
+}
+.login__reveal:hover { background: var(--mist); }
+.login__password .input { padding-right: 72px; }
+.login__divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--stone);
+  font-size: 14px;
+}
+.login__divider::before,
+.login__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--hairline);
+}
+.login__foot { text-align: center; }
+@media (max-width: 900px) {
+  .login { grid-template-columns: 1fr; min-height: 0; }
+  .login__media { min-height: 260px; }
+  .login__headline { font-size: clamp(56px, 14vw, 88px); margin-bottom: 14px; }
+  .login__perks { display: none; }
+}
 .segmented {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -1184,8 +1347,16 @@
   border-bottom: 1px solid var(--hairline);
 }
 .result__score .display { font-size: 56px; }
+.inbox { display: grid; gap: 18px; align-content: start; }
 .notif-list { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--hairline); }
-.notif { border-bottom: 1px solid var(--hairline); }
+.notif {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid var(--hairline);
+}
+.notif__btn { flex: 1; min-width: 0; }
+.notif__btn:disabled { cursor: default; }
 .notif__btn {
   display: flex;
   gap: 14px;
@@ -1210,6 +1381,32 @@
 .notif--unread .notif__title { font-weight: 700; }
 .notif__time { font-size: 13px; }
 .profile-form { display: grid; gap: 20px; max-width: 720px; }
+/* Profile, read-only view (the form only appears after "Edit profile") */
+.profile-view {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px 24px;
+  max-width: 720px;
+  margin: 0;
+}
+.profile-view > div {
+  display: grid;
+  gap: 4px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+.profile-view dt { color: var(--stone); font-size: 14px; }
+.profile-view dd {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 550;
+  overflow-wrap: anywhere;
+  white-space: pre-line;
+}
+.profile-view__full { grid-column: 1 / -1; }
+@media (max-width: 640px) {
+  .profile-view { grid-template-columns: 1fr; }
+}
 .form-actions {
   display: flex;
   justify-content: flex-end;

@@ -5,7 +5,7 @@ const FAQ = [
   ['Can I cancel?', 'Yes, from My account → Bookings, until you have attended your first session. After that, ask reception.'],
   ['What if a class is full?', 'The class page shows how many spots are left. When it reaches zero, booking closes. Check other classes in the same sport.'],
   ['How do I pay for a membership?', 'Pay at reception for now. Staff create your membership and invoice. Online payment is coming soon.'],
-  ['Who marks my attendance?', 'Your coach or reception marks you present, late or absent at each session. You can see it in My account → Attendance.'],
+  ['Who marks my attendance?', 'Your coach marks you present, late or absent at each session. You can see it in My account → Attendance.'],
 ];
 
 export default function Help() {
