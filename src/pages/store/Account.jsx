@@ -11,6 +11,7 @@ import {
   InvoiceStatus,
   MembershipStatus,
   PaymentMethod,
+  SupportRequestStatus,
 } from "../../lib/enums.js";
 import {
   daysUntil,
@@ -44,6 +45,7 @@ const TABS = [
   { key: "training", label: "Training" },
   { key: "invoices", label: "Invoices" },
   { key: "notifications", label: "Notifications" },
+  { key: "support", label: "Support" },
   { key: "profile", label: "Profile" },
 ];
 
@@ -127,6 +129,7 @@ export default function Account() {
         {tab === "training" && <TrainingTab />}
         {tab === "invoices" && <InvoicesTab />}
         {tab === "notifications" && <NotificationsTab />}
+        {tab === "support" && <SupportTab />}
         {tab === "profile" && <ProfileTab />}
       </div>
     </div>
@@ -485,6 +488,80 @@ function InvoicesTab() {
 /* ---- Notifications (API) ------------------------------------------------ */
 function NotificationsTab() {
   return <NotificationInbox />;
+}
+
+/* ---- Support requests (API) --------------------------------------------- */
+// The member writes to reception; reception answers from Staff → Support requests
+function SupportTab() {
+  const toast = useToast();
+  const requests = useApi(() => api.supportRequests.list(), []);
+  const [content, setContent] = useState("");
+  const [error, setError] = useState(null);
+  const [sending, setSending] = useState(false);
+
+  const send = async (e) => {
+    e.preventDefault();
+    const text = content.trim();
+    if (!text) return setError("Write what you need help with.");
+    if (text.length > 2000) return setError("Keep it under 2000 characters.");
+    setError(null);
+    setSending(true);
+    try {
+      await api.supportRequests.create({ content: text });
+      toast.success("Sent. Reception will answer here.");
+      setContent("");
+      requests.reload();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  return (
+    <>
+      <form className="support-form" onSubmit={send} noValidate>
+        <Field
+          label="Ask reception"
+          name="content"
+          type="textarea"
+          value={content}
+          onChange={(_, v) => setContent(v)}
+          error={error}
+          help="A question about a class, your membership, a payment or anything else. The answer shows up below."
+        />
+        <Button type="submit" disabled={sending}>{sending ? "Sending…" : "Send request"}</Button>
+      </form>
+      <h2 className="panel-title">Your requests</h2>
+      {requests.loading ? (
+        <Loading />
+      ) : (
+        <>
+          <ErrorNotice error={requests.error} onRetry={requests.reload} />
+          {requests.data?.length ? (
+            <ul className="support-list">
+              {requests.data.map((r) => (
+                <li key={r.id} className="support-item">
+                  <div className="support-item__head">
+                    <StatusTag tone={SupportRequestStatus.tone(r.status)}>{SupportRequestStatus.label(r.status)}</StatusTag>
+                    <span className="muted small">{formatDateTime(r.createdAt)}</span>
+                  </div>
+                  <p className="pre-wrap">{r.content}</p>
+                  {r.resolution && (
+                    <p className="support-item__answer pre-wrap">
+                      <strong>Reception:</strong> {r.resolution}
+                    </p>
+                  )}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            !requests.error && <p className="muted">No requests yet.</p>
+          )}
+        </>
+      )}
+    </>
+  );
 }
 
 /* ---- Profile (API) ------------------------------------------------------ */

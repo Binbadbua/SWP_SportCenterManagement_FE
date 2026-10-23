@@ -5,10 +5,10 @@
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
-import { useAuth } from '../../context/AuthContext.jsx';
-import { AUDIT_VERBS, describeAction } from '../../lib/audit.js';
+import { AUDIT_VERBS, groupEntries } from '../../lib/audit.js';
 import {
   AccountRole, AccountStatus, BookingStatus, ClassStatus, InvoiceStatus, MembershipStatus, PaymentMethod, RoomStatus,
+  SupportRequestStatus,
 } from '../../lib/enums.js';
 import {
   addDaysToDateInput, formatDate, formatDateTime, formatMoney, formatTimeRange, formatWeekday, fromDateInput,
@@ -41,9 +41,6 @@ const L = {
   coachPlans: { load: () => api.trainingPlans.forCoach(), sample: mock.trainingPlans },
 };
 
-// A member's account row (join date, status) from the manager-only account lookup
-const accountOf = (l, member) => (l.accounts ?? []).find((a) => a.id === member.accountId);
-
 // Training plans/results must carry the signed-in coach's ID (the API checks it)
 const coachIdOf = async (u) => u?.coachId ?? (await api.coaches.me()).id;
 
@@ -61,14 +58,7 @@ async function coachNames() {
 
 /* ---- Class roster shown in a modal ------------------------------------ */
 function ClassRoster({ classId }) {
-  const { user } = useAuth();
-  // The class roster endpoint is for managers and coaches; reception gets it from members' bookings
-  const fromBookings = user?.role === 'Receptionist';
-  const roster = useApi(
-    () => (fromBookings ? api.classes.membersFromBookings(classId) : api.classes.members(classId)),
-    [classId, fromBookings],
-    { sample: mock.classMembers },
-  );
+  const roster = useApi(() => api.classes.members(classId), [classId], { sample: mock.classMembers });
   if (roster.loading) return <Loading />;
   return (
     <>
@@ -113,22 +103,62 @@ function AuditWho({ row, accounts }) {
   );
 }
 
-// The description is a summary line, then one line per field (see lib/audit.js)
-function AuditDetail({ row, accounts }) {
-  const a = accountOfLog(accounts, row);
-  const action = describeAction(row.actionType);
-  const [summary, ...lines] = String(row.description ?? '').split('\n');
+// The server logs only an entity ID; the lists the page already loads give most of them a name
+const RECORD_NAMES = {
+  Account: (l, id) => l.accounts?.find((x) => x.id === id)?.username,
+  Member: (l, id) => l.members?.find((x) => x.id === id)?.fullName,
+  Coach: (l, id) => l.coaches?.find((x) => x.id === id)?.fullName,
+  Receptionist: (l, id) => l.receptionists?.find((x) => x.id === id)?.fullName,
+  CenterManager: (l, id) => l.managers?.find((x) => x.id === id)?.fullName,
+  Class: (l, id) => l.classes?.find((x) => x.id === id)?.className,
+  Room: (l, id) => l.rooms?.find((x) => x.id === id)?.roomName,
+  SportCategory: (l, id) => l.categories?.find((x) => x.id === id)?.categoryName,
+  MembershipPackage: (l, id) => l.packages?.find((x) => x.id === id)?.packageName,
+};
+const recordNames = (row, l) =>
+  row.entityIds.map((id) => RECORD_NAMES[row.entry.type]?.(l, id)).filter(Boolean);
+
+// "Dương Tuấn Kiệt · changed phone" / "21 notifications" / the text the FE used to write
+function auditDetails(row, l) {
+  const e = row.entry;
+  if (e.source === 'client') return [e.summary, ...e.lines].filter(Boolean).join(' · ');
+  const names = recordNames(row, l);
+  // A deleted record (or a kind with no list here) has no name left: show the start of its ID
+  const what = row.entityIds.length > 1
+    ? `${row.entityIds.length} ${e.entity}s`
+    : names[0] ?? (row.entityIds[0] ? `#${String(row.entityIds[0]).slice(0, 8)}` : '');
+  return [what, e.fields.length ? `changed ${e.fields.join(', ')}` : ''].filter(Boolean).join(' · ');
+}
+
+function AuditDetail({ row, lookups }) {
+  const a = accountOfLog(lookups.accounts, row);
+  const e = row.entry;
+  const names = recordNames(row, lookups);
   return (
     <dl className="detail-list">
       <div><dt>When</dt><dd className="num">{formatDateTime(row.timestamp)}</dd></div>
       <div><dt>Who</dt><dd>{row.username}{a && ` · ${personOf(a)}`}</dd></div>
-      <div><dt>Action</dt><dd><StatusTag tone={action.tone}>{action.label}</StatusTag></dd></div>
-      <div><dt>What</dt><dd>{summary || '—'}</dd></div>
-      {lines.length > 0 && (
-        <div>
-          <dt>Details</dt>
-          <dd><ul>{lines.map((line, i) => <li key={i}>{line}</li>)}</ul></dd>
-        </div>
+      <div><dt>Action</dt><dd><StatusTag tone={e.tone}>{e.label}</StatusTag></dd></div>
+      {e.source === 'server' ? (
+        <>
+          <div>
+            <dt>{row.entityIds.length > 1 ? `Records (${row.entityIds.length})` : 'Record'}</dt>
+            <dd>{names.length ? names.join(', ') : <span className="num muted">{row.entityIds.join(', ') || '—'}</span>}</dd>
+          </div>
+          <div>
+            <dt>Changed</dt>
+            <dd>{e.fields.length ? <ul>{e.fields.map((f) => <li key={f}>{f}</li>)}</ul> : '—'}</dd>
+          </div>
+          <div><dt>Recorded by</dt><dd>The server, when the change was saved</dd></div>
+        </>
+      ) : (
+        <>
+          <div><dt>What</dt><dd>{e.summary || '—'}</dd></div>
+          {e.lines.length > 0 && (
+            <div><dt>Details</dt><dd><ul>{e.lines.map((line, i) => <li key={i}>{line}</li>)}</ul></dd></div>
+          )}
+          <div><dt>Recorded by</dt><dd>The website (entries from before the server kept the log)</dd></div>
+        </>
       )}
     </dl>
   );
@@ -413,13 +443,16 @@ export const resources = {
 
   myMembers: {
     key: 'myMembers', title: 'My members', singular: 'Member',
-    description: 'Everyone booked into your classes.',
+    description: 'Everyone booked into your classes, with what they want to work on.',
     source: (u) => ({ list: () => api.coaches.members(u.coachId) }), sample: mock.coachMembers,
-    searchText: (r) => `${r.fullName} ${r.className} ${r.email}`,
+    searchText: (r) => `${r.fullName} ${r.className} ${r.email} ${r.trainingGoal ?? ''}`,
     columns: [
       { key: 'fullName', label: 'Member', className: 'cell-strong' },
       { key: 'className', label: 'Class' },
-      { key: 'phone', label: 'Phone', className: 'num' },
+      { key: 'trainingGoal', label: 'Goal', render: (r) => <span className="clamp">{r.trainingGoal || '—'}</span> },
+      { key: 'gender', label: 'Gender', render: (r) => r.gender || '—' },
+      { key: 'dob', label: 'Born', className: 'num', render: (r) => formatDate(r.dob) },
+      { key: 'phone', label: 'Phone', className: 'num', render: (r) => realPhone(r.phone) || '—' },
       { key: 'email', label: 'Email' },
     ],
   },
@@ -428,20 +461,19 @@ export const resources = {
      Members, packages, memberships, accounts, training
      (these used to be UI-only previews; all of them call the API now)
      ==================================================================== */
-  // MemberResponse has no join date or account status: those come from the account list, which only
-  // a manager may read, so the two columns are manager-only. A new member is registered like on the
+  // MemberResponse carries the account's join date and status. A new member is registered like on the
   // website (POST /api/auth/register creates the account and the profile; POST /api/members would need
-  // an existing account). Only a manager may edit a member (PUT /api/members/{id}).
+  // an existing account). Reception and managers edit a member; only a manager may delete one.
   members: {
     key: 'members', title: 'Members', singular: 'Member',
-    description: 'Search and register members at the front desk.',
+    description: 'Search, register and update members at the front desk.',
     source: (u) => ({
       list: api.members.list,
       create: (body) => api.auth.register(body),
-      ...(isManager(u) ? { update: api.members.update, remove: api.members.remove } : {}),
+      update: api.members.update,
+      ...(isManager(u) ? { remove: api.members.remove } : {}),
     }),
     sample: mock.members, canWrite: isFrontDesk, canDelete: isManager, nameOf: (r) => r.fullName,
-    lookups: (u) => (isManager(u) ? { accounts: L.accounts } : {}),
     searchText: (r) => `${r.fullName} ${r.phone} ${r.email}`,
     columns: [
       { key: 'fullName', label: 'Name', className: 'cell-strong' },
@@ -450,8 +482,8 @@ export const resources = {
       { key: 'gender', label: 'Gender', render: (r) => r.gender || '—' },
       { key: 'dob', label: 'Born', className: 'num', render: (r) => formatDate(r.dob) },
       { key: 'trainingGoal', label: 'Goal', render: (r) => <span className="clamp">{r.trainingGoal || '—'}</span> },
-      { key: 'createdAt', label: 'Joined', className: 'num', hidden: (u) => !isManager(u), render: (r, l) => formatDate(accountOf(l, r)?.createdAt) },
-      { key: 'status', label: 'Account', hidden: (u) => !isManager(u), render: (r, l) => (accountOf(l, r) ? tag(AccountStatus)(accountOf(l, r).status) : '—') },
+      { key: 'createdAt', label: 'Joined', className: 'num', render: (r) => formatDate(r.createdAt) },
+      { key: 'accountStatus', label: 'Account', render: (r) => (r.accountStatus ? tag(AccountStatus)(r.accountStatus) : '—') },
     ],
     fields: [
       { name: 'fullName', label: 'Full name', required: true, full: true },
@@ -647,14 +679,6 @@ export const resources = {
       { name: 'status', label: 'Status', type: 'select', numeric: true, required: true, options: AccountStatus.options, defaultValue: () => '1' },
     ],
     toRequest: (data) => data,
-    // Locking or unlocking an account is logged as its own action
-    audit: (mode, before, after, name) => {
-      const LOCKED = '3'; // AccountStatus "Locked", as the form holds it
-      if (mode !== 'edit' || before.status === after.status) return null;
-      if (after.status === LOCKED) return { verb: 'LOCK', text: `Locked account “${name}”` };
-      if (before.status === LOCKED) return { verb: 'UNLOCK', text: `Unlocked account “${name}”` };
-      return null;
-    },
   },
 
   trainingPlans: {
@@ -750,14 +774,62 @@ export const resources = {
     emptyHint: 'Write a training plan first, then score the member against it here.',
   },
 
-  // Read-only history of changes made in the staff area (lib/audit.js says what is logged and why)
+  // Requests members send from My account → Support. Reception and managers answer them here; the API
+  // records who handled each one. There is no create here (only a member may open a request).
+  supportRequests: {
+    key: 'supportRequests', title: 'Support requests', singular: 'Request',
+    description: 'Questions and problems members send from their account. Set the status and write what you did.',
+    source: { list: api.supportRequests.list, update: api.supportRequests.update },
+    sample: mock.supportRequests, canWrite: isFrontDesk, nameOf: (r) => `${r.memberName}’s request`,
+    searchText: (r) => `${r.memberName} ${r.content} ${r.resolution ?? ''}`,
+    sort: (a, b) => (a.status === b.status ? String(b.createdAt).localeCompare(String(a.createdAt)) : a.status - b.status),
+    filters: [{
+      key: 'status', label: 'Filter by status', all: 'All statuses',
+      options: () => SupportRequestStatus.options.map((o) => ({ value: String(o.value), label: o.label })),
+      match: (r, v) => String(r.status) === v,
+    }],
+    columns: [
+      { key: 'createdAt', label: 'Sent', className: 'num', render: (r) => formatDateTime(r.createdAt) },
+      { key: 'memberName', label: 'Member', className: 'cell-strong' },
+      { key: 'content', label: 'Request', render: (r) => <span className="clamp">{r.content}</span> },
+      { key: 'status', label: 'Status', render: (r) => tag(SupportRequestStatus)(r.status) },
+      { key: 'resolution', label: 'Answer', render: (r) => <span className="clamp">{r.resolution || '—'}</span> },
+    ],
+    fields: [
+      { name: 'status', label: 'Status', type: 'select', numeric: true, required: true, options: SupportRequestStatus.options },
+      { name: 'resolution', label: 'Answer to the member', type: 'textarea', help: 'The member sees this under their request.' },
+    ],
+    validate: (v) => (v.resolution?.length > 2000 ? { resolution: 'Keep the answer under 2000 characters.' } : {}),
+    toRequest: (b) => ({ status: b.status, resolution: b.resolution ?? '' }),
+    rowActions: [{
+      label: 'Read',
+      modal: {
+        title: (r) => `${r.memberName}’s request`,
+        render: (r) => (
+          <dl className="detail-list">
+            <div><dt>Sent</dt><dd className="num">{formatDateTime(r.createdAt)}</dd></div>
+            <div><dt>Status</dt><dd>{tag(SupportRequestStatus)(r.status)}</dd></div>
+            <div><dt>Request</dt><dd className="pre-wrap">{r.content}</dd></div>
+            <div><dt>Answer</dt><dd className="pre-wrap">{r.resolution || '—'}</dd></div>
+          </dl>
+        ),
+      },
+    }],
+    emptyHint: 'When a member sends a request from My account → Support, it appears here.',
+  },
+
+  // Read-only history the API keeps of every change staff save (lib/audit.js reads its entries)
   auditLog: {
     key: 'auditLog', title: 'Audit log', singular: 'Entry',
-    description: 'Changes made in the staff area, newest first: who did what, and when.',
-    source: { list: api.auditLogs.list }, sample: mock.auditLogs,
-    lookups: () => ({ accounts: L.accounts }),
-    nameOf: (r) => describeAction(r.actionType).label,
-    searchText: (r) => `${r.username} ${describeAction(r.actionType).label} ${r.description}`,
+    description: 'Every change saved by staff, newest first: who did what, and when.',
+    source: { list: async () => groupEntries(await api.auditLogs.list()) },
+    sample: groupEntries(mock.auditLogs),
+    lookups: () => ({
+      accounts: L.accounts, members: L.members, coaches: L.coaches, receptionists: L.receptionists,
+      managers: L.managers, classes: L.classes, rooms: L.rooms, categories: L.categories, packages: L.packages,
+    }),
+    nameOf: (r) => r.entry.label,
+    searchText: (r) => `${r.username} ${r.entry.label} ${r.entry.fields.join(' ')} ${r.entry.summary} ${r.entry.lines.join(' ')}`,
     sort: (a, b) => String(b.timestamp).localeCompare(String(a.timestamp)),
     filters: [
       {
@@ -770,32 +842,28 @@ export const resources = {
       {
         key: 'verb', label: 'Filter by action', all: 'All actions',
         options: (rows) => [...AUDIT_VERBS, { value: 'OTHER', label: 'Other' }]
-          .filter((o) => rows.some((r) => describeAction(r.actionType).verb === o.value)),
-        match: (r, v) => describeAction(r.actionType).verb === v,
+          .filter((o) => rows.some((r) => r.entry.verb === o.value)),
+        match: (r, v) => r.entry.verb === v,
       },
       {
         key: 'entity', label: 'Filter by record', all: 'All records',
-        options: (rows) => [...new Set(rows.map((r) => describeAction(r.actionType).entity).filter(Boolean))]
+        options: (rows) => [...new Set(rows.map((r) => r.entry.entity).filter(Boolean))]
           .sort()
           .map((e) => ({ value: e, label: e[0].toUpperCase() + e.slice(1) })),
-        match: (r, v) => describeAction(r.actionType).entity === v,
+        match: (r, v) => r.entry.entity === v,
       },
     ],
     columns: [
       { key: 'timestamp', label: 'When', className: 'num', render: (r) => formatDateTime(r.timestamp) },
       { key: 'username', label: 'Who', render: (r, l) => <AuditWho row={r} accounts={l.accounts} /> },
-      {
-        key: 'actionType', label: 'Action',
-        render: (r) => { const a = describeAction(r.actionType); return <StatusTag tone={a.tone}>{a.label}</StatusTag>; },
-      },
-      // The summary and its field lines on one line here; View shows them one per line
-      { key: 'description', label: 'Details', render: (r) => <span className="clamp">{String(r.description ?? '').split('\n').join(' · ') || '—'}</span> },
+      { key: 'actionType', label: 'Action', render: (r) => <StatusTag tone={r.entry.tone}>{r.entry.label}</StatusTag> },
+      { key: 'description', label: 'Details', render: (r, l) => <span className="clamp">{auditDetails(r, l) || '—'}</span> },
     ],
     rowActions: [{
       label: 'View',
-      modal: { title: (r) => describeAction(r.actionType).label, render: (r, l) => <AuditDetail row={r} accounts={l.accounts} /> },
+      modal: { title: (r) => r.entry.label, render: (r, l) => <AuditDetail row={r} lookups={l} /> },
     }],
-    emptyHint: 'When a manager adds, edits or deletes a record, renews or cancels a membership, locks an account or sends a notification, it is listed here.',
+    emptyHint: 'Whenever a coach, receptionist or manager saves a change, the server adds it here.',
   },
 };
 

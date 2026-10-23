@@ -65,3 +65,11 @@ export const RoomStatus = enumOf([
   { value: 1, label: 'Available', tone: 'success' },
   { value: 2, label: 'Unavailable', tone: 'danger' },
 ]);
+
+// SWP_SportCenter.Repository/Entity/SupportRequest.cs
+export const SupportRequestStatus = enumOf([
+  { value: 1, label: 'Open', tone: 'warning' },
+  { value: 2, label: 'In progress', tone: 'info' },
+  { value: 3, label: 'Resolved', tone: 'success' },
+  { value: 4, label: 'Cancelled', tone: 'neutral' },
+]);

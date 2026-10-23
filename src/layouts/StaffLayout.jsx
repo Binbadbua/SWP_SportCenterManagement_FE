@@ -58,6 +58,11 @@ export const STAFF_NAV = [
         label: "Invoices",
         roles: ["CenterManager", "Receptionist"],
       },
+      {
+        to: "/staff/support-requests",
+        label: "Support requests",
+        roles: ["CenterManager", "Receptionist"],
+      },
     ],
   },
   {

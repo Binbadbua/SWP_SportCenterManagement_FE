@@ -40,6 +40,7 @@ const CRUD_ROUTES = {
   'training-plans': 'trainingPlans',
   'training-results': 'trainingResults',
   'audit-log': 'auditLog',
+  'support-requests': 'supportRequests',
 };
 
 export default function App() {

@@ -2,8 +2,7 @@ import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useApi } from "../../hooks/useApi.js";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { audit } from "../../lib/audit.js";
-import { formatDate, fromTimeInput, toDateInput, toTimeInput } from "../../lib/format.js";
+import { fromTimeInput, toDateInput, toTimeInput } from "../../lib/format.js";
 import Icon from "../../components/Icon.jsx";
 import Modal from "../../components/Modal.jsx";
 import { useToast } from "../../components/Toast.jsx";
@@ -76,11 +75,10 @@ function Pager({ page, pageCount, total, onPage }) {
  *   searchText?(row), sort?(a, b), validate?(values), toRequest?(values, ctx), canWrite?(user), canDelete?(user),
  *   rowActions?: [{ label, icon?, to?(row), modal?: { title(row), render(row, lookups) },
  *                   run?(row), confirm?(row), done?(row), hidden?(row, user, lookups) }],
- *   audit?(mode, before, after, name)           // { verb, text } to log a change as something else
- *   nameOf(row)                                 // used in confirm/toast messages and the audit log
+ *   nameOf(row)                                 // used in confirm/toast messages
  * }
  * Edit and delete buttons only appear when the source has update / remove.
- * Every change that succeeds is written to the audit log (lib/audit.js) as VERB_SINGULAR.
+ * The API writes the audit log itself, so pages here never post to it.
  */
 export default function CrudPage({ config }) {
   const { user } = useAuth();
@@ -121,7 +119,7 @@ export default function CrudPage({ config }) {
   const [query, setQuery] = useState("");
   const [filterValues, setFilterValues] = useState({});
   const [page, setPage] = useState(1);
-  const [form, setForm] = useState(null); // { mode, row, values, initial }
+  const [form, setForm] = useState(null); // { mode, row, values }
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -132,6 +130,7 @@ export default function CrudPage({ config }) {
   const canWrite =
     !!config.fields && (config.canWrite ? config.canWrite(user) : true);
   const canUpdate = canWrite && !!source.update;
+  const canCreate = canWrite && !!source.create;
   const columns = config.columns.filter((c) => !c.hidden?.(user));
   const [runningId, setRunningId] = useState(null);
   const canDelete =
@@ -187,60 +186,9 @@ export default function CrudPage({ config }) {
         return [f.name, v === null || v === undefined ? "" : String(v)];
       }),
     );
-    setForm({ mode: "edit", row, values, initial: values });
+    setForm({ mode: "edit", row, values });
     setErrors({});
     setFormError(null);
-  };
-
-  /* ---- Audit log: what changed, in the words of the form ---------------- */
-  const entity = config.singular.toLowerCase();
-  const auditCode = config.singular.toUpperCase().replace(/\s+/g, "_");
-  // nameOf() of an API response, or "" when the response lacks the fields it reads
-  const safeName = (row) => {
-    try {
-      const n = row ? String(nameOf(row) ?? "") : "";
-      return n.includes("undefined") ? "" : n;
-    } catch {
-      return "";
-    }
-  };
-  const quoted = (name) => (name ? ` “${name}”` : "");
-  const shown = (f, v) => {
-    if (v === "" || v === null || v === undefined) return "—";
-    const options = f.optionsFrom ? f.optionsFrom(lk, user) : f.options;
-    const option = options?.find((o) => String(o.value) === String(v));
-    if (option) return option.label;
-    if (f.type === "date") return formatDate(v);
-    const s = String(v);
-    return s.length > 80 ? `${s.slice(0, 79)}…` : s;
-  };
-  // One line per filled field (create, leaving out the name already in the summary) or per
-  // changed field (edit); passwords are never logged
-  const changeLines = (mode, before, after, name) =>
-    fieldsFor(mode)
-      .filter((f) => f.type !== "password")
-      .filter((f) =>
-        mode === "create"
-          ? after[f.name] !== "" && after[f.name] !== undefined && shown(f, after[f.name]) !== name
-          : String(before[f.name] ?? "") !== String(after[f.name] ?? ""),
-      )
-      .map((f) =>
-        mode === "create"
-          ? `${f.label}: ${shown(f, after[f.name])}`
-          : `${f.label}: ${shown(f, before[f.name])} → ${shown(f, after[f.name])}`,
-      );
-  const logSave = (current, result) => {
-    const name =
-      current.mode === "create"
-        ? safeName(result) || safeName({ ...current.values, ...result })
-        : safeName(current.row);
-    const custom = config.audit?.(current.mode, current.initial ?? {}, current.values, name);
-    const verb = custom?.verb ?? (current.mode === "create" ? "CREATE" : "UPDATE");
-    const text =
-      custom?.text ??
-      `${current.mode === "create" ? "Added" : "Edited"} ${entity}${quoted(name)}`;
-    const lines = changeLines(current.mode, current.initial ?? {}, current.values, name);
-    audit(user, `${verb}_${auditCode}`, [text, ...lines].join("\n"));
   };
 
   const setValue = (name, value) => {
@@ -303,15 +251,8 @@ export default function CrudPage({ config }) {
     setFormError(null);
     try {
       const body = toRequest(form.mode, form.values);
-      const result =
-        form.mode === "create"
-          ? await source.create(body)
-          : await source.update(form.row.id, body);
-      try {
-        logSave(form, result);
-      } catch {
-        // The change is saved; a log line that can't be written must not report it as failed
-      }
+      if (form.mode === "create") await source.create(body);
+      else await source.update(form.row.id, body);
       toast.success(
         form.mode === "create"
           ? `${config.singular} added.`
@@ -355,7 +296,6 @@ export default function CrudPage({ config }) {
     setConfirm(null);
     try {
       await source.remove(row.id);
-      audit(user, `DELETE_${auditCode}`, `Deleted ${entity}${quoted(safeName(row))}`);
       toast.success(`${config.singular} “${nameOf(row)}” deleted.`);
       list.reload();
     } catch (err) {
@@ -370,11 +310,6 @@ export default function CrudPage({ config }) {
     setRunningId(row.id);
     try {
       await action.run(row);
-      audit(
-        user,
-        `${action.label.toUpperCase().replace(/\s+/g, "_")}_${auditCode}`,
-        action.done?.(row) ?? `${action.label} ${entity}${quoted(safeName(row))}`,
-      );
       toast.success(action.done?.(row) ?? `${action.label}: done.`);
       list.reload();
     } catch (err) {
@@ -393,7 +328,7 @@ export default function CrudPage({ config }) {
           <h1 className="staff-page__title display">{config.title}</h1>
           {description && <p className="muted">{description}</p>}
         </div>
-        {canWrite && (
+        {canCreate && (
           <Button icon="plus" onClick={openCreate} disabled={offline}>
             Add {config.singular.toLowerCase()}
           </Button>
@@ -551,7 +486,7 @@ export default function CrudPage({ config }) {
             action={
               !query &&
               !filtered &&
-              canWrite && (
+              canCreate && (
                 <Button icon="plus" onClick={openCreate}>
                   Add {config.singular.toLowerCase()}
                 </Button>

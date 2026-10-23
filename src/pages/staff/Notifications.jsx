@@ -2,15 +2,15 @@ import { useState } from "react";
 import { api } from "../../api/endpoints.js";
 import { useApi } from "../../hooks/useApi.js";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { audit } from "../../lib/audit.js";
 import { AccountRole } from "../../lib/enums.js";
 import { useToast } from "../../components/Toast.jsx";
 import NotificationInbox from "../../components/NotificationInbox.jsx";
 import { Button, ErrorNotice, Field } from "../../components/ui.jsx";
 
-// Every staff member reads their own notifications here; the center manager can also send them
-// (POST /api/notifications takes a list of account IDs).
-const AUDIENCES = [
+// Every staff member reads their own notifications here. The center manager can send to anyone;
+// a coach to the members booked into their classes, e.g. homework or a change of plan
+// (POST /api/notifications takes a list of account IDs and refuses a coach's send to anyone else).
+const MANAGER_AUDIENCES = [
   { value: "role:1", label: "All members" },
   { value: "role:2", label: "All coaches" },
   { value: "role:3", label: "All receptionists" },
@@ -20,22 +20,24 @@ const AUDIENCES = [
 
 export default function StaffNotifications() {
   const { user } = useAuth();
-  const isManager = user?.role === "CenterManager";
+  const canSend = user?.role === "CenterManager" || user?.role === "Coach";
   return (
     <div className="staff-page">
       <header className="staff-page__head">
         <div>
           <h1 className="staff-page__title display">Notifications</h1>
           <p className="muted">
-            {isManager
+            {user?.role === "CenterManager"
               ? "Send a message to members or staff, and read the ones sent to you."
-              : "Messages sent to your account."}
+              : user?.role === "Coach"
+                ? "Send homework or news to the members in your classes, and read the messages sent to you."
+                : "Messages sent to your account."}
           </p>
         </div>
       </header>
-      {isManager ? (
+      {canSend ? (
         <div className="two-col">
-          <SendPanel />
+          {user.role === "Coach" ? <CoachSendPanel /> : <ManagerSendPanel />}
           <section className="panel">
             <h2 className="panel-title">Your inbox</h2>
             <NotificationInbox />
@@ -48,27 +50,76 @@ export default function StaffNotifications() {
   );
 }
 
-function SendPanel() {
-  const { user } = useAuth();
-  const toast = useToast();
+function ManagerSendPanel() {
   const accounts = useApi(() => api.accounts.list(), []);
-  const [v, setV] = useState({ audience: "role:1", accountId: "", title: "", message: "" });
+  const active = (accounts.data ?? []).filter((a) => a.status === 1);
+  return (
+    <SendForm
+      audiences={MANAGER_AUDIENCES}
+      loading={accounts.loading}
+      error={accounts.error}
+      onRetry={accounts.reload}
+      people={active.map((a) => ({ value: a.id, label: `${a.fullName || a.username} · ${AccountRole.label(a.role)}` }))}
+      recipientsFor={(audience, one) =>
+        audience === "all"
+          ? active.map((a) => a.id)
+          : audience === "one"
+            ? active.filter((a) => a.id === one).map((a) => a.id)
+            : active.filter((a) => `role:${a.role}` === audience).map((a) => a.id)
+      }
+    />
+  );
+}
+
+// The coach's members carry no account ID, so it is read from the member list (staff may read it)
+function CoachSendPanel() {
+  const roster = useApi(async () => {
+    const [booked, members] = await Promise.all([api.coaches.members(), api.members.list()]);
+    return { booked, members };
+  }, []);
+  const accountOf = new Map((roster.data?.members ?? [])
+    .filter((m) => !m.accountStatus || m.accountStatus === 1)
+    .map((m) => [m.id, m.accountId]));
+  // One row per member and class they booked; only active accounts can receive
+  const booked = (roster.data?.booked ?? []).filter((b) => accountOf.has(b.memberId));
+  const classes = [...new Map(booked.map((b) => [b.classId, b.className])).entries()];
+  const people = [...new Map(booked.map((b) => [b.memberId, b])).values()]
+    .sort((a, b) => a.fullName.localeCompare(b.fullName, "vi"));
+  return (
+    <SendForm
+      audiences={[
+        { value: "all", label: "All my members" },
+        ...classes.map(([id, name]) => ({ value: `class:${id}`, label: `Members of ${name}` })),
+        { value: "one", label: "One member…" },
+      ]}
+      loading={roster.loading}
+      error={roster.error}
+      onRetry={roster.reload}
+      people={people.map((p) => ({ value: p.memberId, label: p.fullName }))}
+      recipientsFor={(audience, one) => {
+        const rows = audience === "all"
+          ? booked
+          : audience === "one"
+            ? booked.filter((b) => b.memberId === one)
+            : booked.filter((b) => `class:${b.classId}` === audience);
+        return [...new Set(rows.map((b) => accountOf.get(b.memberId)))];
+      }}
+    />
+  );
+}
+
+function SendForm({ audiences, people, recipientsFor, loading, error, onRetry }) {
+  const toast = useToast();
+  const [v, setV] = useState({ audience: audiences[0].value, accountId: "", title: "", message: "" });
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
   const set = (n, val) => setV((s) => ({ ...s, [n]: val }));
-
-  const active = (accounts.data ?? []).filter((a) => a.status === 1);
-  const recipients =
-    v.audience === "all"
-      ? active
-      : v.audience === "one"
-        ? active.filter((a) => a.id === v.accountId)
-        : active.filter((a) => `role:${a.role}` === v.audience);
+  const recipients = recipientsFor(v.audience, v.accountId);
 
   const send = async (e) => {
     e.preventDefault();
     const found = {};
-    if (v.audience === "one" && !v.accountId) found.accountId = "Pick an account.";
+    if (v.audience === "one" && !v.accountId) found.accountId = "Pick a person.";
     else if (!recipients.length) found.audience = "There is no active account in this group.";
     if (!v.title.trim()) found.title = "Enter a title.";
     if (!v.message.trim()) found.message = "Enter a message.";
@@ -76,22 +127,8 @@ function SendPanel() {
     if (Object.keys(found).length) return;
     setSending(true);
     try {
-      await api.notifications.send({
-        accountIds: recipients.map((a) => a.id),
-        title: v.title.trim(),
-        message: v.message.trim(),
-      });
-      const count = `${recipients.length} ${recipients.length === 1 ? "account" : "accounts"}`;
-      const to =
-        v.audience === "one"
-          ? recipients[0].fullName || recipients[0].username
-          : AUDIENCES.find((a) => a.value === v.audience)?.label;
-      audit(
-        user,
-        "SEND_NOTIFICATION",
-        `Sent “${v.title.trim()}” to ${to} (${count})\nMessage: ${v.message.trim().replace(/\s+/g, " ")}`,
-      );
-      toast.success(`Sent to ${count}.`);
+      await api.notifications.send({ accountIds: recipients, title: v.title.trim(), message: v.message.trim() });
+      toast.success(`Sent to ${recipients.length} ${recipients.length === 1 ? "account" : "accounts"}.`);
       setV((s) => ({ ...s, title: "", message: "" }));
     } catch (err) {
       toast.error(err.message);
@@ -103,46 +140,31 @@ function SendPanel() {
   return (
     <form className="panel" onSubmit={send} noValidate>
       <h2 className="panel-title">Send a notification</h2>
-      <ErrorNotice error={accounts.error} onRetry={accounts.reload} />
+      <ErrorNotice error={error} onRetry={onRetry} />
       <Field
         label="Send to"
         name="audience"
         type="select"
         value={v.audience}
         onChange={set}
-        options={AUDIENCES}
+        options={audiences}
         error={errors.audience}
-        help={
-          accounts.loading
-            ? "Loading accounts…"
-            : `${recipients.length} active ${recipients.length === 1 ? "account" : "accounts"}`
-        }
+        help={loading ? "Loading people…" : `${recipients.length} active ${recipients.length === 1 ? "account" : "accounts"}`}
       />
       {v.audience === "one" && (
         <Field
-          label="Account"
+          label="Person"
           name="accountId"
           type="select"
           value={v.accountId}
           onChange={set}
           error={errors.accountId}
-          options={active.map((a) => ({
-            value: a.id,
-            label: `${a.fullName || a.username} · ${AccountRole.label(a.role)}`,
-          }))}
+          options={people}
         />
       )}
       <Field label="Title" name="title" required value={v.title} onChange={set} error={errors.title} />
-      <Field
-        label="Message"
-        name="message"
-        type="textarea"
-        required
-        value={v.message}
-        onChange={set}
-        error={errors.message}
-      />
-      <Button type="submit" disabled={sending || accounts.loading}>
+      <Field label="Message" name="message" type="textarea" required value={v.message} onChange={set} error={errors.message} />
+      <Button type="submit" disabled={sending || loading}>
         {sending ? "Sending…" : "Send"}
       </Button>
     </form>

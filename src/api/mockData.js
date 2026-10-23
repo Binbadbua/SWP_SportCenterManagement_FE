@@ -203,12 +203,22 @@ export const accounts = [
   { id: id('ac', 25), username: 'thinh.vo', role: 1, status: 3, createdAt: stamp(-30) },
 ];
 
-// AuditLogResponse; the description is a summary line, then one line per field (lib/audit.js)
+// SupportResponse (status: 1 Open, 2 In progress, 3 Resolved, 4 Cancelled)
+export const supportRequests = [
+  { id: id('sr', 1), memberId: id('a1', 1), memberName: 'An Nguyễn', content: 'Can I move my booking to the evening class next week?', status: 1, handledByAccountId: null, resolution: null, createdAt: stamp(0, 7), updatedAt: null },
+  { id: id('sr', 2), memberId: id('a1', 1), memberName: 'An Nguyễn', content: 'My invoice shows the wrong package.', status: 3, handledByAccountId: DEMO_IDS.receptionistAccountId, resolution: 'Fixed at the desk; the new invoice is under My account → Invoices.', createdAt: stamp(-3, 9), updatedAt: stamp(-2, 10) },
+];
+
+// AuditLogResponse as the server writes it: "<EF state>:<entity>" + JSON (lib/audit.js)
+const serverLog = (n, accountId, username, actionType, entityId, changedFields, timestamp) => ({
+  id: id('al', n), accountId, username, actionType, timestamp,
+  description: JSON.stringify({ entityId, changedFields, source: 'server' }),
+});
 export const auditLogs = [
-  { id: id('al', 1), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'UPDATE_SESSION', description: 'Edited session\nStarts: 18:00 → 18:45', timestamp: stamp(0, 8) },
-  { id: id('al', 2), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'SEND_NOTIFICATION', description: 'Sent “Session moved” to All members (3 accounts)\nMessage: Track Tuesdays moves to 18:45 this week.', timestamp: stamp(0, 7) },
-  { id: id('al', 3), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'LOCK_ACCOUNT', description: 'Locked account “thinh.vo”\nStatus: Active → Locked', timestamp: stamp(-1, 16) },
-  { id: id('al', 4), accountId: DEMO_IDS.managerAccountId, username: 'manager.huy', actionType: 'CREATE_PACKAGE', description: 'Added package “Everyday”\nDuration (days): 30\nPrice (VND): 900000\nStatus: Active', timestamp: stamp(-2, 10) },
+  serverLog(1, DEMO_IDS.managerAccountId, 'manager.huy', 'Modified:ClassSession', id('se', 1), ['StartTime', 'EndTime', 'UpdatedAt'], stamp(0, 8)),
+  serverLog(2, DEMO_IDS.receptionistAccountId, 'reception.tam', 'Added:Invoice', id('in', 1), [], stamp(0, 7)),
+  serverLog(3, DEMO_IDS.managerAccountId, 'manager.huy', 'Modified:Account', id('ac', 25), ['Status', 'UpdatedAt'], stamp(-1, 16)),
+  serverLog(4, DEMO_IDS.coachAccountId, 'coach.khoa', 'Added:Attendance', id('at', 1), [], stamp(-1, 9)),
 ];
 
 // Report preview (no report API yet)

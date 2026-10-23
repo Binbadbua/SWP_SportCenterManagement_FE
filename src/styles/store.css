@@ -1466,3 +1466,38 @@
   .booked-panel { top: auto; bottom: 12px; }
   .hero__actions { gap: 20px; }
 }
+
+/* Account → Support */
+.support-form {
+  display: grid;
+  gap: 14px;
+  max-width: 640px;
+  margin-bottom: 36px;
+  justify-items: start;
+}
+.support-form .field { width: 100%; }
+.support-list {
+  display: grid;
+  gap: 12px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.support-item {
+  display: grid;
+  gap: 8px;
+  padding: 16px 18px;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+}
+.support-item__head {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.support-item p { margin: 0; }
+.support-item__answer {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--mist);
+}

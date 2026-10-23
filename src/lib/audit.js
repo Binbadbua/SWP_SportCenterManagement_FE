@@ -1,20 +1,8 @@
-// Audit log. The API stores entries (GET/POST /api/audit-logs) but writes none itself, and only a
-// center manager may add one (CHANGELOG_AND_BE_ISSUES.md, Part B, B33). So the staff pages log the
-// changes a manager makes; add a role to WRITERS once the API accepts entries from it.
-import { api } from '../api/endpoints.js';
-
-const WRITERS = ['CenterManager'];
-
-// actionType = VERB_ENTITY (CREATE_CLASS, LOCK_ACCOUNT, SEND_NOTIFICATION…), at most 100 characters.
-// description = a one-line summary, then one line per changed field.
-export function audit(user, actionType, description) {
-  if (!user?.accountId || !WRITERS.includes(user.role)) return;
-  api.auditLogs
-    .log({ accountId: user.accountId, actionType: actionType.slice(0, 100), description })
-    .catch(() => {
-      // A lost log line must never undo or block the change the user just made
-    });
-}
+// Audit log. Since the 23/10/2026 deploy the API writes an entry itself for every change a staff
+// member saves (ServerAuditInterceptor): actionType "Added:Room" / "Modified:Member" / "Deleted:…",
+// description {"entityId","changedFields","source":"server"}. The FE no longer posts its own copies,
+// which would show every change twice. Entries the FE wrote before that ("CREATE_ROOM" + a text
+// summary, sometimes prefixed "[client]") are still read.
 
 const VERBS = {
   CREATE: { label: 'Create', tone: 'success' },
@@ -29,12 +17,67 @@ const VERBS = {
 
 export const AUDIT_VERBS = Object.entries(VERBS).map(([value, v]) => ({ value, label: v.label }));
 
-// "UPDATE_TRAINING_PLAN" -> { verb: 'UPDATE', entity: 'training plan', label: 'Update training plan', tone: 'info' };
-// entries written another way (e.g. by hand through Swagger) are shown as they are.
-export function describeAction(actionType = '') {
-  const [verb, ...rest] = String(actionType).split('_');
+const SERVER_VERBS = { Added: 'CREATE', Modified: 'UPDATE', Deleted: 'DELETE' };
+// Entity class names that read better under another word
+const ENTITIES = {
+  ClassBooking: 'booking', ClassSession: 'session', CenterManager: 'manager',
+  MembershipPackage: 'package', SportCategory: 'sport',
+};
+// Bookkeeping columns every save touches
+const QUIET_FIELDS = ['UpdatedAt', 'CreatedAt', 'IsDeleted'];
+
+const words = (pascal) => pascal.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
+const json = (text) => {
+  try {
+    const value = JSON.parse(text);
+    return value && typeof value === 'object' ? value : null;
+  } catch {
+    return null;
+  }
+};
+
+// One entry, whichever way it was written ->
+// { verb, entity, type, label, tone, entityId, fields, summary, lines, source }
+export function readEntry(row) {
+  const [state, type] = String(row.actionType ?? '').split(':');
+  if (SERVER_VERBS[state] && type) {
+    const d = json(row.description) ?? {};
+    const changed = d.changedFields ?? [];
+    // A soft delete is saved as a change of IsDeleted
+    const verb = state === 'Modified' && changed.includes('IsDeleted') ? 'DELETE' : SERVER_VERBS[state];
+    const entity = ENTITIES[type] ?? words(type);
+    return {
+      verb, entity, type, label: `${VERBS[verb].label} ${entity}`, tone: VERBS[verb].tone,
+      entityId: d.entityId, fields: changed.filter((f) => !QUIET_FIELDS.includes(f)).map(words),
+      summary: '', lines: [], source: 'server',
+    };
+  }
+  const [verb, ...rest] = String(row.actionType ?? '').split('_');
+  const [summary, ...lines] = String(row.description ?? '').replace(/^\[client\]\s*/, '').split('\n');
   const known = VERBS[verb];
-  if (!known || !rest.length) return { verb: 'OTHER', entity: '', label: actionType || '—', tone: 'neutral' };
-  const entity = rest.join(' ').toLowerCase();
-  return { verb, entity, label: `${known.label} ${entity}`, tone: known.tone };
+  const entity = known && rest.length ? rest.join(' ').toLowerCase() : '';
+  return {
+    verb: entity ? verb : 'OTHER', entity, type: '', label: entity ? `${known.label} ${entity}` : row.actionType || '—',
+    tone: entity ? known.tone : 'neutral', entityId: null, fields: [], summary, lines, source: 'client',
+  };
+}
+
+// One save can write many entries of the same kind (a notification to 20 members = 20 rows);
+// they are shown as one line with every record they touched.
+export function groupEntries(rows) {
+  const groups = new Map();
+  for (const row of rows) {
+    const entry = readEntry(row);
+    const key = entry.source === 'server'
+      ? `${row.accountId}|${row.actionType}|${String(row.timestamp).slice(0, 19)}`
+      : row.id;
+    const group = groups.get(key);
+    if (group) {
+      group.entityIds.push(entry.entityId);
+      for (const f of entry.fields) if (!group.entry.fields.includes(f)) group.entry.fields.push(f);
+    } else {
+      groups.set(key, { ...row, entry, entityIds: entry.entityId ? [entry.entityId] : [] });
+    }
+  }
+  return [...groups.values()];
 }

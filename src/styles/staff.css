@@ -551,3 +551,6 @@
   .today-list li .muted { grid-column: 1; }
   .bars { gap: 6px; }
 }
+
+/* Text people typed, shown with its own line breaks */
+.pre-wrap { white-space: pre-wrap; }

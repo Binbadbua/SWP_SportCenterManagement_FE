@@ -6,6 +6,7 @@ const FAQ = [
   ['What if a class is full?', 'The class page shows how many spots are left. When it reaches zero, booking closes. Check other classes in the same sport.'],
   ['How do I pay for a membership?', 'Pay at reception for now. Staff create your membership and invoice. Online payment is coming soon.'],
   ['Who marks my attendance?', 'Your coach marks you present, late or absent at each session. You can see it in My account → Attendance.'],
+  ['Something else?', 'Send a request from My account → Support. Reception answers there, and you can follow its status.'],
 ];
 
 export default function Help() {
@@ -24,7 +25,8 @@ export default function Help() {
         ))}
       </div>
       <div className="block">
-        <Button to="/classes" variant="secondary">Browse classes</Button>
+        <Button to="/classes" variant="secondary">Browse classes</Button>{' '}
+        <Button to="/account?tab=support">Ask reception</Button>
       </div>
     </div>
   );

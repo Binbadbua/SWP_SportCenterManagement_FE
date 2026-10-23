@@ -94,27 +94,8 @@ export const api = {
 
   classes: {
     ...crud("/api/classes"),
+    // Every staff role (reception too, since the 23/10/2026 deploy)
     members: (classId) => http.get(`/api/classes/${classId}/members`),
-    // Reception may not read /api/classes/{id}/members (managers and coaches only) but may read
-    // every member's bookings, so the same roster rows are rebuilt from those, a few members at a time.
-    membersFromBookings: async (classId) => {
-      const members = itemsOf(await http.get(`/api/members?${ALL}`));
-      const roster = [];
-      for (let i = 0; i < members.length; i += 6) {
-        const chunk = members.slice(i, i + 6);
-        const lists = await Promise.all(
-          chunk.map((m) => http.get(`/api/class-bookings/member/${m.memberId}`).then(itemsOf)),
-        );
-        lists.forEach((bookings, j) => {
-          const b = bookings.find((x) => x.classId === classId && x.status !== 3);
-          if (b) {
-            const m = chunk[j];
-            roster.push({ memberId: m.memberId, fullName: m.fullName, phone: m.phone, email: m.email, bookingStatus: b.status, bookingDate: b.bookingDate });
-          }
-        });
-      }
-      return roster;
-    },
   },
 
   schedules: {
@@ -173,7 +154,8 @@ export const api = {
     markRead: (id) => http.put(`/api/notifications/${id}/read`),
     markAllRead: () => http.put("/api/notifications/read-all"),
     remove: (id) => http.del(`/api/notifications/${id}`),
-    // Center manager: { accountIds: [], title, message }
+    // { accountIds: [], title, message }. A manager may send to anyone; a coach only to the members
+    // booked into their classes (the API refuses the whole send otherwise).
     send: (body) => http.post("/api/notifications", body),
   },
 
@@ -200,9 +182,16 @@ export const api = {
     classesSummary: () => http.get("/api/dashboard/classes/summary"),
   },
 
-  // Center manager only. GET returns every entry, newest first; the API writes none itself (lib/audit.js).
+  // A member creates requests and sees only their own (the API scopes GET to them); reception and
+  // managers see every request and update its status. Paged, newest first.
+  supportRequests: {
+    list: listOf(`/api/support-requests?${ALL}`),
+    create: (body) => http.post("/api/support-requests", body),
+    update: (id, body) => http.put(`/api/support-requests/${id}`, body),
+  },
+
+  // Center manager only; paged, newest first, at most 500 a page. The API writes the entries itself (lib/audit.js).
   auditLogs: {
-    list: listOf("/api/audit-logs"),
-    log: (body) => http.post("/api/audit-logs", body),
+    list: listOf("/api/audit-logs?pageSize=500"),
   },
 };
