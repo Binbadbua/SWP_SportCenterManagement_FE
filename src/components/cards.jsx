@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { sportImage } from '../lib/images.js';
+import { photoUrl, sportImage } from '../lib/images.js';
 import { daysUntil, formatDateRange, formatMoney, initials } from '../lib/format.js';
 import { ClassStatus } from '../lib/enums.js';
 import { Button } from './ui.jsx';
@@ -54,10 +54,14 @@ export function CategoryTile({ category, count }) {
   );
 }
 
+// Pixels asked from the photo store per size: md is the 4:5 card / coach page photo, sm and xs are squares (2× for sharp screens)
+const PORTRAIT_PX = { md: [800, 1000], sm: [128, 128], xs: [64, 64] };
+
 export function CoachPortrait({ coach, size = 'md' }) {
   // Older coach rows hold a bare file name instead of a link; those fall back to initials
   if (/^(https?:\/\/|\/)/i.test(coach.avatar ?? '')) {
-    return <img className={`coach-portrait coach-portrait--${size}`} src={coach.avatar} alt="" loading="lazy" />;
+    const [w, h] = PORTRAIT_PX[size] ?? PORTRAIT_PX.md;
+    return <img className={`coach-portrait coach-portrait--${size}`} src={photoUrl(coach.avatar, w, h)} alt="" loading="lazy" />;
   }
   return (
     <div className={`coach-portrait coach-portrait--${size} coach-portrait--mono`} aria-hidden="true">

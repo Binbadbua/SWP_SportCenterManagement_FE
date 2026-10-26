@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { api, isMissingRoute } from '../../api/endpoints.js';
+import { apiUrl } from '../../api/client.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
@@ -9,16 +10,16 @@ import Icon from '../../components/Icon.jsx';
 import { AgreeToPolicies } from '../../components/Policies.jsx';
 import { Button, EmptyState, Field, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
 
-// Ways to pay online (values are PaymentMethod in lib/enums.js); cash stays at the reception desk
+// Ways to pay for a web order (values are PaymentMethod in lib/enums.js); cash stays at the reception desk
 const METHODS = [
-  { value: 2, title: 'Chuyển khoản ngân hàng', text: 'Quét mã VietQR hoặc chuyển khoản theo hướng dẫn của cổng thanh toán.' },
-  { value: 3, title: 'Thẻ ATM / Visa / Mastercard', text: 'Nhập thông tin thẻ trên trang thanh toán của ngân hàng.' },
+  { value: 2, title: 'Chuyển khoản ngân hàng', text: 'Chuyển khoản theo hướng dẫn của lễ tân, ghi mã giao dịch trong nội dung chuyển khoản.' },
+  { value: 3, title: 'Thẻ ATM / Visa / Mastercard', text: 'Quẹt thẻ tại quầy lễ tân, đọc mã giao dịch cho lễ tân.' },
 ];
 
-// A member confirms a package and pays for it online. The payment API is not built yet (CHANGELOG
-// Part B, B38): POST /api/payments/checkout should create the membership + invoice and return the
-// gateway page (paymentUrl), which sends the member back to /payment/result. Until it exists, paying
-// explains that nothing was charged.
+// A member confirms a package: POST /api/payments/checkout creates the membership (inactive) + a pending
+// invoice. The API has no payment gateway yet (paymentUrl is null), so the member goes to /payment/result
+// while reception or a manager confirms the money within 30 minutes; after that the API cancels the order.
+// A paymentUrl, once the API has a real gateway, is followed instead.
 export default function Checkout() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -80,7 +81,7 @@ export default function Checkout() {
         paymentMethod: method,
         returnUrl: `${window.location.origin}/payment/result`,
       });
-      if (res?.paymentUrl) window.location.assign(res.paymentUrl);
+      if (res?.paymentUrl) window.location.assign(apiUrl(res.paymentUrl));
       else navigate(`/payment/result?paymentId=${encodeURIComponent(res?.paymentId ?? '')}`);
     } catch (err) {
       if (isMissingRoute(err)) setUnavailable(true);
@@ -99,8 +100,8 @@ export default function Checkout() {
       <header className="checkout__head">
         <h1 className="checkout__title">Xác nhận đăng ký và thanh toán</h1>
         <p className="muted">
-          Kiểm tra gói tập, chọn ngày bắt đầu và cách thanh toán. Thẻ được kích hoạt và hóa đơn được xuất ngay khi
-          thanh toán thành công.
+          Kiểm tra gói tập, chọn ngày bắt đầu và cách thanh toán. Đơn được giữ 30 phút để lễ tân xác nhận thanh toán;
+          thẻ được kích hoạt và hóa đơn được xuất ngay khi lễ tân xác nhận.
         </p>
       </header>
       {packages.usingSample && <SampleDataNotice onRetry={packages.reload} />}
@@ -225,7 +226,7 @@ export default function Checkout() {
                 {paying ? 'Đang tạo giao dịch…' : `Xác nhận và thanh toán ${formatMoney(pkg.price)}`}
               </Button>
               <p className="checkout__safe muted">
-                <Icon name="check" size={16} strokeWidth={2} /> Bạn chỉ bị trừ tiền sau khi xác nhận trên cổng thanh toán.
+                <Icon name="check" size={16} strokeWidth={2} /> Bước này chưa trừ tiền: bạn thanh toán với lễ tân, quá 30 phút chưa xác nhận thì đơn tự hủy.
               </p>
             </>
           )}

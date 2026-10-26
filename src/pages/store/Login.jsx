@@ -5,7 +5,7 @@ import { useSlideshow } from '../../hooks/useSlideshow.js';
 import { LOGIN_SLIDES, LOGIN_TIMING } from '../../lib/images.js';
 import Logo from '../../components/Logo.jsx';
 import Icon from '../../components/Icon.jsx';
-import { Button, Field, ErrorNotice, Notice } from '../../components/ui.jsx';
+import { Button, Field, ErrorNotice, Notice, SlowHint } from '../../components/ui.jsx';
 
 const PERKS = [
   'Đặt lớp chỉ với vài thao tác',
@@ -157,6 +157,7 @@ export default function Login() {
           <Button type="submit" size="lg" block disabled={isSubmitting} iconAfter={isSubmitting ? undefined : 'arrowRight'}>
             {isSubmitting ? 'Đang đăng nhập…' : 'Đăng nhập'}
           </Button>
+          <SlowHint active={isSubmitting} />
 
           <div className="login__divider"><span>Lần đầu đến SportCenter?</span></div>
           <Button to="/register" variant="secondary" size="lg" block>

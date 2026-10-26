@@ -554,3 +554,9 @@
 
 /* Text people typed, shown with its own line breaks */
 .pre-wrap { white-space: pre-wrap; }
+
+/* Manager renews a membership: pick the receptionist the new invoice is billed to */
+.renew-form { display: grid; gap: 16px; }
+
+/* A person's small photo (or initials) before their name in a table */
+.person-cell { display: inline-flex; align-items: center; gap: 10px; }

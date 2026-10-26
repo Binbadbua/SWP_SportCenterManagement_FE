@@ -4,6 +4,7 @@ import { useApi } from "../../hooks/useApi.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { fromTimeInput, toDateInput, toTimeInput } from "../../lib/format.js";
 import Icon from "../../components/Icon.jsx";
+import ImageField from "../../components/ImageField.jsx";
 import Modal from "../../components/Modal.jsx";
 import { useToast } from "../../components/Toast.jsx";
 import {
@@ -72,8 +73,10 @@ function Pager({ page, pageCount, total, onPage }) {
  *   filters?: [{ key, label, all, options(rows, lookups), match(row, value) }]   // selects beside the search
  *   fields?: [{ name, label, type, required, options?, optionsFrom?(lookups, user), createOnly?, editOnly?,
  *               numeric?, min?, max?, step?, help?, full?, defaultValue?(user) }]
+ *               type "image" = a photo picked from the computer, uploaded at once; the value is its link
  *   searchText?(row), sort?(a, b), validate?(values), toRequest?(values, ctx), canWrite?(user), canDelete?(user),
- *   rowActions?: [{ label, icon?, to?(row), modal?: { title(row), render(row, lookups) },
+ *   canEditRow?(row, user)                      // false hides that row's edit button
+ *   rowActions?: [{ label, icon?, to?(row), modal?: { title(row), render(row, lookups, { close, reload }) },
  *                   run?(row), confirm?(row), done?(row), hidden?(row, user, lookups) }],
  *   nameOf(row)                                 // used in confirm/toast messages
  * }
@@ -123,6 +126,7 @@ export default function CrudPage({ config }) {
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false); // an image field is still sending its file
   const [confirm, setConfirm] = useState(null);
   const [detail, setDetail] = useState(null); // { action, row }
 
@@ -176,6 +180,7 @@ export default function CrudPage({ config }) {
     setForm({ mode: "create", row: null, values });
     setErrors({});
     setFormError(null);
+    setUploading(false);
   };
   const openEdit = (row) => {
     const values = Object.fromEntries(
@@ -189,6 +194,7 @@ export default function CrudPage({ config }) {
     setForm({ mode: "edit", row, values });
     setErrors({});
     setFormError(null);
+    setUploading(false);
   };
 
   const setValue = (name, value) => {
@@ -450,7 +456,7 @@ export default function CrudPage({ config }) {
                           </Button>
                         );
                       })}
-                      {canUpdate && (
+                      {canUpdate && (config.canEditRow?.(row, user) ?? true) && (
                         <IconButton
                           icon="edit"
                           label={`Sửa ${nameOf(row)}`}
@@ -515,10 +521,12 @@ export default function CrudPage({ config }) {
             <Button variant="secondary" onClick={() => setForm(null)}>
               Hủy
             </Button>
-            <Button type="submit" form="crud-form" disabled={saving}>
+            <Button type="submit" form="crud-form" disabled={saving || uploading}>
               {saving
                 ? "Đang lưu…"
-                : form?.mode === "create"
+                : uploading
+                  ? "Chờ ảnh tải lên…"
+                  : form?.mode === "create"
                   ? `Thêm ${config.singular.toLowerCase()}`
                   : "Lưu thay đổi"}
             </Button>
@@ -535,7 +543,19 @@ export default function CrudPage({ config }) {
               </div>
             )}
             <div className="form-grid">
-              {fieldsFor(form.mode).map((f) => (
+              {fieldsFor(form.mode).map((f) => f.type === "image" ? (
+                <ImageField
+                  key={f.name}
+                  className="field--full"
+                  label={f.label}
+                  name={f.name}
+                  help={f.help}
+                  value={form.values[f.name]}
+                  onChange={setValue}
+                  onBusy={setUploading}
+                  error={errors[f.name]}
+                />
+              ) : (
                 <Field
                   key={f.name}
                   className={
@@ -592,7 +612,7 @@ export default function CrudPage({ config }) {
         title={detail ? detail.action.modal.title(detail.row) : ""}
         onClose={() => setDetail(null)}
       >
-        {detail && detail.action.modal.render(detail.row, lk)}
+        {detail && detail.action.modal.render(detail.row, lk, { close: () => setDetail(null), reload: list.reload })}
       </Modal>
     </div>
   );

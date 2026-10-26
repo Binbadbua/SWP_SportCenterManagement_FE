@@ -17,6 +17,9 @@ export default function Modal({ open, title, onClose, children, footer, wide = f
       ref={ref}
       className={`modal ${wide ? 'modal--wide' : ''}`}
       onCancel={(e) => {
+        // A file picker closed without a choice fires "cancel" on its <input>, and that event bubbles up
+        // to here: only the dialog's own cancel (Esc) closes it
+        if (e.target !== e.currentTarget) return;
         e.preventDefault();
         onClose?.();
       }}

@@ -2,6 +2,7 @@
 //
 //   source: api.xxx (or (user) => ({ list, create?, update?, remove? })) -> the back-end endpoints;
 //   edit and delete buttons only appear when the source has update / remove.
+import { useState } from 'react';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
@@ -14,11 +15,16 @@ import {
   addDaysToDateInput, formatDate, formatDateTime, formatMoney, formatTimeRange, formatWeekday, fromDateInput,
   realPhone, todayUtcDateString,
 } from '../../lib/format.js';
-import { ErrorNotice, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
+import { CoachPortrait } from '../../components/cards.jsx';
+import { useToast } from '../../components/Toast.jsx';
+import { Button, ErrorNotice, Field, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
 
 const tag = (E) => (v) => <StatusTag tone={E.tone(v)}>{E.label(v)}</StatusTag>;
 const isManager = (u) => u?.role === 'CenterManager';
 const isFrontDesk = (u) => u?.role === 'CenterManager' || u?.role === 'Receptionist';
+// A package bought on the website: unpaid and no receptionist yet. Staff confirm it within 30 minutes
+// (api.payments.confirm); editing it to Paid instead would leave the card inactive (CHANGELOG Part B, B43).
+const awaitingOnline = (r) => r.status === 1 && !r.receptionistId;
 const opt = (rows, value, label) => (rows ?? []).map((r) => ({ value: r[value], label: typeof label === 'function' ? label(r) : r[label] }));
 
 const endAfterStart = (v) =>
@@ -115,10 +121,45 @@ const RECORD_NAMES = {
   SportCategory: (l, id) => l.categories?.find((x) => x.id === id)?.categoryName,
   MembershipPackage: (l, id) => l.packages?.find((x) => x.id === id)?.packageName,
 };
-const recordNames = (row, l) =>
-  row.entityIds.map((id) => RECORD_NAMES[row.entry.type]?.(l, id)).filter(Boolean);
+// A deleted record is gone from the lists; its name then comes from the values the log kept
+const recordNames = (row, l) => {
+  const names = row.entityIds.map((id) => RECORD_NAMES[row.entry.type]?.(l, id)).filter(Boolean);
+  return names.length || row.entityIds.length > 1 || !row.entry.recordName ? names : [row.entry.recordName];
+};
 
-// "Dương Tuấn Kiệt · đổi số điện thoại" / "21 thông báo" / the text the FE used to write
+// A logged value as people read it: names for IDs, enum labels for numbers, dates the Vietnamese way
+const REFERENCES = {
+  CategoryId: (l, id) => l.categories?.find((x) => x.id === id)?.categoryName,
+  CoachId: (l, id) => l.coaches?.find((x) => x.id === id)?.fullName,
+  RoomId: (l, id) => l.rooms?.find((x) => x.id === id)?.roomName,
+  ClassId: (l, id) => l.classes?.find((x) => x.id === id)?.className,
+  MemberId: (l, id) => l.members?.find((x) => x.id === id)?.fullName,
+  PackageId: (l, id) => l.packages?.find((x) => x.id === id)?.packageName,
+  AccountId: (l, id) => l.accounts?.find((x) => x.id === id)?.username,
+  ReceptionistId: (l, id) => l.receptionists?.find((x) => x.id === id)?.fullName,
+};
+const STATUS_OF = {
+  Room: RoomStatus, Class: ClassStatus, Membership: MembershipStatus, MembershipPackage: MembershipStatus,
+  Invoice: InvoiceStatus, Account: AccountStatus, ClassBooking: BookingStatus, SupportRequest: SupportRequestStatus,
+};
+const ENUM_FIELDS = { PaymentMethod, Role: AccountRole, Gender };
+function showValue(type, field, v, l) {
+  if (v === null || v === undefined || v === '') return '—';
+  if (field === 'Status' && STATUS_OF[type]) return STATUS_OF[type].label(v);
+  if (ENUM_FIELDS[field]) return ENUM_FIELDS[field].label(v);
+  if (REFERENCES[field]) return REFERENCES[field](l, v) ?? `#${String(v).slice(0, 8)}`;
+  if (typeof v === 'boolean') return v ? 'Có' : 'Không';
+  if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(v)) {
+    return /T00:00:00(\.0+)?(Z|\+00:00)?$/.test(v) ? formatDate(v) : formatDateTime(v);
+  }
+  if (typeof v === 'string' && /^\d{2}:\d{2}:\d{2}$/.test(v)) return v.slice(0, 5);
+  const text = typeof v === 'object' ? JSON.stringify(v) : String(v);
+  return text.length > 80 ? `${text.slice(0, 80)}…` : text;
+}
+const changeText = (row, c, l) =>
+  `${c.label} ${showValue(row.entry.type, c.field, c.old, l)} → ${showValue(row.entry.type, c.field, c.new, l)}`;
+
+// "Phòng A · đổi sức chứa 20 → 25" / "Dương Tuấn Kiệt · đổi số điện thoại" / "21 thông báo" / old FE text
 function auditDetails(row, l) {
   const e = row.entry;
   if (e.source === 'client') return [e.summary, ...e.lines].filter(Boolean).join(' · ');
@@ -127,7 +168,11 @@ function auditDetails(row, l) {
   const what = row.entityIds.length > 1
     ? `${row.entityIds.length} ${e.entity}`
     : names[0] ?? (row.entityIds[0] ? `#${String(row.entityIds[0]).slice(0, 8)}` : '');
-  return [what, e.fields.length ? `đổi ${e.fields.join(', ')}` : ''].filter(Boolean).join(' · ');
+  // A save that changed nothing still logs a row whose only change is UpdatedAt (CHANGELOG Part B, B40)
+  const changed = e.changes.length && e.changes.length <= 2 && row.entityIds.length <= 1 && e.verb === 'UPDATE'
+    ? `đổi ${e.changes.map((c) => changeText(row, c, l)).join(', ')}`
+    : e.fields.length ? `đổi ${e.fields.join(', ')}` : e.verb === 'UPDATE' ? 'lưu lại, không đổi gì' : '';
+  return [what, changed].filter(Boolean).join(' · ');
 }
 
 function AuditDetail({ row, lookups }) {
@@ -145,10 +190,27 @@ function AuditDetail({ row, lookups }) {
             <dt>{row.entityIds.length > 1 ? `Bản ghi (${row.entityIds.length})` : 'Bản ghi'}</dt>
             <dd>{names.length ? names.join(', ') : <span className="num muted">{row.entityIds.join(', ') || '—'}</span>}</dd>
           </div>
-          <div>
-            <dt>Trường đã đổi</dt>
-            <dd>{e.fields.length ? <ul>{e.fields.map((f) => <li key={f}>{f}</li>)}</ul> : '—'}</dd>
-          </div>
+          {e.changes.length > 0 && row.entityIds.length <= 1 ? (
+            <div>
+              <dt>{e.verb === 'UPDATE' ? 'Thay đổi' : e.verb === 'CREATE' ? 'Giá trị lúc tạo' : 'Giá trị trước khi xóa'}</dt>
+              <dd>
+                <ul>
+                  {e.changes.map((c) => (
+                    <li key={c.field}>
+                      {e.verb === 'UPDATE'
+                        ? changeText(row, c, lookups)
+                        : `${c.label}: ${showValue(e.type, c.field, e.verb === 'CREATE' ? c.new : c.old, lookups)}`}
+                    </li>
+                  ))}
+                </ul>
+              </dd>
+            </div>
+          ) : (
+            <div>
+              <dt>Trường đã đổi</dt>
+              <dd>{e.fields.length ? <ul>{e.fields.map((f) => <li key={f}>{f}</li>)}</ul> : '—'}</dd>
+            </div>
+          )}
           <div><dt>Ghi bởi</dt><dd>Máy chủ, ngay khi thay đổi được lưu</dd></div>
         </>
       ) : (
@@ -161,6 +223,56 @@ function AuditDetail({ row, lookups }) {
         </>
       )}
     </dl>
+  );
+}
+
+/* ---- Membership renewal by a manager ------------------------------------ */
+// The API bills a renewal to a receptionist: reception bill it to themselves, a manager picks who
+function RenewAsManager({ row, lookups, close, reload }) {
+  const toast = useToast();
+  const options = opt(lookups.receptionists, 'id', (r) => (r.phone ? `${r.fullName} · ${r.phone}` : r.fullName));
+  const [receptionistId, setReceptionistId] = useState(options[0]?.value ?? '');
+  const [error, setError] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  const renew = async (e) => {
+    e.preventDefault();
+    if (!receptionistId) return setError('Vui lòng chọn lễ tân lập hóa đơn.');
+    setBusy(true);
+    setError(null);
+    try {
+      await api.memberships.renew(row.id, receptionistId);
+      toast.success(`Đã gia hạn thẻ của ${row.memberName}; hóa đơn chờ thanh toán đã được tạo.`);
+      reload();
+      close();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <form className="renew-form" onSubmit={renew} noValidate>
+      <p>
+        Gia hạn {row.packageName} của {row.memberName} thêm một chu kỳ. Hệ thống tạo kỳ mới nối tiếp kỳ cũ và
+        một hóa đơn chờ thanh toán đứng tên lễ tân bạn chọn.
+      </p>
+      <Field
+        label="Lễ tân lập hóa đơn"
+        name="receptionistId"
+        type="select"
+        required
+        value={receptionistId}
+        onChange={(_, v) => setReceptionistId(v)}
+        options={options}
+        error={error}
+      />
+      <div className="form-actions">
+        <Button variant="ghost" onClick={close} disabled={busy}>Hủy</Button>
+        <Button type="submit" disabled={busy}>{busy ? 'Đang gia hạn…' : 'Gia hạn'}</Button>
+      </div>
+    </form>
   );
 }
 
@@ -285,17 +397,17 @@ export const resources = {
       if (values.phone && !phoneRegex.test(values.phone)) {
         errors.phone = "Số điện thoại phải có đúng 10 chữ số và bắt đầu bằng số 0.";
       }
-      if (values.avatar && !/^https?:\/\/\S+$/i.test(values.avatar)) {
-        errors.avatar = 'Đây không phải đường dẫn. Hãy dán link ảnh bắt đầu bằng https://, hoặc để trống.';
-      } else if (values.avatar && values.avatar.length > 500) {
-        errors.avatar = 'Đường dẫn quá dài (tối đa 500 ký tự).';
-      }
       return errors;
     },
     columns: [
-      { key: 'fullName', label: 'Họ tên', className: 'cell-strong' },
+      {
+        key: 'fullName', label: 'Họ tên', className: 'cell-strong',
+        render: (r) => <span className="person-cell"><CoachPortrait coach={r} size="xs" />{r.fullName}</span>,
+      },
       { key: 'specialization', label: 'Chuyên môn', render: (r) => r.specialization || '—' },
       { key: 'experienceYears', label: 'Kinh nghiệm (năm)', className: 'num' },
+      { key: 'dob', label: 'Ngày sinh', className: 'num', render: (r) => formatDate(r.dob) },
+      { key: 'gender', label: 'Giới tính', render: (r) => (r.gender ? Gender.label(r.gender) : '—') },
       { key: 'phone', label: 'Số điện thoại', className: 'num' },
       { key: 'email', label: 'Email' },
     ],
@@ -328,9 +440,13 @@ export const resources = {
       { name: 'email', label: 'Email', type: 'email', required: true },
       { name: 'specialization', label: 'Chuyên môn' },
       { name: 'experienceYears', label: 'Số năm kinh nghiệm', type: 'number', min: 0, max: 50, defaultValue: () => '0' },
-      // The API stores the photo as a link (max 500 characters); it has no file upload
-      { name: 'avatar', label: 'Link ảnh', type: 'url', full: true, placeholder: 'https://…/coach.jpg', help: 'Link tới ảnh .jpg / .png / .webp (tải ảnh lên một trang lưu ảnh trước). Để trống thì hiện chữ viết tắt.' },
+      { name: 'dob', label: 'Ngày sinh', type: 'date', help: 'Hiện trên trang huấn luyện viên.' },
+      { name: 'gender', label: 'Giới tính', type: 'select', options: Gender.options },
+      // The photo is uploaded as soon as it is picked (api.media); the coach keeps only its link
+      { name: 'avatar', label: 'Ảnh đại diện', type: 'image', help: 'Chọn ảnh JPG, PNG, WebP hoặc GIF trong máy, tối đa 5 MB; ảnh hiện trên thẻ và trang huấn luyện viên. Không có ảnh thì hiện chữ viết tắt của tên.' },
     ],
+    // Date columns are timestamptz: send midnight UTC, never a bare day
+    toRequest: (b) => (b.dob ? { ...b, dob: fromDateInput(b.dob) } : b),
   },
 
   managers: {
@@ -382,8 +498,18 @@ export const resources = {
 
   invoices: {
     key: 'invoices', title: 'Hóa đơn', singular: 'Hóa đơn',
-    description: 'Mỗi lần mua thẻ thành viên có một hóa đơn. Hóa đơn đã thanh toán thì không xóa được.',
+    description: 'Mỗi lần mua thẻ thành viên có một hóa đơn; hóa đơn đã thanh toán thì không xóa được. Gói học viên mua trên web được giữ 30 phút: nhận tiền xong bấm “Xác nhận đã nhận tiền” để kích hoạt thẻ, quá hạn thì máy chủ tự hủy đơn.',
     source: api.invoices, sample: mock.invoices, canWrite: isFrontDesk, nameOf: (r) => `${r.memberName} · ${r.packageName}`,
+    canEditRow: (r) => !awaitingOnline(r),
+    rowActions: [
+      {
+        label: 'Xác nhận đã nhận tiền',
+        hidden: (r) => !awaitingOnline(r),
+        confirm: (r) => `Xác nhận đã nhận ${formatMoney(r.amount)} của ${r.memberName} cho ${r.packageName}? Thẻ sẽ được kích hoạt ngay.`,
+        run: (r) => api.payments.confirm(r.id),
+        done: (r) => `Đã xác nhận thanh toán: ${r.packageName} của ${r.memberName} đã được kích hoạt.`,
+      },
+    ],
     lookups: (u) => ({
       memberships: L.memberships,
       packages: L.packages,
@@ -393,15 +519,22 @@ export const resources = {
         : L.receptionists,
     }),
     searchText: (r) => `${r.memberName} ${r.packageName} ${r.receptionistName}`,
-    sort: (a, b) => b.paymentDate.localeCompare(a.paymentDate),
+    // Unpaid invoices have no payment date (null) and come first, then the newest payments
+    sort: (a, b) =>
+      !a.paymentDate || !b.paymentDate
+        ? (a.paymentDate ? 1 : 0) - (b.paymentDate ? 1 : 0)
+        : b.paymentDate.localeCompare(a.paymentDate),
     columns: [
-      { key: 'paymentDate', label: 'Ngày', className: 'num', render: (r) => formatDate(r.paymentDate) },
+      { key: 'paymentDate', label: 'Ngày thanh toán', className: 'num', render: (r) => formatDate(r.paymentDate) },
       { key: 'memberName', label: 'Học viên', className: 'cell-strong' },
       { key: 'packageName', label: 'Thẻ thành viên' },
       { key: 'amount', label: 'Số tiền', className: 'num', render: (r) => formatMoney(r.amount) },
       { key: 'paymentMethod', label: 'Hình thức', render: (r) => PaymentMethod.label(r.paymentMethod) },
       { key: 'status', label: 'Trạng thái', render: (r) => tag(InvoiceStatus)(r.status) },
-      { key: 'receptionistName', label: 'Người thu' },
+      {
+        key: 'receptionistName', label: 'Người thu',
+        render: (r) => r.receptionistName || (awaitingOnline(r) ? 'Mua trên web · chờ xác nhận' : 'Mua trên web'),
+      },
     ],
     fields: [
       {
@@ -587,9 +720,9 @@ export const resources = {
   // fixed once sold. Renew and Cancel have their own endpoints.
   memberships: {
     key: 'memberships', title: 'Thẻ thành viên', singular: 'Thẻ thành viên',
-    description: 'Học viên nào đang dùng gói nào và đến ngày nào. Gia hạn sẽ kéo dài thẻ thêm một chu kỳ của gói.',
+    description: 'Học viên nào đang dùng gói nào và đến ngày nào. Gia hạn tạo một kỳ mới nối tiếp kỳ cũ cùng một hóa đơn chờ thanh toán.',
     source: api.memberships, sample: mock.memberships, canWrite: isFrontDesk, canDelete: isManager,
-    lookups: () => ({ members: L.members, packages: L.packages }),
+    lookups: (u) => ({ members: L.members, packages: L.packages, ...(isManager(u) ? { receptionists: L.receptionists } : {}) }),
     nameOf: (r) => `${r.memberName} · ${r.packageName}`,
     searchText: (r) => `${r.memberName} ${r.packageName}`,
     sort: (a, b) => String(b.startDate).localeCompare(String(a.startDate)),
@@ -633,13 +766,24 @@ export const resources = {
       {
         label: 'Gia hạn',
         run: (r) => api.memberships.renew(r.id),
-        confirm: (r) => `Gia hạn thẻ ${r.packageName} của ${r.memberName} thêm một chu kỳ?`,
-        done: (r) => `Đã gia hạn thẻ của ${r.memberName}.`,
+        // Package names already start with "Thẻ …", so the messages name the package alone
+        confirm: (r) => `Gia hạn ${r.packageName} của ${r.memberName} thêm một chu kỳ? Hệ thống tạo kỳ mới và một hóa đơn chờ thanh toán.`,
+        done: (r) => `Đã gia hạn thẻ của ${r.memberName}; hóa đơn chờ thanh toán đã được tạo.`,
+        hidden: (r, u) => isManager(u),
+      },
+      {
+        // The API bills a manager's renewal to a receptionist the manager picks
+        label: 'Gia hạn',
+        modal: {
+          title: (r) => `Gia hạn thẻ của ${r.memberName}`,
+          render: (r, l, ctx) => <RenewAsManager row={r} lookups={l} {...ctx} />,
+        },
+        hidden: (r, u) => !isManager(u),
       },
       {
         label: 'Hủy thẻ',
         run: (r) => api.memberships.cancel(r.id),
-        confirm: (r) => `Hủy thẻ ${r.packageName} của ${r.memberName}?`,
+        confirm: (r) => `Hủy ${r.packageName} của ${r.memberName}?`,
         done: (r) => `Đã hủy thẻ của ${r.memberName}.`,
         hidden: (r) => r.status !== 1,
       },

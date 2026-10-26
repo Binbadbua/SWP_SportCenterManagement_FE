@@ -74,7 +74,7 @@ export const Gender = enumOf([
   { value: 'Other', label: 'Khác' },
 ]);
 
-// Online payment of a package. Not in the API yet: the values the FE expects (CHANGELOG Part B, B38).
+// Online payment of a package (GET /api/payments/{id}), from the invoice behind it
 export const PaymentStatus = enumOf([
   { value: 1, label: 'Chờ thanh toán', tone: 'warning' },
   { value: 2, label: 'Thành công', tone: 'success' },

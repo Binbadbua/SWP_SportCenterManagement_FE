@@ -36,6 +36,7 @@ import {
   Loading,
   Notice,
   SampleDataNotice,
+  SlowHint,
   StatusTag,
 } from "../../components/ui.jsx";
 
@@ -766,9 +767,9 @@ function ProfileTab() {
   );
 }
 
-/* ---- Password (planned API) --------------------------------------------- */
-// POST /api/auth/change-password is not in the API yet (CHANGELOG Part B, B36). Until it is, saving
-// says so and nothing changes; once it exists this works as is.
+/* ---- Password ----------------------------------------------------------- */
+// POST /api/auth/change-password checks the current password and keeps the session; an API without the
+// route (older deploy) gets the "not supported yet" notice instead of a raw error.
 const NO_PASSWORDS = { currentPassword: "", newPassword: "", confirmPassword: "" };
 
 function validatePassword(v) {
@@ -891,6 +892,9 @@ function PasswordSection() {
               {saving ? "Đang lưu…" : "Lưu mật khẩu mới"}
             </Button>
           </div>
+          <SlowHint active={saving}>
+            Máy chủ đang kiểm tra và mã hóa mật khẩu, có thể mất khoảng nửa phút.
+          </SlowHint>
         </form>
       )}
     </section>

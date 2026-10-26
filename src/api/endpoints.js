@@ -1,6 +1,6 @@
-// Every endpoint that exists in SWP_SportCenter.Api today (routes checked against the API's swagger.json),
-// plus two the BE has not built yet: auth.changePassword and payments (see CHANGELOG_AND_BE_ISSUES.md,
-// Part B). Pages call those as if they existed and explain the gap when isMissingRoute() says so.
+// Every endpoint that exists in SWP_SportCenter.Api today (routes checked against the API's swagger.json).
+// Pages that use a newer route (auth.changePassword, payments — BE PR #30; media — PR #32) still explain the
+// gap when isMissingRoute() says an older API answers without it.
 import { http } from "./client.js";
 
 // A route the API does not have answers 404/405 with an empty body; a real "not found" carries a message
@@ -38,7 +38,7 @@ export const api = {
   auth: {
     login: (data) => http.post("/api/auth/login", data),
     register: (data) => http.post("/api/auth/register", data),
-    // Not built yet (B36): { currentPassword, newPassword } for the signed-in account
+    // { currentPassword, newPassword } for the signed-in account → { message }
     changePassword: (body) => http.post("/api/auth/change-password", body),
   },
 
@@ -60,7 +60,10 @@ export const api = {
     // PUT takes { startDate, endDate, status } only
     update: (id, body) => http.put(`/api/memberships/${id}`, body),
     remove: (id) => http.del(`/api/memberships/${id}`),
-    renew: (id) => http.post(`/api/memberships/${id}/renew`),
+    // A renewal is a new period + a pending invoice. Reception bill it themselves; a manager names the
+    // receptionist it is billed to (the API refuses a manager's renewal without one).
+    renew: (id, receptionistId) =>
+      http.post(`/api/memberships/${id}/renew${receptionistId ? `?receptionistId=${receptionistId}` : ""}`),
     cancel: (id) => http.post(`/api/memberships/${id}/cancel`),
     mine: listOf("/api/members/me/memberships?pageSize=50", "membershipId"),
   },
@@ -201,12 +204,26 @@ export const api = {
     list: listOf("/api/audit-logs?pageSize=500"),
   },
 
-  // Not built yet (B38). A member buys a package online:
+  // A member buys a package online:
   //   checkout { membershipPackageId, startDate, paymentMethod, returnUrl }
-  //     → { paymentId, membershipId, invoiceId, amount, status, paymentUrl? } — paymentUrl = the gateway page
+  //     → { paymentId, membershipId, invoiceId, amount, status, paymentUrl } — an inactive card + a pending
+  //       invoice (paymentId = invoiceId). The API has no gateway yet, so paymentUrl is null: reception or a
+  //       manager confirms the money within 30 minutes, after that the API cancels the order.
   //   get(paymentId) → { paymentId, status, amount, packageName, membershipId, invoiceId, paidAt }
+  //   confirm(paymentId) — reception / manager only: invoice paid, card active
   payments: {
     checkout: (body) => http.post("/api/payments/checkout", body),
     get: (id) => http.get(`/api/payments/${id}`),
+    confirm: (id) => http.post(`/api/payments/${id}/confirm`),
+  },
+
+  // Photos: the API keeps only a link (avatar ≤ 500 characters). The file goes to the API's Cloudinary store
+  // first (JPEG, PNG, WebP or GIF, ≤ 5 MiB, any signed-in role) and the { url } it returns is what forms save.
+  media: {
+    uploadImage: (file) => {
+      const body = new FormData();
+      body.append("file", file);
+      return http.post("/api/media/images", body);
+    },
   },
 };

@@ -1,8 +1,9 @@
 // Audit log. Since the 23/10/2026 deploy the API writes an entry itself for every change a staff
 // member saves (ServerAuditInterceptor): actionType "Added:Room" / "Modified:Member" / "Deleted:…",
-// description {"entityId","changedFields","source":"server"}. The FE no longer posts its own copies,
-// which would show every change twice. Entries the FE wrote before that ("CREATE_ROOM" + a text
-// summary, sometimes prefixed "[client]") are still read.
+// description {"entityId","changedFields","source":"server"}; since 24/10/2026 also
+// "changes": {Column: {old, new}}. The FE no longer posts its own copies, which would show every change
+// twice. Entries the FE wrote before that ("CREATE_ROOM" + a text summary, sometimes prefixed
+// "[client]") are still read.
 
 const VERBS = {
   CREATE: { label: 'Thêm', tone: 'success' },
@@ -46,6 +47,15 @@ const FIELDS = {
 };
 // Bookkeeping columns every save touches
 const QUIET_FIELDS = ['UpdatedAt', 'CreatedAt', 'IsDeleted'];
+// Columns that name the record, so a deleted one (gone from every list) still has a name
+const NAME_FIELDS = ['FullName', 'ClassName', 'RoomName', 'CategoryName', 'PackageName', 'Username', 'Title'];
+// "" and null are both "empty"; the same instant may be written with or without a zone
+const norm = (v) => {
+  if (v === '' || v === undefined) return null;
+  if (typeof v === 'string' && /^\d{4}-\d{2}-\d{2}T/.test(v)) return Date.parse(/(Z|[+-]\d{2}:\d{2})$/.test(v) ? v : `${v}Z`);
+  return v;
+};
+const same = (a, b) => JSON.stringify(norm(a)) === JSON.stringify(norm(b));
 
 const words = (pascal) => pascal.replace(/([a-z0-9])([A-Z])/g, '$1 $2').toLowerCase();
 const json = (text) => {
@@ -58,18 +68,34 @@ const json = (text) => {
 };
 
 // One entry, whichever way it was written ->
-// { verb, entity, type, label, tone, entityId, fields, summary, lines, source }
+// { verb, entity, type, label, tone, entityId, fields, changes, recordName, summary, lines, source }
+// changes = [{ field, label, old, new }]: what an edit changed, or the values a record was created / deleted with
 export function readEntry(row) {
   const [state, type] = String(row.actionType ?? '').split(':');
   if (SERVER_VERBS[state] && type) {
     const d = json(row.description) ?? {};
-    const changed = d.changedFields ?? [];
-    // A soft delete is saved as a change of IsDeleted
-    const verb = state === 'Modified' && changed.includes('IsDeleted') ? 'DELETE' : SERVER_VERBS[state];
+    const logged = d.changes && typeof d.changes === 'object' ? d.changes : null;
+    let verb = SERVER_VERBS[state];
+    let fields;
+    let changes = [];
+    if (logged) {
+      // Every column comes with old and new, the untouched ones too (the services save whole records)
+      if (state === 'Modified' && logged.IsDeleted?.old === false && logged.IsDeleted?.new === true) verb = 'DELETE';
+      changes = Object.entries(logged)
+        .filter(([f, c]) => !QUIET_FIELDS.includes(f) && (verb !== 'UPDATE' || !same(c?.old, c?.new)))
+        .map(([f, c]) => ({ field: f, label: FIELDS[f] ?? words(f), old: c?.old ?? null, new: c?.new ?? null }));
+      fields = verb === 'UPDATE' ? changes.map((c) => c.label) : [];
+    } else {
+      // Older server entries: column names only; a soft delete is a change of IsDeleted
+      const changed = d.changedFields ?? [];
+      if (state === 'Modified' && changed.includes('IsDeleted')) verb = 'DELETE';
+      fields = changed.filter((f) => !QUIET_FIELDS.includes(f)).map((f) => FIELDS[f] ?? words(f));
+    }
+    const named = logged && NAME_FIELDS.map((f) => logged[f]).find((c) => c && (c.new ?? c.old));
     const entity = ENTITIES[type] ?? words(type);
     return {
       verb, entity, type, label: `${VERBS[verb].label} ${entity}`, tone: VERBS[verb].tone,
-      entityId: d.entityId, fields: changed.filter((f) => !QUIET_FIELDS.includes(f)).map((f) => FIELDS[f] ?? words(f)),
+      entityId: d.entityId, fields, changes, recordName: named ? String(named.new ?? named.old) : null,
       summary: '', lines: [], source: 'server',
     };
   }
@@ -80,7 +106,8 @@ export function readEntry(row) {
   const entity = known && rest.length ? OLD_ENTITIES[old] ?? old : '';
   return {
     verb: entity ? verb : 'OTHER', entity, type: '', label: entity ? `${known.label} ${entity}` : row.actionType || '—',
-    tone: entity ? known.tone : 'neutral', entityId: null, fields: [], summary, lines, source: 'client',
+    tone: entity ? known.tone : 'neutral', entityId: null, fields: [], changes: [], recordName: null, summary, lines,
+    source: 'client',
   };
 }
 

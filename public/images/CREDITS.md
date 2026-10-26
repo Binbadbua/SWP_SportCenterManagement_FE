@@ -36,3 +36,24 @@ They were resized for the web. The other photos in this folder are from Unsplash
 | `hiit-ropes-Room-2.jpg` | [Scott Webb 2015-06-17 (Unsplash).jpg](https://commons.wikimedia.org/wiki/File:Scott_Webb_2015-06-17_(Unsplash).jpg) | Scott Webb scottwebb | [CC0](http://creativecommons.org/publicdomain/zero/1.0/deed.en) |
 | `strength-dumbbell-Room-1.jpg` | [Health club in Gothenburg Sweden in March 2025.jpg](https://commons.wikimedia.org/wiki/File:Health_club_in_Gothenburg_Sweden_in_March_2025.jpg) | R. Henrik Nilsson | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0) |
 | `strength-dumbbell-Room-2.jpg` | [Multifunctional cable and row machines in a gym.jpg](https://commons.wikimedia.org/wiki/File:Multifunctional_cable_and_row_machines_in_a_gym.jpg) | San Francisco Foghorn | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0) |
+
+## Coach photos (stored by the API, not in this folder)
+
+The coach profile photos in the demo data are free stock photos from Pexels
+([Pexels licence](https://www.pexels.com/license/): free to use and edit, no credit required, but people in them
+must not be shown in a bad light or as endorsing a product). They stand in for the coaches' own photos: replace
+them in Staff → Huấn luyện viên → Sửa → "Đổi ảnh khác". They were uploaded on 26/10/2026 through
+`POST /api/media/images`, which keeps them on the API's Cloudinary account; the coach rows store the links.
+
+| Coach | Pexels photo | Photographer |
+|---|---|---|
+| Hoàng Văn Long | [Man Wearing a Taekwondo Uniform](https://www.pexels.com/photo/11685565/) | Эльшан Мусаев |
+| Phạm Quốc Tuấn | [A Man in Gray Shirt and Black Shorts Holding a Tennis Racket](https://www.pexels.com/photo/7566536/) | saeed basseri |
+| Trần Thanh Bình | [A Man in Black Activewear Doing a Meditation on a Yoga Mat](https://www.pexels.com/photo/6932883/) | Mikhail Nilov |
+| Lương Đức Thắng | [Man Wearing Boxing Gloves](https://www.pexels.com/photo/7992065/) | Annushka Ahuja |
+| Đỗ Minh Khang | [Man Stepping on a Soccer Ball](https://www.pexels.com/photo/12841458/) | sagar sintan |
+| Vũ Thị Lan | [Running Woman in Sportswear](https://www.pexels.com/photo/21856840/) | jacky xing |
+| Trần Bảo Châu | [Focused ethnic climber treats hands with talcum powder](https://www.pexels.com/photo/5383489/) | Allan Mas |
+| Nguyễn Mạnh Hùng | [Asian man lifting heavy weight in gym](https://www.pexels.com/photo/6550852/) | Andres Ayrton |
+| Test Coach | [Crop man with dumbbell in gym](https://www.pexels.com/photo/6550837/) | Andres Ayrton |
+| Lê Hoàng Yến | [Swimmer Standing in the Pool](https://www.pexels.com/photo/18214766/) | Vanessa Pozos |

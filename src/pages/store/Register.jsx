@@ -6,7 +6,7 @@ import { Gender } from "../../lib/enums.js";
 import { fromDateInput } from "../../lib/format.js";
 import Logo from "../../components/Logo.jsx";
 import { AgreeToPolicies } from "../../components/Policies.jsx";
-import { Button, Field, ErrorNotice } from "../../components/ui.jsx";
+import { Button, Field, ErrorNotice, SlowHint } from "../../components/ui.jsx";
 
 const GENDERS = Gender.options;
 
@@ -230,6 +230,7 @@ export default function Register() {
         <Button type="submit" size="lg" block disabled={isSubmitting}>
           {isSubmitting ? "Đang tạo tài khoản..." : "Tạo tài khoản"}
         </Button>
+        <SlowHint active={isSubmitting} />
         <p className="auth__foot muted">
           Đã là thành viên?{" "}
           <Link className="text-link" to="/login">

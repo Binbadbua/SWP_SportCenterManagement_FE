@@ -4,6 +4,9 @@
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 
+// A link the API hands back as a path ("/api/payments/…") points at the API, not at this site
+export const apiUrl = (path) => (/^https?:\/\//i.test(path) ? path : BASE_URL + path);
+
 export class ApiError extends Error {
   constructor(message, { status = 0, offline = false, details = null } = {}) {
     super(message);
@@ -95,8 +98,10 @@ export async function request(method, path, body) {
   let res;
   
   // 1. Chuẩn bị Headers cơ bản
+  // A file upload goes as FormData: the browser writes the multipart Content-Type (with its boundary) itself
+  const form = body instanceof FormData;
   const headers = { Accept: 'application/json' };
-  if (body !== undefined) {
+  if (body !== undefined && !form) {
     headers['Content-Type'] = 'application/json';
   }
 
@@ -110,7 +115,7 @@ export async function request(method, path, body) {
     res = await fetch(BASE_URL + path, {
       method,
       headers, // Sử dụng bộ headers đã được đính kèm Token
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined ? undefined : form ? body : JSON.stringify(body),
     });
   } catch {
     throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra máy chủ rồi thử lại.', { offline: true });
@@ -123,8 +128,9 @@ export async function request(method, path, body) {
 
   if (!res.ok) {
     // The Vite dev proxy answers 502 when the back-end is down; Render answers 502/503/504 while it starts.
-    // A 500 comes from the API itself (see messageFromText), so it is a real error, not "offline".
-    const offline = [502, 503, 504].includes(res.status);
+    // A 500 comes from the API itself (see messageFromText), so it is a real error, not "offline"; so is a
+    // 502 that carries the API's JSON message (the photo store could not be reached).
+    const offline = [502, 503, 504].includes(res.status) && !data?.message;
     if (offline) {
       throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra máy chủ rồi thử lại.', { status: res.status, offline: true });
     }

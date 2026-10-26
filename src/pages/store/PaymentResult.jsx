@@ -5,9 +5,9 @@ import { PaymentStatus } from '../../lib/enums.js';
 import { formatDateTime, formatMoney } from '../../lib/format.js';
 import { Button, EmptyState, ErrorNotice, Loading, Notice, StatusTag } from '../../components/ui.jsx';
 
-// Where the payment gateway sends the member back (the returnUrl given to POST /api/payments/checkout,
-// with ?paymentId=…). The page asks the API for the payment's real state instead of trusting the
-// gateway's query string. The payment API is not built yet (CHANGELOG Part B, B38).
+// Shown after checkout (?paymentId=…). The API has no payment gateway yet: reception or a manager confirms
+// the money within 30 minutes, after that the API cancels the order (status 4). The page always asks the
+// API for the payment's real state; a gateway's query string, once there is one, is not trusted.
 export default function PaymentResult() {
   const [params] = useSearchParams();
   const paymentId = params.get('paymentId');
@@ -50,14 +50,14 @@ export default function PaymentResult() {
     <div className="container page narrow pay-result">
       <p className="label">Kết quả thanh toán</p>
       <h1 className="pay-result__title">
-        {paid ? 'Thanh toán thành công' : pending ? 'Đang chờ xác nhận thanh toán' : 'Thanh toán chưa thành công'}
+        {paid ? 'Thanh toán thành công' : pending ? 'Đang chờ xác nhận thanh toán' : 'Đơn đã hết hạn hoặc bị hủy'}
       </h1>
       <p className="muted">
         {paid
-          ? `Thẻ ${p.packageName ?? ''} đã được kích hoạt và hóa đơn đã được xuất.`
+          ? `${p.packageName ?? 'Thẻ'} đã được kích hoạt và hóa đơn đã được xuất.`
           : pending
-            ? 'Ngân hàng chưa báo kết quả. Trang sẽ cập nhật khi bạn tải lại.'
-            : 'Bạn chưa bị trừ tiền. Hãy thử lại hoặc chọn cách thanh toán khác.'}
+            ? 'Đơn được giữ 30 phút. Hãy thanh toán với lễ tân (chuyển khoản hoặc quẹt thẻ) và đọc mã giao dịch bên dưới; lễ tân xác nhận xong thì thẻ được kích hoạt ngay. Quá 30 phút chưa xác nhận thì đơn tự hủy. Bấm Tải lại để xem trạng thái mới.'
+            : 'Đơn quá 30 phút chưa được xác nhận hoặc đã bị hủy, nên thẻ chưa được kích hoạt. Nếu bạn đã chuyển tiền, hãy báo lễ tân kèm mã giao dịch bên dưới.'}
       </p>
       <dl className="checkout__lines">
         <div><dt>Gói tập</dt><dd>{p.packageName ?? '—'}</dd></div>

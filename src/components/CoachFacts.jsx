@@ -11,9 +11,9 @@ export const sportsOf = (classes) =>
   [...new Map((classes ?? []).map((c) => [c.categoryId, c.categoryName])).entries()]
     .sort((a, b) => a[1].localeCompare(b[1]));
 
-// Everything we know about a coach. GET /api/coaches/{id} gives visitors and members only name,
-// photo, specialization and experience (phone and email go to staff), and coaches have no birth
-// date or gender in the API yet (CHANGELOG Part B, B37): those rows show a fallback until they arrive.
+// Everything we know about a coach. GET /api/coaches/{id} gives visitors and members name, photo,
+// specialization, experience, birth date and gender; phone and email go to staff only. A value the
+// manager has not filled in shows a fallback.
 export function CoachFacts({ coach, classes = [] }) {
   const sports = sportsOf(classes);
   const phone = realPhone(coach.phone);

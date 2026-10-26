@@ -110,3 +110,11 @@ export function classThumbnails(...names) {
 
   return [`/images/${baseName}-Room-1.jpg`, `/images/${baseName}-Room-2.jpg`];
 }
+
+// People's photos (coach avatars) are uploaded through the API and live on Cloudinary at full size, up to
+// 5 MB each. Ask Cloudinary for a copy cropped to the box the page draws instead: c_fill + g_auto keeps the
+// person in frame, q_auto/f_auto pick the quality and format. Other links are returned unchanged.
+export function photoUrl(url, width, height = width) {
+  const m = /^(https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/)(.+)$/i.exec(url ?? "");
+  return m ? `${m[1]}c_fill,g_auto,w_${width},h_${height},q_auto,f_auto/${m[2]}` : url;
+}

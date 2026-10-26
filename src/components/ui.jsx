@@ -1,5 +1,23 @@
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from './Icon.jsx';
+
+/* ---------------------------------------------------------------------------
+   SlowHint — shows once an action has waited a few seconds. Sign-in, sign-up and password
+   changes take 10–30 s on the hosted API (CHANGELOG Part B, B41), long enough to look frozen.
+--------------------------------------------------------------------------- */
+export function SlowHint({ active, after = 3000, children = 'Máy chủ đang xử lý, có thể mất vài chục giây. Bạn chờ một chút nhé.' }) {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    if (!active) {
+      setShown(false);
+      return undefined;
+    }
+    const timer = setTimeout(() => setShown(true), after);
+    return () => clearTimeout(timer);
+  }, [active, after]);
+  return shown ? <p className="slow-hint muted small" role="status">{children}</p> : null;
+}
 
 /* ---------------------------------------------------------------------------
    Button

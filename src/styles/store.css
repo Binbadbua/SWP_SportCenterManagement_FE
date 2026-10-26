@@ -623,6 +623,15 @@
 }
 .coach-portrait--sm.coach-portrait--mono { padding: 8px; }
 .coach-portrait--sm.coach-portrait--mono span { font-size: 28px; }
+.coach-portrait--xs {
+  width: 32px;
+  height: 32px;
+  aspect-ratio: auto;
+  flex: none;
+  border-radius: 50%;
+}
+.coach-portrait--xs.coach-portrait--mono { align-items: center; justify-content: center; padding: 0; background: var(--mist); }
+.coach-portrait--xs.coach-portrait--mono span { font-family: var(--font-body); font-size: 12px; font-weight: 600; line-height: 1; }
 .coach-card__body { padding-top: 12px; }
 .coach-card__name { font-size: 16px; font-weight: 550; }
 .coach-card__years { margin-top: 6px; }
