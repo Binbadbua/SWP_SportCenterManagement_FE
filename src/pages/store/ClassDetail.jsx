@@ -8,6 +8,7 @@ import { sportImage, IMAGES, classThumbnails } from "../../lib/images.js";
 import {
   formatDate,
   formatDateRange,
+  formatMoney,
   formatShortDate,
   formatTimeRange,
   formatWeekday,
@@ -15,6 +16,7 @@ import {
 } from "../../lib/format.js";
 import { ClassStatus } from "../../lib/enums.js";
 import { cardCheck } from "../../lib/membership.js";
+import { discountFor, maxDiscount, priceAfter } from "../../lib/pricing.js";
 import Icon from "../../components/Icon.jsx";
 import { classEyebrow, CoachPortrait } from "../../components/cards.jsx";
 import {
@@ -63,10 +65,12 @@ export default function ClassDetail() {
     skip: !member,
     sample: () => mock.bookings.filter((b) => b.memberId === memberId),
   });
-  // Booking needs a card valid on the class's next session (lib/membership.js)
+  // With class fees (B53) the member's card gives a discount; before them a booking needs a card valid on the
+  // class's next session (lib/membership.js)
   const myCards = useApi(() => api.memberships.mine(), [user?.accountId], {
     skip: !member,
   });
+  const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
 
   const [showAll, setShowAll] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -118,13 +122,27 @@ export default function ClassDetail() {
   const upcoming = allSessions.filter((s) => !isSessionOver(s));
   const noSessionsLeft = !sessions.loading && upcoming.length === 0;
   const usingSample = cls.usingSample || sessions.usingSample;
-  // null until both the member's cards and the sessions are known
+  // Class fees (B53): the API carries `price` once it bills classes, and a card then gives a discount. Until then
+  // the 27/10 rule applies: booking needs a card valid on the next session (null until cards and sessions are known).
+  const priced = typeof c.price === "number";
   const card =
-    member && myCards.data && !sessions.loading && !sessions.usingSample
+    !priced && member && myCards.data && !sessions.loading && !sessions.usingSample
       ? cardCheck(myCards.data, allSessions)
       : null;
   const needsCard = card?.ok === false;
-  const checkingCard = member && (myCards.loading || !!myCards.error);
+  const checkingCard = !priced && member && (myCards.loading || !!myCards.error);
+  const deal = priced && member && myCards.data ? discountFor(myCards.data, packages.data) : { percent: 0 };
+  const toPay = priced ? priceAfter(c.price, deal.percent) : 0;
+  const topDiscount = priced ? maxDiscount(packages.data) : 0;
+  const withFee = priced && c.price > 0;
+  const paidBooking = priced && myBooking?.status === 1 && Number(myBooking.price ?? 0) > 0;
+
+  // A class with a fee is booked through its checkout page, like a package
+  const startBooking = () => {
+    if (!withFee) return book();
+    if (!user) navigate(`/login?next=${encodeURIComponent(location.pathname)}`);
+    else navigate(`/classes/${c.id}/checkout`);
+  };
 
   const book = async () => {
     if (!user) {
@@ -180,6 +198,27 @@ export default function ClassDetail() {
         .
       </p>
     );
+  } else if (myBooking?.status === 4) {
+    // Booked on the web, the money not taken yet: the place is held until the order expires
+    cta = (
+      <>
+        <div className="pdp__booked pdp__booked--waiting">
+          <Icon name="clock" size={20} strokeWidth={2} /> Đang chờ thanh toán
+        </div>
+        <p className="muted small">
+          Chỗ của bạn được giữ 30 phút. Thanh toán
+          {myBooking.price ? ` ${formatMoney(myBooking.price)}` : ""} với lễ tân; quá hạn thì lượt đặt tự hủy.
+        </p>
+        {myBooking.invoiceId && (
+          <Button size="lg" block to={`/payment/result?paymentId=${myBooking.invoiceId}`}>
+            Xem đơn thanh toán
+          </Button>
+        )}
+        <Button variant="secondary" size="lg" block onClick={cancel} disabled={busy}>
+          Hủy đặt lớp
+        </Button>
+      </>
+    );
   } else if (myBooking) {
     cta = (
       <>
@@ -187,15 +226,23 @@ export default function ClassDetail() {
           <Icon name="check" size={20} strokeWidth={2} /> Bạn đã đặt lớp
           này
         </div>
-        <Button
-          variant="secondary"
-          size="lg"
-          block
-          onClick={cancel}
-          disabled={busy}
-        >
-          Hủy đặt lớp
-        </Button>
+        {/* A paid class is cancelled and refunded by reception, before its first session (B53) */}
+        {paidBooking ? (
+          <p className="muted small">
+            Đã thanh toán {formatMoney(myBooking.price)}. Muốn hủy và nhận lại tiền, hãy báo lễ tân trước buổi học
+            đầu tiên.
+          </p>
+        ) : (
+          <Button
+            variant="secondary"
+            size="lg"
+            block
+            onClick={cancel}
+            disabled={busy}
+          >
+            Hủy đặt lớp
+          </Button>
+        )}
       </>
     );
   } else {
@@ -205,7 +252,7 @@ export default function ClassDetail() {
         <Button
           size="lg"
           block
-          onClick={book}
+          onClick={startBooking}
           disabled={busy || !open || sessions.loading || checkingCard || needsCard}
         >
           {closed
@@ -218,9 +265,11 @@ export default function ClassDetail() {
                   ? "Đang đặt…"
                   : needsCard
                     ? "Cần thẻ thành viên còn hiệu lực"
-                    : user
-                      ? "Đặt lớp này"
-                      : "Đăng nhập để đặt lớp"}
+                    : !user
+                      ? "Đăng nhập để đặt lớp"
+                      : withFee
+                        ? "Đặt lớp và thanh toán"
+                        : "Đặt lớp này"}
         </Button>
         {!closed && noSessionsLeft && (
           <p className="muted small">
@@ -229,9 +278,14 @@ export default function ClassDetail() {
               : "Lớp chưa được xếp buổi học. Lớp sẽ mở đăng ký khi có lịch học."}
           </p>
         )}
-        {open && !user && (
+        {open && !user && !priced && (
           <p className="muted small">
             Lớp học không thu thêm phí: bạn cần một thẻ thành viên còn hiệu lực vào ngày của buổi học kế tiếp.
+          </p>
+        )}
+        {open && withFee && (
+          <p className="muted small">
+            Đặt trên web thì chỗ được giữ 30 phút để bạn thanh toán với lễ tân.
           </p>
         )}
         {open && member && myCards.error && (
@@ -309,7 +363,30 @@ export default function ClassDetail() {
           <p className="pdp__sub">
             Lớp {c.categoryName} · cùng {c.coachName}
           </p>
-          <p className="pdp__price">Không thu thêm phí khi bạn có thẻ thành viên còn hiệu lực</p>
+          {!priced ? (
+            <p className="pdp__price">Không thu thêm phí khi bạn có thẻ thành viên còn hiệu lực</p>
+          ) : !withFee ? (
+            <p className="pdp__price">Lớp miễn phí</p>
+          ) : (
+            <div className="pdp__fee">
+              <p className="pdp__price">
+                Học phí cả khóa <span className="num">{formatMoney(c.price)}</span>
+              </p>
+              {deal.percent > 0 ? (
+                <p className="pdp__deal">
+                  {deal.pkg.packageName} giảm {deal.percent}%: bạn trả{" "}
+                  <strong className="num">{formatMoney(toPay)}</strong>
+                </p>
+              ) : (
+                topDiscount > 0 && (
+                  <p className="muted small">
+                    Thành viên có thẻ được giảm tới {topDiscount}% học phí mọi lớp.{" "}
+                    <Link className="text-link" to="/memberships">Xem gói tập</Link>
+                  </p>
+                )
+              )}
+            </div>
+          )}
           <p className={`pdp__eyebrow eyebrow--${eyebrow.tone}`}>
             {eyebrow.text}
           </p>

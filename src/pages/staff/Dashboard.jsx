@@ -164,6 +164,8 @@ function ManagerReports() {
   const rawRevenue = revenueApi.data?.monthlyRevenue ?? [];
   const itemOf = (m) => rawRevenue.find((item) => Number(item.year) === m.year && Number(item.month) === m.month);
   const revenueOf = (m) => Number(itemOf(m)?.revenue ?? 0);
+  // Once classes have fees (CHANGELOG Part B, B53) each month also tells packages and classes apart
+  const split = rawRevenue.some((item) => item.classRevenue !== undefined);
   const revenueByMonth = revenueApi.usingSample
     ? revenueApi.data
     : months.map((m) => ({ month: m.label, value: Math.round(revenueOf(m) / 1e5) / 10 }));
@@ -273,6 +275,8 @@ function ManagerReports() {
                     <tr>
                       <th scope="col">Tháng</th>
                       <th scope="col">Doanh thu</th>
+                      {split && <th scope="col">Từ gói tập</th>}
+                      {split && <th scope="col">Từ học phí lớp</th>}
                       <th scope="col">Hóa đơn đã thu</th>
                       <th scope="col">Học viên mới</th>
                     </tr>
@@ -282,6 +286,8 @@ function ManagerReports() {
                       <tr key={`${m.year}-${m.month}`}>
                         <td className="cell-strong num">{m.month}/{m.year}</td>
                         <td className="num">{formatMoney(revenueOf(m))}</td>
+                        {split && <td className="num">{formatMoney(itemOf(m)?.membershipRevenue ?? 0)}</td>}
+                        {split && <td className="num">{formatMoney(itemOf(m)?.classRevenue ?? 0)}</td>}
                         <td className="num">{itemOf(m)?.invoiceCount ?? 0}</td>
                         <td className="num">{members.loading ? "…" : members.error ? "—" : joinedIn(m)}</td>
                       </tr>

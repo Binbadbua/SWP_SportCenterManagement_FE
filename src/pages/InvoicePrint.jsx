@@ -9,12 +9,19 @@ import { Button, EmptyState, ErrorNotice, Loading } from '../components/ui.jsx';
 
 // A printable invoice ("in/xuất hóa đơn"): the browser's print dialog prints it or saves it as a PDF.
 // Reception and managers read it from GET /api/invoices/{id}/export, a member from their own invoices; the
-// card's dates and the member's contact details come from the card and the member's profile.
+// card's (or class's) dates and the member's contact details come from the card, the class and the profile.
+// A class's invoice (classId, CHANGELOG Part B, B53) shows the full fee and the card's discount.
+const classOf = (invoice) => (invoice.classId ? api.classes.get(invoice.classId).catch(() => null) : null);
+
 async function loadForStaff(id) {
   const invoice = await api.invoices.export(id);
-  const card = await api.memberships.get(invoice.memberMembershipId).catch(() => null);
-  const member = card?.memberId ? await api.members.get(card.memberId).catch(() => null) : null;
-  return { invoice, card, member };
+  const card = invoice.memberMembershipId ? await api.memberships.get(invoice.memberMembershipId).catch(() => null) : null;
+  const memberId = card?.memberId ?? invoice.memberId;
+  const [member, cls] = await Promise.all([
+    memberId ? api.members.get(memberId).catch(() => null) : null,
+    classOf(invoice),
+  ]);
+  return { invoice, card, member, cls };
 }
 
 async function loadForMember(id) {
@@ -25,7 +32,8 @@ async function loadForMember(id) {
   ]);
   const invoice = invoices.find((i) => i.id === id);
   if (!invoice) throw Object.assign(new Error('Không tìm thấy hóa đơn này trong tài khoản của bạn.'), { status: 404 });
-  return { invoice, card: cards.find((c) => c.id === invoice.memberMembershipId) ?? null, member: me };
+  const card = cards.find((c) => c.id === invoice.memberMembershipId) ?? null;
+  return { invoice, card, member: me, cls: await classOf(invoice) };
 }
 
 // Days from the first to the last day of a card, both included
@@ -79,9 +87,14 @@ export default function InvoicePrint() {
     );
   }
 
-  const { invoice: i, card, member } = data.data;
+  const { invoice: i, card, member, cls } = data.data;
   const pendingOnline = i.status === 1 && !i.receptionistId;
   const phone = realPhone(member?.phone);
+  const discount = Number(i.discountPercent ?? 0);
+  const full = discount > 0 && i.originalAmount != null ? i.originalAmount : i.amount;
+  const period = i.className
+    ? cls ? `${formatDate(cls.startDate)} – ${formatDate(cls.endDate)}` : '—'
+    : card ? `${formatDate(card.startDate)} – ${formatDate(card.endDate)} (${daysOf(card)} ngày)` : '—';
   return (
     <div className="invoice-page">
       <div className="invoice-page__tools no-print">
@@ -111,7 +124,7 @@ export default function InvoicePrint() {
           {phone && <p>Điện thoại: <span className="num">{phone}</span></p>}
           {member?.email && <p>Email: {member.email}</p>}
           {i.status !== 2 && (
-            <p className="invoice__stamp">{i.status === 1 ? 'Chưa thanh toán' : 'Đã hủy'}</p>
+            <p className="invoice__stamp">{i.status === 1 ? 'Chưa thanh toán' : InvoiceStatus.label(i.status)}</p>
           )}
         </section>
 
@@ -125,12 +138,17 @@ export default function InvoicePrint() {
           </thead>
           <tbody>
             <tr>
-              <td>{i.packageName}</td>
-              <td className="num">
-                {card ? `${formatDate(card.startDate)} – ${formatDate(card.endDate)} (${daysOf(card)} ngày)` : '—'}
-              </td>
-              <td className="num">{formatMoney(i.amount)}</td>
+              <td>{i.className ? `Học phí lớp ${i.className}` : i.packageName}</td>
+              <td className="num">{period}</td>
+              <td className="num">{formatMoney(full)}</td>
             </tr>
+            {discount > 0 && (
+              <tr>
+                <td>Giảm theo thẻ thành viên ({discount}%)</td>
+                <td />
+                <td className="num">−{formatMoney(full - i.amount)}</td>
+              </tr>
+            )}
           </tbody>
           <tfoot>
             <tr>

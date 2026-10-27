@@ -32,6 +32,7 @@ import {
   todayUtcDateString,
 } from "../../lib/format.js";
 import { cardsOn } from "../../lib/membership.js";
+import { hasClassPrices, hasPackageDiscounts } from "../../lib/pricing.js";
 import { useToast } from "../../components/Toast.jsx";
 import NotificationInbox from "../../components/NotificationInbox.jsx";
 import {
@@ -216,6 +217,16 @@ function BookingsTab({ memberId }) {
                   Khai giảng {formatDate(b.classStartDate)} · đặt ngày{" "}
                   {formatDate(b.bookingDate)}
                 </p>
+                {/* Class fees (B53): what the booking costs, and who cancels a paid one */}
+                {Number(b.price ?? 0) > 0 && (
+                  <p className="muted small">
+                    Học phí {formatMoney(b.price)}
+                    {Number(b.discountPercent ?? 0) > 0 && ` (đã giảm ${b.discountPercent}%)`}
+                    {b.status === 4
+                      ? " · thanh toán với lễ tân trong 30 phút"
+                      : b.status === 1 && " · hủy và hoàn tiền: báo lễ tân trước buổi đầu"}
+                  </p>
+                )}
               </div>
               <div className="order__actions">
                 <Button
@@ -225,7 +236,12 @@ function BookingsTab({ memberId }) {
                 >
                   Xem lớp
                 </Button>
-                {b.status === 1 && (
+                {b.status === 4 && b.invoiceId && (
+                  <Button size="sm" to={`/payment/result?paymentId=${b.invoiceId}`}>
+                    Xem đơn
+                  </Button>
+                )}
+                {(b.status === 4 || (b.status === 1 && !(Number(b.price ?? 0) > 0))) && (
                   <Button
                     variant="ghost"
                     size="sm"
@@ -246,7 +262,8 @@ function BookingsTab({ memberId }) {
 
 /* ---- Personal schedule (API) -------------------------------------------- */
 // The upcoming sessions of every class the member booked. The API has no "my sessions" endpoint, so the
-// bookings are matched with the public timetable; a session outside the member's card dates is flagged.
+// bookings are matched with the public timetable. Before class fees (B53) a session outside the member's card
+// dates is flagged; with them a card only gives a discount, and a booking waiting for payment is flagged instead.
 const SCHEDULE_SHOWN = 20;
 function ScheduleTab() {
   const bookings = useApi(() => api.bookings.mine(), []);
@@ -256,6 +273,8 @@ function ScheduleTab() {
   const [showAll, setShowAll] = useState(false);
   if (bookings.loading || sessions.loading) return <Loading />;
 
+  const priced = hasClassPrices(classes.data);
+  const waiting = new Set((bookings.data ?? []).filter((b) => b.status === 4).map((b) => b.classId));
   const booked = new Set((bookings.data ?? []).filter((b) => b.status !== 3).map((b) => b.classId));
   const upcoming = (sessions.data ?? [])
     .filter((s) => booked.has(s.classId) && !isSessionOver(s))
@@ -268,7 +287,7 @@ function ScheduleTab() {
   }, new Map())];
   const coachOf = (id) => (classes.data ?? []).find((c) => c.id === id)?.coachName;
   // Unknown cards (still loading or failed) flag nothing
-  const covered = (day) => !cards.data || cardsOn(cards.data, day).length > 0;
+  const covered = (day) => priced || !cards.data || cardsOn(cards.data, day).length > 0;
   const uncovered = upcoming.filter((s) => !covered(String(s.date).slice(0, 10))).length;
   const today = todayLocalDateString();
   const dayName = (day) =>
@@ -333,7 +352,11 @@ function ScheduleTab() {
                           {[s.roomName, coachOf(s.classId)].filter(Boolean).join(" · ")}
                         </span>
                       </span>
-                      {!covered(day) && <StatusTag tone="warning">Ngoài thời hạn thẻ</StatusTag>}
+                      {waiting.has(s.classId) ? (
+                        <StatusTag tone="warning">Chờ thanh toán</StatusTag>
+                      ) : (
+                        !covered(day) && <StatusTag tone="warning">Ngoài thời hạn thẻ</StatusTag>
+                      )}
                     </li>
                   ))}
                 </ul>
@@ -414,8 +437,9 @@ function AttendanceTab({ memberId }) {
 }
 
 /* ---- Membership (API) --------------------------------------------------- */
-// A card lets the member book classes whose sessions fall within its dates, at no extra cost. Renewing
-// is buying the package again: checkout starts the new card the day after the current one ends.
+// Before class fees (B53) a card lets the member book classes whose sessions fall within its dates; with them it
+// takes its package's discount off every class. Renewing is buying the package again: checkout starts the new
+// card the day after the current one ends.
 function MembershipTab() {
   const rows = useApi(() => api.memberships.mine(), []);
   const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
@@ -432,6 +456,15 @@ function MembershipTab() {
   const paymentOf = (m) => (invoices.data ?? []).find((i) => i.memberMembershipId === m.id && i.status === 1);
   const latest = current ?? [...list].sort((a, b) => String(b.endDate).localeCompare(String(a.endDate)))[0];
   const onSale = latest && (packages.data ?? []).some((p) => p.id === latest.packageId && p.status === 1);
+  const discounts = hasPackageDiscounts(packages.data);
+  const currentDiscount = Number((packages.data ?? []).find((p) => p.id === current?.packageId)?.discountPercent ?? 0);
+  const rule = discounts
+    ? current
+      ? `Thẻ mới bắt đầu ngay sau ngày ${formatDate(current.endDate)}.${currentDiscount > 0 ? ` Trong thời hạn thẻ, bạn được giảm ${currentDiscount}% học phí mọi lớp.` : ""}`
+      : "Không có thẻ bạn vẫn đặt lớp được với học phí gốc; thẻ còn hiệu lực được giảm học phí theo gói."
+    : current
+      ? `Thẻ mới bắt đầu ngay sau ngày ${formatDate(current.endDate)}. Trong thời hạn thẻ, bạn đặt lớp không mất thêm phí.`
+      : "Bạn cần thẻ còn hiệu lực để đặt lớp. Lớp học không thu thêm phí ngoài thẻ.";
   return (
     <>
       <ErrorNotice error={rows.error} onRetry={rows.reload} />
@@ -464,11 +497,7 @@ function MembershipTab() {
             </Button>
           )}
           <Button variant="secondary" to="/memberships">{onSale ? "Chọn gói khác" : "Xem các gói tập"}</Button>
-          <p className="muted small">
-            {current
-              ? `Thẻ mới bắt đầu ngay sau ngày ${formatDate(current.endDate)}. Trong thời hạn thẻ, bạn đặt lớp không mất thêm phí.`
-              : "Bạn cần thẻ còn hiệu lực để đặt lớp. Lớp học không thu thêm phí ngoài thẻ."}
-          </p>
+          <p className="muted small">{rule}</p>
         </div>
       )}
       {list.length ? (
@@ -600,7 +629,7 @@ function InvoicesTab() {
             <thead>
               <tr>
                 <th>Ngày</th>
-                <th>Gói tập</th>
+                <th>Nội dung</th>
                 <th>Hình thức</th>
                 <th>Số tiền</th>
                 <th>Trạng thái</th>
@@ -613,7 +642,7 @@ function InvoicesTab() {
               {list.map((i) => (
                 <tr key={i.id}>
                   <td className="num">{formatDate(i.paymentDate)}</td>
-                  <td className="cell-strong">{i.packageName}</td>
+                  <td className="cell-strong">{i.className ? `Lớp ${i.className}` : i.packageName}</td>
                   <td>{PaymentMethod.label(i.paymentMethod)}</td>
                   <td className="num">{formatMoney(i.amount)}</td>
                   <td>

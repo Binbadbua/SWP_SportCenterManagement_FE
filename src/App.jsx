@@ -6,6 +6,7 @@ import StaffLayout from './layouts/StaffLayout.jsx';
 import Home from './pages/store/Home.jsx';
 import Classes from './pages/store/Classes.jsx';
 import ClassDetail from './pages/store/ClassDetail.jsx';
+import ClassCheckout from './pages/store/ClassCheckout.jsx';
 import Schedule from './pages/store/Schedule.jsx';
 import Memberships from './pages/store/Memberships.jsx';
 import Coaches from './pages/store/Coaches.jsx';
@@ -58,6 +59,7 @@ export default function App() {
           <Route index element={<Home />} />
           <Route path="classes" element={<Classes />} />
           <Route path="classes/:id" element={<ClassDetail />} />
+          <Route path="classes/:id/checkout" element={<ClassCheckout />} />
           <Route path="schedule" element={<Schedule />} />
           <Route path="memberships" element={<Memberships />} />
           <Route path="memberships/:id/checkout" element={<Checkout />} />

@@ -1787,3 +1787,14 @@ main:has(> .login) + .site-footer { margin-top: 0; }
 @media (max-width: 560px) {
   .how-steps { grid-template-columns: minmax(0, 1fr); }
 }
+
+/* Class fees (CHANGELOG Part B, B53): the fee, the member's discount, a booking waiting for payment */
+.pdp__fee { display: grid; gap: 4px; margin-top: 16px; }
+.pdp__fee .pdp__price { margin-top: 0; }
+.pdp__deal { color: var(--success); font-weight: 550; }
+.pdp__booked--waiting { color: var(--warning); }
+.desk-fee { margin: 0; padding: 14px 16px; background: var(--mist); }
+/* Package card: the discount it gives and the services that come with it */
+.package-card__deal { margin: -4px 0 10px; font-weight: 650; }
+.package-card__benefits { margin: 12px 0 0; padding-left: 18px; font-size: 14px; opacity: 0.9; }
+.package-card__benefits li + li { margin-top: 4px; }

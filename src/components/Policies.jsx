@@ -33,6 +33,13 @@ export const POLICIES = {
   },
 };
 
+// The member terms that change once classes have fees (CHANGELOG Part B, B53); pages/store/Policy.jsx swaps them in
+export const TERMS_WITH_CLASS_FEES = {
+  'Gói tập và thẻ thành viên': 'Mỗi gói dùng cho mọi môn. Thẻ có hiệu lực theo số ngày của gói, tính từ ngày bắt đầu, chỉ dùng cho chính chủ tài khoản, và giảm học phí mọi lớp theo mức của gói. Mua tại quầy lễ tân hoặc đặt mua trên web (đơn được giữ 30 phút để lễ tân xác nhận thanh toán); hóa đơn lưu ở Tài khoản của tôi → Hóa đơn.',
+  'Đặt lớp': 'Mỗi lớp có học phí cả khóa, trả một lần khi đặt; đặt muộn vẫn trả đủ. Thẻ thành viên còn hiệu lực vào ngày thanh toán được giảm theo gói; không có thẻ thì trả giá gốc, và mua gói sau khi đã trả học phí không được hoàn phần chênh lệch. Đặt trên web thì chỗ được giữ 30 phút để bạn thanh toán với lễ tân; quá hạn lượt đặt tự hủy. Lớp đã đủ chỗ hoặc đã kết thúc không nhận đặt thêm.',
+  'Hoàn tiền, bảo lưu': 'Hủy lớp đã thanh toán trước khi buổi học đầu bắt đầu: báo lễ tân, lễ tân hoàn lại học phí; sau đó không hủy được. Lượt đặt chưa thanh toán tự hủy được ở Tài khoản của tôi → Lớp đã đặt. Thẻ thành viên và bảo lưu: gửi yêu cầu ở Tài khoản của tôi → Hỗ trợ; lễ tân xem xét từng trường hợp và trả lời tại đó.',
+};
+
 // Opens in a new tab so a half-filled form (register, checkout) is still there when the reader comes back
 function PolicyLink({ kind }) {
   return (

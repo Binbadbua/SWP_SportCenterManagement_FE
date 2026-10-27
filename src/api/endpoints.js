@@ -175,6 +175,8 @@ export const api = {
   bookings: {
     mine: listOf("/api/members/me/class-bookings"),
     byMember: (memberId) => listOf(`/api/class-bookings/member/${memberId}`)(),
+    // { memberId, classId }; reception also send paymentMethod when the class has a fee: the money is taken at
+    // the desk and the API books and bills at once (B53)
     create: (body) => http.post("/api/class-bookings", body),
     cancel: (bookingId, memberId) =>
       http.del(`/api/class-bookings/${bookingId}/member/${memberId}`),
@@ -217,6 +219,10 @@ export const api = {
   //   confirm(paymentId) — reception / manager only: invoice paid, card active
   payments: {
     checkout: (body) => http.post("/api/payments/checkout", body),
+    // Booking a class with a fee (CHANGELOG Part B, B53): { classId, paymentMethod } → { paymentId, bookingId,
+    // originalAmount, discountPercent, amount, status (1 waiting for reception, 2 booked), paymentUrl, expiresAt }.
+    // The API works out the amount from the class's fee and the member's card.
+    classCheckout: (body) => http.post("/api/payments/class-checkout", body),
     get: (id) => http.get(`/api/payments/${id}`),
     confirm: (id) => http.post(`/api/payments/${id}/confirm`),
   },

@@ -5,9 +5,10 @@ import { PaymentStatus } from '../../lib/enums.js';
 import { formatDateTime, formatMoney } from '../../lib/format.js';
 import { Button, EmptyState, ErrorNotice, Loading, Notice, StatusTag } from '../../components/ui.jsx';
 
-// Shown after checkout (?paymentId=…). The API has no payment gateway yet: reception or a manager confirms
-// the money within 30 minutes, after that the API cancels the order (status 4). The page always asks the
-// API for the payment's real state; a gateway's query string, once there is one, is not trusted.
+// Shown after checkout (?paymentId=…), for a package or a class with a fee (kind "Class", CHANGELOG Part B, B53).
+// The API has no payment gateway yet: reception or a manager confirms the money within 30 minutes, after that
+// the API cancels the order (status 4) and a class gets its place back. The page always asks the API for the
+// payment's real state; a gateway's query string, once there is one, is not trusted.
 export default function PaymentResult() {
   const [params] = useSearchParams();
   const paymentId = params.get('paymentId');
@@ -46,6 +47,8 @@ export default function PaymentResult() {
   const p = payment.data;
   const paid = p.status === 2;
   const pending = p.status === 1;
+  const forClass = p.kind === 'Class' || !!p.className;
+  const discounted = Number(p.discountPercent ?? 0) > 0 && p.originalAmount != null;
   return (
     <div className="container page narrow pay-result">
       <p className="label">Kết quả thanh toán</p>
@@ -53,14 +56,30 @@ export default function PaymentResult() {
         {paid ? 'Thanh toán thành công' : pending ? 'Đang chờ xác nhận thanh toán' : 'Đơn đã hết hạn hoặc bị hủy'}
       </h1>
       <p className="muted">
-        {paid
-          ? `${p.packageName ?? 'Thẻ'} đã được kích hoạt và hóa đơn đã được xuất.`
-          : pending
-            ? 'Đơn được giữ 30 phút. Hãy thanh toán với lễ tân (chuyển khoản hoặc quẹt thẻ) và đọc mã giao dịch bên dưới; lễ tân xác nhận xong thì thẻ được kích hoạt ngay. Quá 30 phút chưa xác nhận thì đơn tự hủy. Bấm Tải lại để xem trạng thái mới.'
-            : 'Đơn quá 30 phút chưa được xác nhận hoặc đã bị hủy, nên thẻ chưa được kích hoạt. Nếu bạn đã chuyển tiền, hãy báo lễ tân kèm mã giao dịch bên dưới.'}
+        {forClass
+          ? paid
+            ? `Bạn đã có chỗ trong lớp ${p.className}. Các buổi học nằm ở Tài khoản của tôi → Lịch tập.`
+            : pending
+              ? 'Chỗ của bạn trong lớp được giữ 30 phút. Hãy thanh toán với lễ tân (chuyển khoản hoặc quẹt thẻ) và đọc mã giao dịch bên dưới; lễ tân xác nhận xong là đặt lớp xong. Quá 30 phút chưa xác nhận thì lượt đặt tự hủy và chỗ được trả lại. Bấm Tải lại để xem trạng thái mới.'
+              : 'Đơn quá 30 phút chưa được xác nhận hoặc đã bị hủy, nên chỗ trong lớp đã được trả lại. Nếu bạn đã chuyển tiền, hãy báo lễ tân kèm mã giao dịch bên dưới.'
+          : paid
+            ? `${p.packageName ?? 'Thẻ'} đã được kích hoạt và hóa đơn đã được xuất.`
+            : pending
+              ? 'Đơn được giữ 30 phút. Hãy thanh toán với lễ tân (chuyển khoản hoặc quẹt thẻ) và đọc mã giao dịch bên dưới; lễ tân xác nhận xong thì thẻ được kích hoạt ngay. Quá 30 phút chưa xác nhận thì đơn tự hủy. Bấm Tải lại để xem trạng thái mới.'
+              : 'Đơn quá 30 phút chưa được xác nhận hoặc đã bị hủy, nên thẻ chưa được kích hoạt. Nếu bạn đã chuyển tiền, hãy báo lễ tân kèm mã giao dịch bên dưới.'}
       </p>
       <dl className="checkout__lines">
-        <div><dt>Gói tập</dt><dd>{p.packageName ?? '—'}</dd></div>
+        {forClass ? (
+          <div><dt>Lớp học</dt><dd>{p.className}</dd></div>
+        ) : (
+          <div><dt>Gói tập</dt><dd>{p.packageName ?? '—'}</dd></div>
+        )}
+        {discounted && (
+          <>
+            <div><dt>Học phí gốc</dt><dd className="num">{formatMoney(p.originalAmount)}</dd></div>
+            <div><dt>Giảm theo thẻ</dt><dd className="num">{p.discountPercent}%</dd></div>
+          </>
+        )}
         <div><dt>Số tiền</dt><dd className="num">{formatMoney(p.amount)}</dd></div>
         <div><dt>Trạng thái</dt><dd><StatusTag tone={PaymentStatus.tone(p.status)}>{PaymentStatus.label(p.status)}</StatusTag></dd></div>
         {p.paidAt && <div><dt>Thời điểm</dt><dd className="num">{formatDateTime(p.paidAt)}</dd></div>}
@@ -69,11 +88,15 @@ export default function PaymentResult() {
       <div className="pay-result__actions">
         {paid ? (
           <>
-            <Button to="/account?tab=membership">Xem thẻ thành viên</Button>
+            <Button to={forClass ? '/account?tab=schedule' : '/account?tab=membership'}>
+              {forClass ? 'Xem lịch tập' : 'Xem thẻ thành viên'}
+            </Button>
             <Button variant="secondary" to="/account?tab=invoices">Xem hóa đơn</Button>
           </>
         ) : pending ? (
           <Button icon="refresh" onClick={payment.reload}>Tải lại</Button>
+        ) : forClass ? (
+          <Button to={p.classId ? `/classes/${p.classId}` : '/classes'}>Đặt lại lớp</Button>
         ) : (
           <Button to="/memberships">Chọn lại gói tập</Button>
         )}

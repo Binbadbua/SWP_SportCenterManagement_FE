@@ -34,6 +34,8 @@ export const BookingStatus = enumOf([
   { value: 1, label: 'Đã đặt', tone: 'info' },
   { value: 2, label: 'Đã tham gia', tone: 'success' },
   { value: 3, label: 'Đã hủy', tone: 'neutral' },
+  // Class fees (CHANGELOG Part B, B53): a web booking holds its place while reception waits for the money
+  { value: 4, label: 'Chờ thanh toán', tone: 'warning' },
 ]);
 
 export const ClassStatus = enumOf([
@@ -47,6 +49,8 @@ export const InvoiceStatus = enumOf([
   { value: 1, label: 'Chờ thanh toán', tone: 'warning' },
   { value: 2, label: 'Đã thanh toán', tone: 'success' },
   { value: 3, label: 'Đã hủy', tone: 'neutral' },
+  // A paid class cancelled before its first session (B53)
+  { value: 4, label: 'Đã hoàn tiền', tone: 'neutral' },
 ]);
 
 export const MembershipStatus = enumOf([

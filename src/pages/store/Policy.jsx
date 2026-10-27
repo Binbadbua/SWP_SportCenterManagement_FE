@@ -1,10 +1,14 @@
 import { Link } from 'react-router-dom';
-import { POLICIES, POLICY_UPDATED } from '../../components/Policies.jsx';
+import { POLICIES, POLICY_UPDATED, TERMS_WITH_CLASS_FEES } from '../../components/Policies.jsx';
+import { useClassPricing } from '../../hooks/usePricing.js';
 
-// /terms and /privacy: the policies linked from the agree boxes on Register and Checkout
+// /terms and /privacy: the policies linked from the agree boxes on Register and Checkout. Once classes have
+// fees (CHANGELOG Part B, B53) the terms about cards, bookings and refunds read as TERMS_WITH_CLASS_FEES.
 export default function Policy({ kind }) {
+  const billed = useClassPricing();
   const policy = POLICIES[kind];
   const other = POLICIES[kind === 'terms' ? 'privacy' : 'terms'];
+  const items = policy.items.map(([name, text]) => [name, (kind === 'terms' && billed && TERMS_WITH_CLASS_FEES[name]) || text]);
   return (
     <div className="container page narrow policy-page">
       <header className="page-head">
@@ -13,7 +17,7 @@ export default function Policy({ kind }) {
         <p className="muted small">Cập nhật lần cuối: {POLICY_UPDATED}</p>
       </header>
       <ol className="policy-list">
-        {policy.items.map(([name, text]) => (
+        {items.map(([name, text]) => (
           <li key={name}>
             <h2 className="policy-list__title">{name}</h2>
             <p>{text}</p>

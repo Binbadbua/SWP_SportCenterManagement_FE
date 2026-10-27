@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { photoUrl, sportImage } from '../lib/images.js';
 import { daysUntil, formatDateRange, formatMoney, initials } from '../lib/format.js';
 import { ClassStatus } from '../lib/enums.js';
+import { benefitsOf } from '../lib/pricing.js';
 import { Button } from './ui.jsx';
 import { sportsOf } from './CoachFacts.jsx';
 
@@ -101,7 +102,16 @@ export function PackageCard({ pkg, onChoose, featured = false }) {
         {pkg.durationDays} ngày{months > 1 ? ` · khoảng ${formatMoney(perMonth)}/tháng` : ''}
       </p>
       <p className="package-card__price num">{formatMoney(pkg.price)}</p>
+      {/* Class fees (CHANGELOG Part B, B53): the discount the card gives and the services that come with it */}
+      {Number(pkg.discountPercent ?? 0) > 0 && (
+        <p className="package-card__deal">Giảm {pkg.discountPercent}% học phí mọi lớp</p>
+      )}
       <p className="package-card__desc">{pkg.description}</p>
+      {benefitsOf(pkg).length > 0 && (
+        <ul className="package-card__benefits">
+          {benefitsOf(pkg).map((b) => <li key={b}>{b}</li>)}
+        </ul>
+      )}
       <div className="package-card__cta">
         <Button variant={featured ? 'inverse' : 'primary'} block onClick={() => onChoose?.(pkg)}>
           Chọn {pkg.packageName}

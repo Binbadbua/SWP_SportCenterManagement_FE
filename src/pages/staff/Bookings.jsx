@@ -2,18 +2,21 @@ import { useMemo, useState } from 'react';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
-import { BookingStatus } from '../../lib/enums.js';
-import { daysUntil, formatDate, isSessionOver, realPhone, todayUtcDateString } from '../../lib/format.js';
+import { BookingStatus, PaymentMethod } from '../../lib/enums.js';
+import { daysUntil, formatDate, formatMoney, isSessionOver, realPhone, todayUtcDateString } from '../../lib/format.js';
 import { cardCheck, cardsOn } from '../../lib/membership.js';
+import { discountFor, hasClassPrices, priceAfter } from '../../lib/pricing.js';
 import { useToast } from '../../components/Toast.jsx';
 import { Button, EmptyState, ErrorNotice, Field, Loading, Notice, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
 
 // A booking holds its spot unless it was cancelled (the API deletes cancelled bookings, but older
 // rows may still say Cancelled)
 const holdsSpot = (b) => b.status !== 3;
+const paid = (b) => b.status === 1 && Number(b.price ?? 0) > 0;
 
-// The member's card, shown under the member picker: classes need a card valid on their next session
-function CardStatus({ cards }) {
+// The member's card, shown under the member picker. With class fees (CHANGELOG Part B, B53) it only gives a
+// discount; before them a class needs a card valid on its next session.
+function CardStatus({ cards, priced, discount }) {
   if (cards.loading) return <p className="muted small">Đang kiểm tra thẻ thành viên…</p>;
   if (cards.error) return <ErrorNotice error={cards.error} onRetry={cards.reload} />;
   const list = cards.data ?? [];
@@ -22,8 +25,12 @@ function CardStatus({ cards }) {
   if (active) {
     return (
       <Notice tone="success" title={active.packageName}>
-        Còn hiệu lực đến {formatDate(active.endDate)} (còn {daysUntil(active.endDate)} ngày). Đặt được các lớp có buổi
-        học kế tiếp trong thời hạn thẻ.
+        Còn hiệu lực đến {formatDate(active.endDate)} (còn {daysUntil(active.endDate)} ngày).{' '}
+        {priced
+          ? discount > 0
+            ? `Được giảm ${discount}% học phí mọi lớp.`
+            : 'Gói này không giảm học phí.'
+          : 'Đặt được các lớp có buổi học kế tiếp trong thời hạn thẻ.'}
       </Notice>
     );
   }
@@ -31,7 +38,7 @@ function CardStatus({ cards }) {
   const later = list.find((m) => m.status === 1 && String(m.startDate).slice(0, 10) > today);
   return (
     <Notice
-      tone="warning"
+      tone={priced ? 'info' : 'warning'}
       title={later ? `${later.packageName} bắt đầu từ ${formatDate(later.startDate)}` : 'Học viên chưa có thẻ còn hiệu lực'}
       action={!later && (
         <Button size="sm" variant="secondary" to={pending ? '/staff/invoices' : '/staff/memberships'}>
@@ -39,23 +46,30 @@ function CardStatus({ cards }) {
         </Button>
       )}
     >
-      {later
-        ? 'Chỉ đặt được các lớp có buổi học kế tiếp từ ngày đó trở đi.'
-        : pending
-          ? `${pending.packageName} chưa được kích hoạt vì chưa thanh toán. Thu tiền ở trang Hóa đơn (đơn mua trên web: bấm “Xác nhận đã nhận tiền”) rồi đặt lớp.`
-          : 'Lớp học không thu thêm phí nhưng cần thẻ thành viên còn hiệu lực. Bán thẻ cho học viên ở trang Thẻ thành viên rồi quay lại đặt lớp.'}
+      {priced
+        ? later
+          ? 'Hôm nay học viên trả học phí gốc; thẻ có hiệu lực từ ngày đó thì được giảm.'
+          : 'Học viên trả học phí gốc. Có thẻ còn hiệu lực thì được giảm học phí theo gói.'
+        : later
+          ? 'Chỉ đặt được các lớp có buổi học kế tiếp từ ngày đó trở đi.'
+          : pending
+            ? `${pending.packageName} chưa được kích hoạt vì chưa thanh toán. Thu tiền ở trang Hóa đơn (đơn mua trên web: bấm “Xác nhận đã nhận tiền”) rồi đặt lớp.`
+            : 'Lớp học không thu thêm phí nhưng cần thẻ thành viên còn hiệu lực. Bán thẻ cho học viên ở trang Thẻ thành viên rồi quay lại đặt lớp.'}
     </Notice>
   );
 }
 
-// Front desk: book a member into a class, or look up and cancel their bookings.
+// Front desk: book a member into a class (taking the class fee once the API bills classes), or look up and
+// cancel their bookings.
 export default function Bookings() {
   const toast = useToast();
   const members = useApi(() => api.members.list(), [], { sample: mock.members });
   const classes = useApi(() => api.classes.list(), [], { sample: mock.classes });
   const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
+  const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
   const [memberId, setMemberId] = useState('');
   const [classId, setClassId] = useState('');
+  const [method, setMethod] = useState('1'); // cash, the usual way at the desk
   const [lookupId, setLookupId] = useState('');
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState(null);
@@ -74,13 +88,15 @@ export default function Bookings() {
   );
   const memberName = (id) => (members.data ?? []).find((m) => m.id === id)?.fullName ?? 'Học viên này';
 
-  // Classes open for booking; one that can't take this member says why and can't be picked
+  const priced = !classes.usingSample && hasClassPrices(classes.data);
   const heldByMember = new Set((memberBookings.data ?? []).filter(holdsSpot).map((b) => b.classId));
   const sessionsKnown = !!sessions.data && !sessions.error && !sessions.usingSample;
   const cardsKnown = !!memberId && !!memberCards.data && !memberCards.error;
   const withSessionsLeft = new Set((sessions.data ?? []).filter((s) => !isSessionOver(s)).map((s) => s.classId));
-  // The member's cards against each class's next session (null while either is still unknown)
-  const cardFor = (id) => (cardsKnown && sessionsKnown ? cardCheck(memberCards.data, sessions.data, id) : null);
+  // Before class fees: the member's cards against each class's next session (null while either is unknown)
+  const cardFor = (id) => (!priced && cardsKnown && sessionsKnown ? cardCheck(memberCards.data, sessions.data, id) : null);
+  const deal = priced && cardsKnown ? discountFor(memberCards.data, packages.data) : { percent: 0 };
+  // Classes open for booking; one that can't take this member says why and can't be picked
   const classOptions = (classes.data ?? [])
     .filter((c) => c.status === 1 || c.status === 2)
     .sort((a, b) => a.className.localeCompare(b.className, 'vi'))
@@ -96,13 +112,17 @@ export default function Bookings() {
               ? 'thẻ không còn hiệu lực vào buổi tới'
               : null;
       const spots = left === null ? null : `còn ${left} chỗ`;
+      const fee = priced ? (c.price > 0 ? formatMoney(c.price) : 'miễn phí') : null;
       return {
         value: c.id,
-        label: [c.className, c.categoryName, blocked ?? spots].filter(Boolean).join(' · '),
+        label: [c.className, c.categoryName, fee, blocked ?? spots].filter(Boolean).join(' · '),
         disabled: !!blocked,
       };
     });
   const chosenCard = classId ? cardFor(classId) : null;
+  const chosen = (classes.data ?? []).find((c) => c.id === classId);
+  const fee = priced ? Number(chosen?.price ?? 0) : 0;
+  const toPay = priceAfter(fee, deal.percent);
 
   const book = async (e) => {
     e.preventDefault();
@@ -112,11 +132,15 @@ export default function Bookings() {
       return;
     }
     const who = memberName(memberId);
-    const className = (classes.data ?? []).find((c) => c.id === classId)?.className ?? 'lớp này';
+    const className = chosen?.className ?? 'lớp này';
     const alreadyBooked = `${who} đã đặt lớp ${className} rồi.`;
-    // The API does not check the card yet (CHANGELOG Part B, B45), so the desk does
+    // Before class fees the API does not check the card (B45), so the desk does
     if (chosenCard && !chosenCard.ok) {
       setFormError(`${chosenCard.reason} ${who} cần thẻ còn hiệu lực vào buổi học kế tiếp của lớp (${formatDate(chosenCard.nextDate)}).`);
+      return;
+    }
+    if (fee > 0 && !method) {
+      setFormError('Vui lòng chọn hình thức thanh toán.');
       return;
     }
     setSaving(true);
@@ -128,8 +152,13 @@ export default function Bookings() {
         memberBookings.reload();
         return;
       }
-      const b = await api.bookings.create({ memberId, classId });
-      toast.success(`Đã đặt lớp ${b.className ?? className} cho ${b.memberName ?? who}.${chosenCard?.warning ? ` ${chosenCard.warning}` : ''}`);
+      // With a fee the money is taken at the desk: the API books and bills at once, working out the amount
+      const b = await api.bookings.create(fee > 0 ? { memberId, classId, paymentMethod: Number(method) } : { memberId, classId });
+      toast.success(
+        fee > 0
+          ? `Đã thu ${formatMoney(b.price ?? toPay)} và đặt lớp ${b.className ?? className} cho ${b.memberName ?? who}.`
+          : `Đã đặt lớp ${b.className ?? className} cho ${b.memberName ?? who}.${chosenCard?.warning ? ` ${chosenCard.warning}` : ''}`,
+      );
       setClassId('');
       if (lookupId === memberId) bookings.reload();
       else setLookupId(memberId);
@@ -143,11 +172,21 @@ export default function Bookings() {
     }
   };
 
+  // A paid class is refunded at the desk when cancelled before its first session (the API refuses later)
   const cancel = async (b) => {
-    if (!window.confirm(`Hủy lượt đặt lớp ${b.className} của ${b.memberName}?`)) return;
+    const question = paid(b)
+      ? `Hủy lượt đặt lớp ${b.className} của ${b.memberName} và hoàn ${formatMoney(b.price)}? Chỉ hoàn được khi buổi đầu chưa bắt đầu.`
+      : b.status === 4
+        ? `Hủy lượt đặt lớp ${b.className} đang chờ thanh toán của ${b.memberName}?`
+        : `Hủy lượt đặt lớp ${b.className} của ${b.memberName}?`;
+    if (!window.confirm(question)) return;
     try {
       await api.bookings.cancel(b.id, b.memberId);
-      toast.success(`Đã hủy lượt đặt lớp ${b.className} của ${b.memberName}.`);
+      toast.success(
+        paid(b)
+          ? `Đã hủy lượt đặt lớp ${b.className} và ghi hoàn ${formatMoney(b.price)}. Trả tiền cho ${b.memberName} tại quầy.`
+          : `Đã hủy lượt đặt lớp ${b.className} của ${b.memberName}.`,
+      );
       bookings.reload();
       if (b.memberId === memberId) memberBookings.reload();
       classes.reload();
@@ -163,7 +202,11 @@ export default function Bookings() {
       <header className="staff-page__head">
         <div>
           <h1 className="staff-page__title display">Đặt lớp</h1>
-          <p className="muted">Đặt lớp cho học viên tại quầy, hoặc tra cứu các lớp họ đã đặt để hỗ trợ hủy.</p>
+          <p className="muted">
+            {priced
+              ? 'Thu học phí và đặt lớp cho học viên tại quầy, hoặc tra cứu các lớp họ đã đặt để hỗ trợ hủy.'
+              : 'Đặt lớp cho học viên tại quầy, hoặc tra cứu các lớp họ đã đặt để hỗ trợ hủy.'}
+          </p>
         </div>
       </header>
 
@@ -191,7 +234,7 @@ export default function Bookings() {
             placeholder={memberPlaceholder}
             help="Mọi học viên đã đăng ký trên web hoặc tại quầy. Gõ vài chữ đầu của tên để nhảy nhanh tới người cần tìm."
           />
-          {memberId && <CardStatus cards={memberCards} />}
+          {memberId && <CardStatus cards={memberCards} priced={priced} discount={deal.percent} />}
           <Field
             label="Lớp học"
             name="classId"
@@ -205,14 +248,43 @@ export default function Bookings() {
             options={classOptions}
             placeholder={classes.loading ? 'Đang tải danh sách lớp…' : 'Chọn lớp học…'}
             help={
-              memberId
-                ? 'Không chọn được lớp học viên đã đặt, lớp đã đủ chỗ, lớp đã hết buổi học và lớp có buổi kế tiếp nằm ngoài thời hạn thẻ của học viên.'
-                : 'Chọn học viên trước để biết họ có thể vào những lớp nào.'
+              !memberId
+                ? 'Chọn học viên trước để biết họ có thể vào những lớp nào.'
+                : priced
+                  ? 'Không chọn được lớp học viên đã đặt, lớp đã đủ chỗ và lớp đã hết buổi học.'
+                  : 'Không chọn được lớp học viên đã đặt, lớp đã đủ chỗ, lớp đã hết buổi học và lớp có buổi kế tiếp nằm ngoài thời hạn thẻ của học viên.'
             }
           />
+          {fee > 0 && (
+            <>
+              <dl className="checkout__lines desk-fee">
+                <div><dt>Học phí cả khóa</dt><dd className="num">{formatMoney(fee)}</dd></div>
+                {deal.percent > 0 && (
+                  <div>
+                    <dt>{deal.pkg.packageName} giảm {deal.percent}%</dt>
+                    <dd className="num">−{formatMoney(fee - toPay)}</dd>
+                  </div>
+                )}
+                <div className="checkout__total"><dt>Thu của học viên</dt><dd className="num">{formatMoney(toPay)}</dd></div>
+              </dl>
+              <Field
+                label="Hình thức thanh toán"
+                name="paymentMethod"
+                type="select"
+                required
+                value={method}
+                onChange={(_, v) => setMethod(v)}
+                options={PaymentMethod.options.map((o) => ({ value: String(o.value), label: o.label }))}
+                placeholder="Chọn hình thức…"
+                help="Thu tiền xong mới bấm nút bên dưới: lớp được đặt và hóa đơn đã thanh toán được xuất ngay."
+              />
+            </>
+          )}
           {chosenCard?.warning && <p className="muted small">{chosenCard.warning}</p>}
           {formError && <p className="field__error" role="alert">{formError}</p>}
-          <Button type="submit" disabled={saving || (!!memberId && memberCards.loading)}>{saving ? 'Đang đặt…' : 'Đặt lớp'}</Button>
+          <Button type="submit" disabled={saving || (!!memberId && memberCards.loading)}>
+            {saving ? 'Đang đặt…' : fee > 0 ? `Thu ${formatMoney(toPay)} và đặt lớp` : 'Đặt lớp'}
+          </Button>
         </form>
 
         <section className="panel">
@@ -225,7 +297,11 @@ export default function Bookings() {
             onChange={(_, v) => setLookupId(v)}
             options={memberOptions}
             placeholder={memberPlaceholder}
-            help="Lượt đặt chỉ hủy được khi học viên chưa tham gia buổi nào."
+            help={
+              priced
+                ? 'Lượt đã thanh toán chỉ hủy được trước buổi học đầu, kèm hoàn tiền cho học viên; lượt chờ thanh toán hủy lúc nào cũng được.'
+                : 'Lượt đặt chỉ hủy được khi học viên chưa tham gia buổi nào.'
+            }
           />
 
           {!lookupId ? (
@@ -241,10 +317,17 @@ export default function Bookings() {
                     <li key={b.id}>
                       <div>
                         <p className="cell-strong">{b.className}</p>
-                        <p className="muted small">Khai giảng {formatDate(b.classStartDate)} · đặt ngày {formatDate(b.bookingDate)}</p>
+                        <p className="muted small">
+                          Khai giảng {formatDate(b.classStartDate)} · đặt ngày {formatDate(b.bookingDate)}
+                          {Number(b.price ?? 0) > 0 && ` · ${formatMoney(b.price)}`}
+                        </p>
                       </div>
                       <StatusTag tone={BookingStatus.tone(b.status)}>{BookingStatus.label(b.status)}</StatusTag>
-                      {b.status === 1 && <Button variant="ghost" size="sm" onClick={() => cancel(b)}>Hủy</Button>}
+                      {(b.status === 1 || b.status === 4) && (
+                        <Button variant="ghost" size="sm" onClick={() => cancel(b)}>
+                          {paid(b) ? 'Hủy, hoàn tiền' : 'Hủy'}
+                        </Button>
+                      )}
                     </li>
                   ))}
                 </ul>

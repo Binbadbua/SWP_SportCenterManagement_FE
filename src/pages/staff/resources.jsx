@@ -16,6 +16,7 @@ import {
   realPhone, todayLocalDateString, todayUtcDateString,
 } from '../../lib/format.js';
 import { cardsOn } from '../../lib/membership.js';
+import { hasClassPrices, hasPackageDiscounts } from '../../lib/pricing.js';
 import { CoachPortrait } from '../../components/cards.jsx';
 import { useToast } from '../../components/Toast.jsx';
 import { Button, ErrorNotice, Field, FillBar, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
@@ -26,7 +27,13 @@ const isFrontDesk = (u) => u?.role === 'CenterManager' || u?.role === 'Reception
 // A package bought on the website: unpaid and no receptionist yet. Staff confirm it within 30 minutes
 // (api.payments.confirm); editing it to Paid instead would leave the card inactive (CHANGELOG Part B, B43).
 const awaitingOnline = (r) => r.status === 1 && !r.receptionistId;
+// What an invoice pays for: a package, or a class with a fee (B53)
+const itemOf = (r) => (r.className ? `Lớp ${r.className}` : r.packageName);
 const opt = (rows, value, label) => (rows ?? []).map((r) => ({ value: r[value], label: typeof label === 'function' ? label(r) : r[label] }));
+
+// Class fees and package discounts (CHANGELOG Part B, B53): their columns and fields appear once the lists the
+// API sends carry them (set when the Classes / Packages pages load)
+const carries = { price: false, discount: false };
 
 const endAfterStart = (v) =>
   v.startDate && v.endDate && v.endDate <= v.startDate ? { endDate: 'Ngày kết thúc phải sau ngày bắt đầu.' } : {};
@@ -335,8 +342,18 @@ function RenewAsManager({ row, lookups, close, reload }) {
 export const resources = {
   classes: {
     key: 'classes', title: 'Lớp học', singular: 'Lớp học',
-    description: 'Mọi lớp học trong chương trình. Học viên đặt lớp một lần là tham gia được tất cả các buổi.',
-    source: api.classes, sample: mock.classes, lookups: () => ({ categories: L.categories, coaches: L.coaches }),
+    description: () => (carries.price
+      ? 'Mọi lớp học trong chương trình. Học viên trả học phí cả khóa một lần là tham gia được tất cả các buổi; thẻ thành viên được giảm theo gói.'
+      : 'Mọi lớp học trong chương trình. Học viên đặt lớp một lần là tham gia được tất cả các buổi.'),
+    source: {
+      ...api.classes,
+      list: async () => {
+        const rows = await api.classes.list();
+        carries.price = hasClassPrices(rows);
+        return rows;
+      },
+    },
+    sample: mock.classes, lookups: () => ({ categories: L.categories, coaches: L.coaches }),
     canWrite: isManager, nameOf: (r) => r.className,
     searchText: (r) => `${r.className} ${r.categoryName} ${r.coachName}`,
     sort: (a, b) => a.startDate.localeCompare(b.startDate),
@@ -349,6 +366,10 @@ export const resources = {
         key: 'maxCapacity', label: 'Đã đặt / sĩ số',
         render: (r) => (r.currentEnrolled == null ? <span className="num">{r.maxCapacity}</span> : <FillBar value={r.currentEnrolled} max={r.maxCapacity} />),
       },
+      {
+        key: 'price', label: 'Học phí', className: 'num', hidden: () => !carries.price,
+        render: (r) => (r.price > 0 ? formatMoney(r.price) : 'Miễn phí'),
+      },
       { key: 'dates', label: 'Thời gian', className: 'num', render: (r) => `${formatDate(r.startDate)} – ${formatDate(r.endDate)}` },
       { key: 'status', label: 'Trạng thái', render: (r) => tag(ClassStatus)(r.status) },
     ],
@@ -357,6 +378,10 @@ export const resources = {
       { name: 'categoryId', label: 'Môn', type: 'select', required: true, optionsFrom: (l) => opt(l.categories, 'id', 'categoryName') },
       { name: 'coachId', label: 'Huấn luyện viên', type: 'select', required: true, optionsFrom: (l) => opt(l.coaches, 'id', 'fullName') },
       { name: 'maxCapacity', label: 'Sĩ số tối đa', type: 'number', required: true, min: 1, max: 1000 },
+      {
+        name: 'price', label: 'Học phí cả khóa (VND)', type: 'number', required: true, min: 0, defaultValue: () => '0',
+        shown: () => carries.price, help: '0 = lớp miễn phí. Thành viên có thẻ còn hiệu lực được giảm theo mức của gói.',
+      },
       { name: 'status', label: 'Trạng thái', type: 'select', numeric: true, required: true, options: ClassStatus.options, defaultValue: () => '1' },
       { name: 'startDate', label: 'Ngày bắt đầu', type: 'date', required: true },
       { name: 'endDate', label: 'Ngày kết thúc', type: 'date', required: true },
@@ -555,16 +580,19 @@ export const resources = {
 
   invoices: {
     key: 'invoices', title: 'Hóa đơn', singular: 'Hóa đơn',
-    description: 'Mỗi lần mua thẻ thành viên có một hóa đơn; hóa đơn đã thanh toán thì không xóa được. Gói học viên mua trên web được giữ 30 phút: nhận tiền xong bấm “Xác nhận đã nhận tiền” để kích hoạt thẻ, quá hạn thì máy chủ tự hủy đơn. “In” mở hóa đơn để in hoặc lưu PDF.',
-    source: api.invoices, sample: mock.invoices, canWrite: isFrontDesk, nameOf: (r) => `${r.memberName} · ${r.packageName}`,
-    canEditRow: (r) => !awaitingOnline(r),
+    description: 'Mỗi lần mua thẻ thành viên hoặc đặt lớp có học phí có một hóa đơn; hóa đơn đã thanh toán thì không xóa được. Đơn học viên đặt trên web được giữ 30 phút: nhận tiền xong bấm “Xác nhận đã nhận tiền” để kích hoạt thẻ hoặc giữ chỗ trong lớp, quá hạn thì máy chủ tự hủy đơn. “In” mở hóa đơn để in hoặc lưu PDF.',
+    source: api.invoices, sample: mock.invoices, canWrite: isFrontDesk, nameOf: (r) => `${r.memberName} · ${itemOf(r)}`,
+    // A class's invoice follows its booking (B53): it changes through confirm, cancel and refund, not by hand
+    canEditRow: (r) => !awaitingOnline(r) && !r.classBookingId,
     rowActions: [
       {
         label: 'Xác nhận đã nhận tiền',
         hidden: (r) => !awaitingOnline(r),
-        confirm: (r) => `Xác nhận đã nhận ${formatMoney(r.amount)} của ${r.memberName} cho ${r.packageName}? Thẻ sẽ được kích hoạt ngay.`,
+        confirm: (r) => `Xác nhận đã nhận ${formatMoney(r.amount)} của ${r.memberName} cho ${itemOf(r)}? ${r.className ? 'Học viên có chỗ trong lớp ngay.' : 'Thẻ sẽ được kích hoạt ngay.'}`,
         run: (r) => api.payments.confirm(r.id),
-        done: (r) => `Đã xác nhận thanh toán: ${r.packageName} của ${r.memberName} đã được kích hoạt.`,
+        done: (r) => (r.className
+          ? `Đã xác nhận thanh toán: ${r.memberName} đã có chỗ trong lớp ${r.className}.`
+          : `Đã xác nhận thanh toán: ${r.packageName} của ${r.memberName} đã được kích hoạt.`),
       },
       // Opens in a new tab so the list stays where it was (pages/InvoicePrint.jsx)
       { label: 'In', to: (r) => `/print/invoices/${r.id}`, newTab: true },
@@ -577,7 +605,7 @@ export const resources = {
         ? { load: async () => [await api.receptionists.me()], sample: mock.receptionists.slice(0, 1) }
         : L.receptionists,
     }),
-    searchText: (r) => `${r.memberName} ${r.packageName} ${r.receptionistName}`,
+    searchText: (r) => `${r.memberName} ${r.packageName ?? ''} ${r.className ?? ''} ${r.receptionistName}`,
     // Unpaid invoices have no payment date (null) and come first, then the newest payments
     sort: (a, b) =>
       !a.paymentDate || !b.paymentDate
@@ -586,7 +614,7 @@ export const resources = {
     columns: [
       { key: 'paymentDate', label: 'Ngày thanh toán', className: 'num', render: (r) => formatDate(r.paymentDate) },
       { key: 'memberName', label: 'Học viên', className: 'cell-strong' },
-      { key: 'packageName', label: 'Thẻ thành viên' },
+      { key: 'packageName', label: 'Nội dung', render: (r) => itemOf(r) },
       { key: 'amount', label: 'Số tiền', className: 'num', render: (r) => formatMoney(r.amount) },
       { key: 'paymentMethod', label: 'Hình thức', render: (r) => PaymentMethod.label(r.paymentMethod) },
       { key: 'status', label: 'Trạng thái', render: (r) => tag(InvoiceStatus)(r.status) },
@@ -765,23 +793,45 @@ export const resources = {
 
   packages: {
     key: 'packages', title: 'Gói tập', singular: 'Gói tập',
-    description: 'Các gói tập bán trên trang web và tại quầy lễ tân.',
-    source: api.packages, sample: mock.packages, canWrite: isManager, nameOf: (r) => r.packageName,
-    searchText: (r) => `${r.packageName} ${r.description}`,
+    description: () => (carries.discount
+      ? 'Các gói tập bán trên trang web và tại quầy lễ tân. Mỗi gói dùng cho mọi môn, giảm học phí mọi lớp theo mức của gói và kèm các dịch vụ ghi ở đây.'
+      : 'Các gói tập bán trên trang web và tại quầy lễ tân.'),
+    source: {
+      ...api.packages,
+      list: async () => {
+        const rows = await api.packages.list();
+        carries.discount = hasPackageDiscounts(rows);
+        return rows;
+      },
+    },
+    sample: mock.packages, canWrite: isManager, nameOf: (r) => r.packageName,
+    searchText: (r) => `${r.packageName} ${r.description} ${r.benefits ?? ''}`,
     idOf: (r) => r.membershipPackageId,
     columns: [
       { key: 'packageName', label: 'Gói tập', className: 'cell-strong' },
       { key: 'durationDays', label: 'Số ngày', className: 'num' },
       { key: 'price', label: 'Giá', className: 'num', render: (r) => formatMoney(r.price) },
+      {
+        key: 'discountPercent', label: 'Giảm học phí', className: 'num', hidden: () => !carries.discount,
+        render: (r) => `${r.discountPercent ?? 0}%`,
+      },
       { key: 'status', label: 'Trạng thái', render: (r) => tag(MembershipStatus)(r.status) },
     ],
     fields: [
       { name: 'packageName', label: 'Tên gói', required: true, full: true },
       { name: 'durationDays', label: 'Thời hạn (ngày)', type: 'number', required: true, min: 1 },
       { name: 'price', label: 'Giá (VND)', type: 'number', required: true, min: 0 },
+      {
+        name: 'discountPercent', label: 'Giảm học phí mọi lớp (%)', type: 'number', required: true, min: 0, max: 100,
+        defaultValue: () => '0', shown: () => carries.discount,
+      },
       // "Cancelled" only applies to a member's membership, not to a package on sale
       { name: 'status', label: 'Trạng thái', type: 'select', numeric: true, required: true, options: MembershipStatus.options.filter((o) => o.value !== 4), defaultValue: () => '1' },
       { name: 'description', label: 'Mô tả', type: 'textarea' },
+      {
+        name: 'benefits', label: 'Dịch vụ đi kèm', type: 'textarea', shown: () => carries.discount,
+        help: 'Mỗi dòng một dịch vụ, vd. “Khu gym tự do”, “Tủ đồ riêng”. Hiện trên trang Gói tập; nhân viên phục vụ tại trung tâm.',
+      },
     ],
   },
 

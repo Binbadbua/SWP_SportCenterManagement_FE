@@ -7,14 +7,9 @@ import { useApi } from '../../hooks/useApi.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import { addDaysToDateInput, formatDate, formatMoney, fromDateInput, realPhone, todayUtcDateString } from '../../lib/format.js';
 import Icon from '../../components/Icon.jsx';
+import PayMethods, { WEB_METHODS } from '../../components/PayMethods.jsx';
 import { AgreeToPolicies } from '../../components/Policies.jsx';
 import { Button, EmptyState, Field, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
-
-// Ways to pay for a web order (values are PaymentMethod in lib/enums.js); cash stays at the reception desk
-const METHODS = [
-  { value: 2, title: 'Chuyển khoản ngân hàng', text: 'Chuyển khoản theo hướng dẫn của lễ tân, ghi mã giao dịch trong nội dung chuyển khoản.' },
-  { value: 3, title: 'Thẻ ATM / Visa / Mastercard', text: 'Quẹt thẻ tại quầy lễ tân, đọc mã giao dịch cho lễ tân.' },
-];
 
 // A member confirms a package: POST /api/payments/checkout creates the membership (inactive) + a pending
 // invoice. The API has no payment gateway yet (paymentUrl is null), so the member goes to /payment/result
@@ -31,7 +26,7 @@ export default function Checkout() {
   const mine = useApi(() => api.memberships.mine(), [user?.accountId], { skip: !member });
 
   const [startDate, setStartDate] = useState(null); // null = the suggested day
-  const [method, setMethod] = useState(METHODS[0].value);
+  const [method, setMethod] = useState(WEB_METHODS[0].value);
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState({});
   const [paying, setPaying] = useState(false);
@@ -171,23 +166,7 @@ export default function Checkout() {
 
               <section className="checkout__step">
                 <h2 className="checkout__step-title"><span className="checkout__num">3</span> Phương thức thanh toán</h2>
-                <div className="pay-methods" role="radiogroup" aria-label="Phương thức thanh toán">
-                  {METHODS.map((m) => (
-                    <label key={m.value} className={`pay-method ${method === m.value ? 'is-active' : ''}`}>
-                      <input
-                        type="radio"
-                        name="paymentMethod"
-                        value={m.value}
-                        checked={method === m.value}
-                        onChange={() => setMethod(m.value)}
-                      />
-                      <span className="pay-method__text">
-                        <strong>{m.title}</strong>
-                        <span className="muted">{m.text}</span>
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                <PayMethods value={method} onChange={setMethod} />
                 <label className={`check check--terms ${errors.agree ? 'check--error' : ''}`}>
                   <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                   <span><AgreeToPolicies lead="Tôi đồng ý với" termsNote="(gồm quy định hoàn tiền, bảo lưu)" /></span>

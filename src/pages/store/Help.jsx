@@ -1,3 +1,4 @@
+import { useClassPricing } from '../../hooks/usePricing.js';
 import { Button } from '../../components/ui.jsx';
 
 const FAQ = [
@@ -13,7 +14,16 @@ const FAQ = [
   ['Cần hỗ trợ khác?', 'Gửi yêu cầu ở Tài khoản của tôi → Hỗ trợ. Lễ tân sẽ trả lời ngay tại đó và bạn theo dõi được trạng thái.'],
 ];
 
+// The answers that change once classes have fees (CHANGELOG Part B, B53)
+const WITH_CLASS_FEES = {
+  'Làm sao để đặt lớp?': 'Mở trang lớp, xem học phí và các buổi học rồi bấm “Đặt lớp và thanh toán”. Một lần đặt là tham gia được mọi buổi của lớp. Đơn giữ chỗ cho bạn 30 phút để thanh toán với lễ tân; lễ tân xác nhận xong là đặt lớp xong. Lớp miễn phí thì đặt ngay.',
+  'Thẻ thành viên dùng để làm gì?': 'Thẻ dùng cho mọi môn: trong thời hạn thẻ, bạn được giảm học phí mọi lớp theo mức của gói, kèm các dịch vụ ghi ở trang Gói tập. Không có thẻ bạn vẫn đặt lớp được với học phí gốc. Gia hạn bằng cách mua tiếp một gói ở Tài khoản của tôi → Thẻ thành viên, thẻ mới bắt đầu ngay sau ngày thẻ cũ hết hạn.',
+  'Tôi xem lịch tập của mình ở đâu?': 'Ở Tài khoản của tôi → Lịch tập: mọi buổi sắp tới của những lớp bạn đã đặt, theo từng ngày; lớp đang chờ thanh toán có nhãn riêng.',
+  'Tôi có hủy được không?': 'Lượt đặt chưa thanh toán: tự hủy ở Tài khoản của tôi → Lớp đã đặt. Lớp đã thanh toán: báo lễ tân trước buổi học đầu để hủy và nhận lại học phí; sau buổi đầu thì không hủy được.',
+};
+
 export default function Help() {
+  const billed = useClassPricing();
   return (
     <div className="container page narrow">
       <header className="page-head">
@@ -24,7 +34,7 @@ export default function Help() {
         {FAQ.map(([q, a], i) => (
           <details key={q} open={i === 0}>
             <summary>{q}</summary>
-            <p>{a}</p>
+            <p>{(billed && WITH_CLASS_FEES[q]) || a}</p>
           </details>
         ))}
       </div>
