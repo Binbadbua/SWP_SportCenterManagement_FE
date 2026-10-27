@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 
 // The member terms and privacy policy people agree to (Register, Checkout), each shown on its own page
 // (pages/store/Policy.jsx). Keep them true to how the site works; a rule the center adds goes here too.
-export const POLICY_UPDATED = '26/10/2026';
+export const POLICY_UPDATED = '27/10/2026';
 
 export const POLICIES = {
   terms: {
@@ -12,7 +12,7 @@ export const POLICIES = {
     items: [
       ['Tài khoản', 'Mỗi người dùng một tài khoản, khai đúng họ tên, email, số điện thoại và ngày sinh. Bạn tự giữ bí mật mật khẩu; thao tác bằng tài khoản của bạn được xem là do bạn thực hiện.'],
       ['Gói tập và thẻ thành viên', 'Thẻ có hiệu lực theo số ngày của gói, tính từ ngày bắt đầu, và chỉ dùng cho chính chủ tài khoản. Mua tại quầy lễ tân hoặc đặt mua trên web (đơn được giữ 30 phút để lễ tân xác nhận thanh toán); hóa đơn lưu ở Tài khoản của tôi → Hóa đơn.'],
-      ['Đặt lớp', 'Một lần đặt giữ chỗ cho mọi buổi của lớp. Bạn tự hủy trên web khi chưa học buổi nào; sau đó hãy nhờ lễ tân. Lớp đã đủ chỗ hoặc đã kết thúc không nhận đặt thêm.'],
+      ['Đặt lớp', 'Lớp học không thu thêm phí ngoài thẻ thành viên: để đặt lớp, bạn cần một thẻ còn hiệu lực vào ngày của buổi học kế tiếp, và các buổi sau ngày thẻ hết hạn chỉ học được khi đã gia hạn. Một lần đặt giữ chỗ cho mọi buổi của lớp. Bạn tự hủy trên web khi chưa học buổi nào; sau đó hãy nhờ lễ tân. Lớp đã đủ chỗ hoặc đã kết thúc không nhận đặt thêm.'],
       ['Điểm danh và tập luyện', 'Huấn luyện viên ghi có mặt hoặc vắng ở từng buổi, cùng kế hoạch và kết quả tập của bạn; bạn xem lại trong tài khoản.'],
       ['Nội quy', 'Đến đúng giờ, làm theo hướng dẫn của huấn luyện viên và nội quy phòng tập. Trung tâm có thể khóa tài khoản khai thông tin giả hoặc vi phạm nội quy.'],
       ['Hoàn tiền, bảo lưu', 'Gửi yêu cầu ở Tài khoản của tôi → Hỗ trợ; lễ tân xem xét từng trường hợp và trả lời tại đó.'],

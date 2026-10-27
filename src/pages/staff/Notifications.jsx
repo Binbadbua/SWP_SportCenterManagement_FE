@@ -3,6 +3,8 @@ import { api } from "../../api/endpoints.js";
 import { useApi } from "../../hooks/useApi.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { AccountRole } from "../../lib/enums.js";
+import { formatDate, todayUtcDateString } from "../../lib/format.js";
+import { HOMEWORK_PREFIX } from "../../lib/homework.js";
 import { useToast } from "../../components/Toast.jsx";
 import NotificationInbox from "../../components/NotificationInbox.jsx";
 import { Button, ErrorNotice, Field } from "../../components/ui.jsx";
@@ -87,6 +89,7 @@ function CoachSendPanel() {
     .sort((a, b) => a.fullName.localeCompare(b.fullName, "vi"));
   return (
     <SendForm
+      homework
       audiences={[
         { value: "all", label: "Tất cả học viên của tôi" },
         ...classes.map(([id, name]) => ({ value: `class:${id}`, label: `Học viên lớp ${name}` })),
@@ -108,13 +111,16 @@ function CoachSendPanel() {
   );
 }
 
-function SendForm({ audiences, people, recipientsFor, loading, error, onRetry }) {
+// `homework` (coaches): the message may be homework, sent as a notification whose title carries
+// HOMEWORK_PREFIX (lib/homework.js) and whose last line is the due date
+function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, homework = false }) {
   const toast = useToast();
-  const [v, setV] = useState({ audience: audiences[0].value, accountId: "", title: "", message: "" });
+  const [v, setV] = useState({ audience: audiences[0].value, accountId: "", kind: "notice", due: "", title: "", message: "" });
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
   const set = (n, val) => setV((s) => ({ ...s, [n]: val }));
   const recipients = recipientsFor(v.audience, v.accountId);
+  const isHomework = homework && v.kind === "homework";
 
   const send = async (e) => {
     e.preventDefault();
@@ -123,13 +129,20 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry })
     else if (!recipients.length) found.audience = "Nhóm này không có tài khoản nào đang hoạt động.";
     if (!v.title.trim()) found.title = "Vui lòng nhập tiêu đề.";
     if (!v.message.trim()) found.message = "Vui lòng nhập nội dung.";
+    if (isHomework && v.due && v.due < todayUtcDateString()) found.due = "Hạn hoàn thành phải từ hôm nay trở đi.";
     setErrors(found);
     if (Object.keys(found).length) return;
+    const title = isHomework ? `${HOMEWORK_PREFIX}${v.title.trim()}` : v.title.trim();
+    const message = isHomework && v.due
+      ? `${v.message.trim()}\n\nHạn hoàn thành: ${formatDate(v.due)}`
+      : v.message.trim();
     setSending(true);
     try {
-      await api.notifications.send({ accountIds: recipients, title: v.title.trim(), message: v.message.trim() });
-      toast.success(`Đã gửi tới ${recipients.length} tài khoản.`);
-      setV((s) => ({ ...s, title: "", message: "" }));
+      await api.notifications.send({ accountIds: recipients, title, message });
+      toast.success(isHomework
+        ? `Đã giao bài tập cho ${recipients.length} học viên.`
+        : `Đã gửi tới ${recipients.length} tài khoản.`);
+      setV((s) => ({ ...s, title: "", message: "", due: "" }));
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -139,8 +152,23 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry })
 
   return (
     <form className="panel" onSubmit={send} noValidate>
-      <h2 className="panel-title">Gửi thông báo</h2>
+      <h2 className="panel-title">{homework ? "Gửi thông báo hoặc bài tập" : "Gửi thông báo"}</h2>
       <ErrorNotice error={error} onRetry={onRetry} />
+      {homework && (
+        <Field
+          label="Loại tin"
+          name="kind"
+          type="select"
+          value={v.kind}
+          onChange={set}
+          placeholder="Chọn loại tin…"
+          options={[
+            { value: "notice", label: "Thông báo" },
+            { value: "homework", label: "Bài tập về nhà" },
+          ]}
+          help={isHomework ? "Học viên thấy tin này với nhãn “Bài tập về nhà” trong hộp thư." : undefined}
+        />
+      )}
       <Field
         label="Gửi tới"
         name="audience"
@@ -162,10 +190,38 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry })
           options={people}
         />
       )}
-      <Field label="Tiêu đề" name="title" required value={v.title} onChange={set} error={errors.title} />
-      <Field label="Nội dung" name="message" type="textarea" required value={v.message} onChange={set} error={errors.message} />
+      <Field
+        label={isHomework ? "Tên bài tập" : "Tiêu đề"}
+        name="title"
+        required
+        value={v.title}
+        onChange={set}
+        error={errors.title}
+        placeholder={isHomework ? "Ví dụ: 3 hiệp plank 45 giây" : undefined}
+      />
+      <Field
+        label={isHomework ? "Hướng dẫn" : "Nội dung"}
+        name="message"
+        type="textarea"
+        required
+        value={v.message}
+        onChange={set}
+        error={errors.message}
+      />
+      {isHomework && (
+        <Field
+          label="Hạn hoàn thành"
+          name="due"
+          type="date"
+          min={todayUtcDateString()}
+          value={v.due}
+          onChange={set}
+          error={errors.due}
+          help="Không bắt buộc. Ghi ở cuối nội dung tin."
+        />
+      )}
       <Button type="submit" disabled={sending || loading}>
-        {sending ? "Đang gửi…" : "Gửi"}
+        {sending ? "Đang gửi…" : isHomework ? "Giao bài tập" : "Gửi"}
       </Button>
     </form>
   );

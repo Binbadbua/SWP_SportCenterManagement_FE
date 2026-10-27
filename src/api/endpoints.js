@@ -66,6 +66,8 @@ export const api = {
       http.post(`/api/memberships/${id}/renew${receptionistId ? `?receptionistId=${receptionistId}` : ""}`),
     cancel: (id) => http.post(`/api/memberships/${id}/cancel`),
     mine: listOf("/api/members/me/memberships?pageSize=50", "membershipId"),
+    // Reception / manager: one member's cards, e.g. to check them before booking a class for the member
+    byMember: (memberId) => listOf(`/api/members/${memberId}/memberships?${ALL}`, "membershipId")(),
   },
 
   members: {
@@ -156,6 +158,8 @@ export const api = {
   invoices: {
     ...crud("/api/invoices"),
     mine: listOf("/api/members/me/invoices"),
+    // Reception / manager: the invoice to print (same fields as GET /api/invoices/{id})
+    export: (id) => http.get(`/api/invoices/${id}/export`),
   },
 
   notifications: {

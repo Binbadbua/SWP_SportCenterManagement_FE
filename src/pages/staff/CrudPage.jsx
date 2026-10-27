@@ -71,15 +71,18 @@ function Pager({ page, pageCount, total, onPage }) {
  *   lookups?: (user) => ({ name: { load, sample } })   // data for <select> options
  *   columns: [{ key, label, render?(row, lookups), className?, hidden?(user) }]
  *   filters?: [{ key, label, all, options(rows, lookups), match(row, value) }]   // selects beside the search
- *   fields?: [{ name, label, type, required, options?, optionsFrom?(lookups, user), createOnly?, editOnly?,
- *               numeric?, min?, max?, step?, help?, full?, defaultValue?(user) }]
+ *   fields?: [{ name, label, type, required, options?, optionsFrom?(lookups, user, values), createOnly?, editOnly?,
+ *               shown?(values, mode), numeric?, min?, max?, step?, help?, full?, defaultValue?(user) }]
  *               type "image" = a photo picked from the computer, uploaded at once; the value is its link
+ *               shown false = the field is not drawn, checked or sent (e.g. "member" when a plan is for the whole class)
  *   searchText?(row), sort?(a, b), validate?(values), toRequest?(values, ctx), canWrite?(user), canDelete?(user),
  *   canEditRow?(row, user)                      // false hides that row's edit button
- *   rowActions?: [{ label, icon?, to?(row), modal?: { title(row), render(row, lookups, { close, reload }) },
+ *   doneMessage?(mode, result)                  // toast after a save instead of "Đã thêm …" / "Đã lưu …"
+ *   rowActions?: [{ label, icon?, to?(row), newTab?, modal?: { title(row), render(row, lookups, { close, reload }) },
  *                   run?(row), confirm?(row), done?(row), hidden?(row, user, lookups) }],
  *   nameOf(row)                                 // used in confirm/toast messages
  * }
+ * A save that fails after writing part of its rows throws an error with `partial: true`: the list reloads.
  * Edit and delete buttons only appear when the source has update / remove.
  * The API writes the audit log itself, so pages here never post to it.
  */
@@ -169,6 +172,9 @@ export default function CrudPage({ config }) {
     (config.fields ?? []).filter((f) =>
       mode === "create" ? !f.editOnly : !f.createOnly,
     );
+  // The fields the form shows for the values typed so far
+  const shownFields = (mode, values) =>
+    fieldsFor(mode).filter((f) => !f.shown || f.shown(values, mode));
 
   const openCreate = () => {
     const values = Object.fromEntries(
@@ -218,7 +224,7 @@ export default function CrudPage({ config }) {
 
   const validate = (mode, values) => {
     const e = {};
-    for (const f of fieldsFor(mode)) {
+    for (const f of shownFields(mode, values)) {
       const v = values[f.name];
       if (f.required && (v === "" || v === null || v === undefined))
         e[f.name] = `${f.type === "select" ? "Vui lòng chọn" : "Vui lòng nhập"} ${f.label.charAt(0).toLowerCase()}${f.label.slice(1)}.`;
@@ -236,7 +242,7 @@ export default function CrudPage({ config }) {
 
   const toRequest = (mode, values) => {
     const body = {};
-    for (const f of fieldsFor(mode)) {
+    for (const f of shownFields(mode, values)) {
       const v = values[f.name];
       if (v === "" || v === undefined) continue; // let the API use its default
       if (f.type === "number" || f.numeric) body[f.name] = Number(v);
@@ -257,16 +263,19 @@ export default function CrudPage({ config }) {
     setFormError(null);
     try {
       const body = toRequest(form.mode, form.values);
-      if (form.mode === "create") await source.create(body);
-      else await source.update(form.row.id, body);
+      const result = form.mode === "create"
+        ? await source.create(body)
+        : await source.update(form.row.id, body);
       toast.success(
-        form.mode === "create"
-          ? `Đã thêm ${config.singular.toLowerCase()}.`
-          : `Đã lưu ${config.singular.toLowerCase()}.`,
+        config.doneMessage?.(form.mode, result) ??
+          (form.mode === "create"
+            ? `Đã thêm ${config.singular.toLowerCase()}.`
+            : `Đã lưu ${config.singular.toLowerCase()}.`),
       );
       setForm(null);
       list.reload();
     } catch (err) {
+      if (err.partial) list.reload();
       let errorMsg = "Đã xảy ra lỗi hệ thống.";
       const responseData = err.response?.data;
 
@@ -442,6 +451,7 @@ export default function CrudPage({ config }) {
                             key={a.label}
                             className="btn btn--secondary btn--sm"
                             to={a.to(row)}
+                            {...(a.newTab ? { target: "_blank", rel: "noopener" } : {})}
                           >
                             {a.label}
                           </Link>
@@ -543,7 +553,7 @@ export default function CrudPage({ config }) {
               </div>
             )}
             <div className="form-grid">
-              {fieldsFor(form.mode).map((f) => f.type === "image" ? (
+              {shownFields(form.mode, form.values).map((f) => f.type === "image" ? (
                 <ImageField
                   key={f.name}
                   className="field--full"
@@ -570,7 +580,7 @@ export default function CrudPage({ config }) {
                   step={f.step}
                   help={f.help}
                   placeholder={f.placeholder}
-                  options={f.optionsFrom ? f.optionsFrom(lk, user) : f.options}
+                  options={f.optionsFrom ? f.optionsFrom(lk, user, form.values) : f.options}
                   value={form.values[f.name]}
                   onChange={setValue}
                   error={errors[f.name]}

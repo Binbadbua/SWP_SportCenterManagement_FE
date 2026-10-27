@@ -14,6 +14,7 @@ import {
   isSessionOver,
 } from "../../lib/format.js";
 import { ClassStatus } from "../../lib/enums.js";
+import { cardCheck } from "../../lib/membership.js";
 import Icon from "../../components/Icon.jsx";
 import { classEyebrow, CoachPortrait } from "../../components/cards.jsx";
 import {
@@ -21,6 +22,7 @@ import {
   EmptyState,
   ErrorNotice,
   Loading,
+  Notice,
   SampleDataNotice,
 } from "../../components/ui.jsx";
 
@@ -60,6 +62,10 @@ export default function ClassDetail() {
   const myBookings = useApi(() => api.bookings.mine(), [user?.accountId], {
     skip: !member,
     sample: () => mock.bookings.filter((b) => b.memberId === memberId),
+  });
+  // Booking needs a card valid on the class's next session (lib/membership.js)
+  const myCards = useApi(() => api.memberships.mine(), [user?.accountId], {
+    skip: !member,
   });
 
   const [showAll, setShowAll] = useState(false);
@@ -112,6 +118,13 @@ export default function ClassDetail() {
   const upcoming = allSessions.filter((s) => !isSessionOver(s));
   const noSessionsLeft = !sessions.loading && upcoming.length === 0;
   const usingSample = cls.usingSample || sessions.usingSample;
+  // null until both the member's cards and the sessions are known
+  const card =
+    member && myCards.data && !sessions.loading && !sessions.usingSample
+      ? cardCheck(myCards.data, allSessions)
+      : null;
+  const needsCard = card?.ok === false;
+  const checkingCard = member && (myCards.loading || !!myCards.error);
 
   const book = async () => {
     if (!user) {
@@ -186,13 +199,14 @@ export default function ClassDetail() {
       </>
     );
   } else {
+    const open = !closed && !noSessionsLeft && spotsLeft > 0;
     cta = (
       <>
         <Button
           size="lg"
           block
           onClick={book}
-          disabled={busy || closed || spotsLeft === 0 || sessions.loading || noSessionsLeft}
+          disabled={busy || !open || sessions.loading || checkingCard || needsCard}
         >
           {closed
             ? "Đã đóng đăng ký"
@@ -202,9 +216,11 @@ export default function ClassDetail() {
                 ? "Lớp đã đủ chỗ"
                 : busy
                   ? "Đang đặt…"
-                  : user
-                    ? "Đặt lớp này"
-                    : "Đăng nhập để đặt lớp"}
+                  : needsCard
+                    ? "Cần thẻ thành viên còn hiệu lực"
+                    : user
+                      ? "Đặt lớp này"
+                      : "Đăng nhập để đặt lớp"}
         </Button>
         {!closed && noSessionsLeft && (
           <p className="muted small">
@@ -213,6 +229,26 @@ export default function ClassDetail() {
               : "Lớp chưa được xếp buổi học. Lớp sẽ mở đăng ký khi có lịch học."}
           </p>
         )}
+        {open && !user && (
+          <p className="muted small">
+            Lớp học không thu thêm phí: bạn cần một thẻ thành viên còn hiệu lực vào ngày của buổi học kế tiếp.
+          </p>
+        )}
+        {open && member && myCards.error && (
+          <ErrorNotice error={myCards.error} onRetry={myCards.reload} />
+        )}
+        {open && needsCard && (
+          <Notice
+            tone="warning"
+            title="Cần thẻ thành viên để đặt lớp"
+            action={<Button size="sm" to="/memberships">Xem gói tập</Button>}
+          >
+            {card.reason} Lớp học không thu thêm phí, nhưng bạn cần một thẻ còn hiệu lực vào ngày của buổi học kế
+            tiếp ({formatDate(card.nextDate)}). Xem thẻ của bạn ở{" "}
+            <Link className="text-link" to="/account?tab=membership">Tài khoản → Thẻ thành viên</Link>.
+          </Notice>
+        )}
+        {open && card?.warning && <p className="muted small">{card.warning}</p>}
       </>
     );
   }
@@ -273,7 +309,7 @@ export default function ClassDetail() {
           <p className="pdp__sub">
             Lớp {c.categoryName} · cùng {c.coachName}
           </p>
-          <p className="pdp__price">Đã bao gồm trong mọi thẻ thành viên</p>
+          <p className="pdp__price">Không thu thêm phí khi bạn có thẻ thành viên còn hiệu lực</p>
           <p className={`pdp__eyebrow eyebrow--${eyebrow.tone}`}>
             {eyebrow.text}
           </p>

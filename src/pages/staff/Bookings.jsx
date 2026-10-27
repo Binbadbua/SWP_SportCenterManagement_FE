@@ -3,13 +3,50 @@ import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
 import { BookingStatus } from '../../lib/enums.js';
-import { formatDate, isSessionOver, realPhone } from '../../lib/format.js';
+import { daysUntil, formatDate, isSessionOver, realPhone, todayUtcDateString } from '../../lib/format.js';
+import { cardCheck, cardsOn } from '../../lib/membership.js';
 import { useToast } from '../../components/Toast.jsx';
-import { Button, EmptyState, ErrorNotice, Field, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
+import { Button, EmptyState, ErrorNotice, Field, Loading, Notice, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
 
 // A booking holds its spot unless it was cancelled (the API deletes cancelled bookings, but older
 // rows may still say Cancelled)
 const holdsSpot = (b) => b.status !== 3;
+
+// The member's card, shown under the member picker: classes need a card valid on their next session
+function CardStatus({ cards }) {
+  if (cards.loading) return <p className="muted small">Đang kiểm tra thẻ thành viên…</p>;
+  if (cards.error) return <ErrorNotice error={cards.error} onRetry={cards.reload} />;
+  const list = cards.data ?? [];
+  const today = todayUtcDateString();
+  const [active] = cardsOn(list, today);
+  if (active) {
+    return (
+      <Notice tone="success" title={active.packageName}>
+        Còn hiệu lực đến {formatDate(active.endDate)} (còn {daysUntil(active.endDate)} ngày). Đặt được các lớp có buổi
+        học kế tiếp trong thời hạn thẻ.
+      </Notice>
+    );
+  }
+  const pending = list.find((m) => m.status === 2 && String(m.endDate).slice(0, 10) >= today);
+  const later = list.find((m) => m.status === 1 && String(m.startDate).slice(0, 10) > today);
+  return (
+    <Notice
+      tone="warning"
+      title={later ? `${later.packageName} bắt đầu từ ${formatDate(later.startDate)}` : 'Học viên chưa có thẻ còn hiệu lực'}
+      action={!later && (
+        <Button size="sm" variant="secondary" to={pending ? '/staff/invoices' : '/staff/memberships'}>
+          {pending ? 'Thu tiền' : 'Bán thẻ'}
+        </Button>
+      )}
+    >
+      {later
+        ? 'Chỉ đặt được các lớp có buổi học kế tiếp từ ngày đó trở đi.'
+        : pending
+          ? `${pending.packageName} chưa được kích hoạt vì chưa thanh toán. Thu tiền ở trang Hóa đơn (đơn mua trên web: bấm “Xác nhận đã nhận tiền”) rồi đặt lớp.`
+          : 'Lớp học không thu thêm phí nhưng cần thẻ thành viên còn hiệu lực. Bán thẻ cho học viên ở trang Thẻ thành viên rồi quay lại đặt lớp.'}
+    </Notice>
+  );
+}
 
 // Front desk: book a member into a class, or look up and cancel their bookings.
 export default function Bookings() {
@@ -25,6 +62,7 @@ export default function Bookings() {
 
   // The bookings of the member being booked mark the classes they already hold a spot in
   const memberBookings = useApi(() => api.bookings.byMember(memberId), [memberId], { skip: !memberId });
+  const memberCards = useApi(() => api.memberships.byMember(memberId), [memberId], { skip: !memberId });
   const bookings = useApi(() => api.bookings.byMember(lookupId), [lookupId], { skip: !lookupId });
 
   const memberOptions = useMemo(
@@ -39,7 +77,10 @@ export default function Bookings() {
   // Classes open for booking; one that can't take this member says why and can't be picked
   const heldByMember = new Set((memberBookings.data ?? []).filter(holdsSpot).map((b) => b.classId));
   const sessionsKnown = !!sessions.data && !sessions.error && !sessions.usingSample;
+  const cardsKnown = !!memberId && !!memberCards.data && !memberCards.error;
   const withSessionsLeft = new Set((sessions.data ?? []).filter((s) => !isSessionOver(s)).map((s) => s.classId));
+  // The member's cards against each class's next session (null while either is still unknown)
+  const cardFor = (id) => (cardsKnown && sessionsKnown ? cardCheck(memberCards.data, sessions.data, id) : null);
   const classOptions = (classes.data ?? [])
     .filter((c) => c.status === 1 || c.status === 2)
     .sort((a, b) => a.className.localeCompare(b.className, 'vi'))
@@ -51,7 +92,9 @@ export default function Bookings() {
           ? 'đã đủ chỗ'
           : sessionsKnown && !withSessionsLeft.has(c.id)
             ? 'hết buổi học'
-            : null;
+            : cardFor(c.id)?.ok === false
+              ? 'thẻ không còn hiệu lực vào buổi tới'
+              : null;
       const spots = left === null ? null : `còn ${left} chỗ`;
       return {
         value: c.id,
@@ -59,6 +102,7 @@ export default function Bookings() {
         disabled: !!blocked,
       };
     });
+  const chosenCard = classId ? cardFor(classId) : null;
 
   const book = async (e) => {
     e.preventDefault();
@@ -70,6 +114,11 @@ export default function Bookings() {
     const who = memberName(memberId);
     const className = (classes.data ?? []).find((c) => c.id === classId)?.className ?? 'lớp này';
     const alreadyBooked = `${who} đã đặt lớp ${className} rồi.`;
+    // The API does not check the card yet (CHANGELOG Part B, B45), so the desk does
+    if (chosenCard && !chosenCard.ok) {
+      setFormError(`${chosenCard.reason} ${who} cần thẻ còn hiệu lực vào buổi học kế tiếp của lớp (${formatDate(chosenCard.nextDate)}).`);
+      return;
+    }
     setSaving(true);
     try {
       // Checked again here: the member may have booked online since this page loaded
@@ -80,7 +129,7 @@ export default function Bookings() {
         return;
       }
       const b = await api.bookings.create({ memberId, classId });
-      toast.success(`Đã đặt lớp ${b.className ?? className} cho ${b.memberName ?? who}.`);
+      toast.success(`Đã đặt lớp ${b.className ?? className} cho ${b.memberName ?? who}.${chosenCard?.warning ? ` ${chosenCard.warning}` : ''}`);
       setClassId('');
       if (lookupId === memberId) bookings.reload();
       else setLookupId(memberId);
@@ -142,6 +191,7 @@ export default function Bookings() {
             placeholder={memberPlaceholder}
             help="Mọi học viên đã đăng ký trên web hoặc tại quầy. Gõ vài chữ đầu của tên để nhảy nhanh tới người cần tìm."
           />
+          {memberId && <CardStatus cards={memberCards} />}
           <Field
             label="Lớp học"
             name="classId"
@@ -156,12 +206,13 @@ export default function Bookings() {
             placeholder={classes.loading ? 'Đang tải danh sách lớp…' : 'Chọn lớp học…'}
             help={
               memberId
-                ? 'Không chọn được lớp học viên đã đặt, lớp đã đủ chỗ và lớp đã hết buổi học.'
+                ? 'Không chọn được lớp học viên đã đặt, lớp đã đủ chỗ, lớp đã hết buổi học và lớp có buổi kế tiếp nằm ngoài thời hạn thẻ của học viên.'
                 : 'Chọn học viên trước để biết họ có thể vào những lớp nào.'
             }
           />
+          {chosenCard?.warning && <p className="muted small">{chosenCard.warning}</p>}
           {formError && <p className="field__error" role="alert">{formError}</p>}
-          <Button type="submit" disabled={saving}>{saving ? 'Đang đặt…' : 'Đặt lớp'}</Button>
+          <Button type="submit" disabled={saving || (!!memberId && memberCards.loading)}>{saving ? 'Đang đặt…' : 'Đặt lớp'}</Button>
         </form>
 
         <section className="panel">

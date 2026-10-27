@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { api, isMissingRoute } from "../../api/endpoints.js";
 import * as mock from "../../api/mockData.js";
 import { useApi } from "../../hooks/useApi.js";
@@ -15,17 +15,23 @@ import {
   SupportRequestStatus,
 } from "../../lib/enums.js";
 import {
+  addDaysToDateInput,
   daysUntil,
   formatDate,
   formatDateTime,
   formatMoney,
   formatTime,
+  formatTimeRange,
+  formatWeekday,
   fromDateInput,
   initials,
+  isSessionOver,
   realPhone,
   toDateInput,
+  todayLocalDateString,
   todayUtcDateString,
 } from "../../lib/format.js";
+import { cardsOn } from "../../lib/membership.js";
 import { useToast } from "../../components/Toast.jsx";
 import NotificationInbox from "../../components/NotificationInbox.jsx";
 import {
@@ -42,6 +48,7 @@ import {
 
 const TABS = [
   { key: "bookings", label: "Lớp đã đặt" },
+  { key: "schedule", label: "Lịch tập" },
   { key: "attendance", label: "Điểm danh" },
   { key: "membership", label: "Thẻ thành viên" },
   { key: "training", label: "Tập luyện" },
@@ -122,6 +129,7 @@ export default function Account() {
 
       <div className="account__panel">
         {tab === "bookings" && <BookingsTab memberId={user.memberId} />}
+        {tab === "schedule" && <ScheduleTab />}
         {tab === "attendance" && <AttendanceTab memberId={user.memberId} />}
         {tab === "membership" && <MembershipTab />}
         {tab === "training" && <TrainingTab />}
@@ -236,6 +244,113 @@ function BookingsTab({ memberId }) {
   );
 }
 
+/* ---- Personal schedule (API) -------------------------------------------- */
+// The upcoming sessions of every class the member booked. The API has no "my sessions" endpoint, so the
+// bookings are matched with the public timetable; a session outside the member's card dates is flagged.
+const SCHEDULE_SHOWN = 20;
+function ScheduleTab() {
+  const bookings = useApi(() => api.bookings.mine(), []);
+  const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
+  const classes = useApi(() => api.classes.list(), [], { sample: mock.classes });
+  const cards = useApi(() => api.memberships.mine(), []);
+  const [showAll, setShowAll] = useState(false);
+  if (bookings.loading || sessions.loading) return <Loading />;
+
+  const booked = new Set((bookings.data ?? []).filter((b) => b.status !== 3).map((b) => b.classId));
+  const upcoming = (sessions.data ?? [])
+    .filter((s) => booked.has(s.classId) && !isSessionOver(s))
+    .sort((a, b) => `${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`));
+  const shown = showAll ? upcoming : upcoming.slice(0, SCHEDULE_SHOWN);
+  // [["2026-10-28", [sessions…]], …] in date order
+  const days = [...shown.reduce((m, s) => {
+    const day = String(s.date).slice(0, 10);
+    return m.set(day, [...(m.get(day) ?? []), s]);
+  }, new Map())];
+  const coachOf = (id) => (classes.data ?? []).find((c) => c.id === id)?.coachName;
+  // Unknown cards (still loading or failed) flag nothing
+  const covered = (day) => !cards.data || cardsOn(cards.data, day).length > 0;
+  const uncovered = upcoming.filter((s) => !covered(String(s.date).slice(0, 10))).length;
+  const today = todayLocalDateString();
+  const dayName = (day) =>
+    day === today ? "Hôm nay" : day === addDaysToDateInput(today, 1) ? "Ngày mai" : formatWeekday(day);
+
+  return (
+    <>
+      {sessions.usingSample && <SampleDataNotice onRetry={sessions.reload} />}
+      <ErrorNotice error={bookings.error} onRetry={bookings.reload} />
+      <ErrorNotice error={!sessions.usingSample ? sessions.error : null} onRetry={sessions.reload} />
+      {!upcoming.length ? (
+        !bookings.error &&
+        !sessions.error && (
+          <EmptyState
+            title={booked.size ? "Không còn buổi học sắp tới" : "Bạn chưa đặt lớp nào"}
+            action={<Button to="/classes">Tìm lớp học</Button>}
+          >
+            {booked.size
+              ? "Các buổi của những lớp bạn đã đặt đều đã diễn ra. Hãy đặt thêm lớp mới."
+              : "Đặt một lớp để các buổi học của lớp hiện ở đây theo từng ngày."}
+          </EmptyState>
+        )
+      ) : (
+        <>
+          <p className="stat-line">
+            <span className="display stat-line__num">{upcoming.length}</span>
+            <span className="muted">buổi học sắp tới của {booked.size} lớp đã đặt</span>
+          </p>
+          {uncovered > 0 && (
+            (cards.data ?? []).some((m) => m.status === 1) ? (
+              <Notice
+                tone="warning"
+                title={`${uncovered} buổi nằm ngoài thời hạn thẻ của bạn`}
+                action={<Button size="sm" variant="secondary" to="/account?tab=membership">Xem thẻ</Button>}
+              >
+                Bạn cần thẻ còn hiệu lực vào ngày học. Gia hạn hoặc mua gói mới để tham gia các buổi này.
+              </Notice>
+            ) : (
+              <Notice
+                tone="warning"
+                title="Bạn chưa có thẻ thành viên còn hiệu lực"
+                action={<Button size="sm" variant="secondary" to="/memberships">Xem gói tập</Button>}
+              >
+                Các buổi dưới đây chỉ học được khi bạn có thẻ còn hiệu lực vào ngày học. Lớp học không thu thêm phí
+                ngoài thẻ.
+              </Notice>
+            )
+          )}
+          <div className="my-schedule">
+            {days.map(([day, list]) => (
+              <section key={day} className="my-schedule__day">
+                <h3 className="my-schedule__date">
+                  {dayName(day)} <span className="muted num">{formatDate(day)}</span>
+                </h3>
+                <ul className="my-schedule__list">
+                  {list.map((s) => (
+                    <li key={s.id} className="my-schedule__item">
+                      <span className="my-schedule__time num">{formatTimeRange(s.startTime, s.endTime)}</span>
+                      <span className="my-schedule__what">
+                        <Link className="cell-strong" to={`/classes/${s.classId}`}>{s.className}</Link>
+                        <span className="muted">
+                          {[s.roomName, coachOf(s.classId)].filter(Boolean).join(" · ")}
+                        </span>
+                      </span>
+                      {!covered(day) && <StatusTag tone="warning">Ngoài thời hạn thẻ</StatusTag>}
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+          {upcoming.length > SCHEDULE_SHOWN && (
+            <button type="button" className="plain-btn sessions__more" onClick={() => setShowAll((v) => !v)}>
+              {showAll ? "Thu gọn" : `Xem tất cả ${upcoming.length} buổi`}
+            </button>
+          )}
+        </>
+      )}
+    </>
+  );
+}
+
 /* ---- Attendance (API) --------------------------------------------------- */
 function AttendanceTab({ memberId }) {
   const rows = useApi(() => api.attendance.mine(), [], {
@@ -299,18 +414,39 @@ function AttendanceTab({ memberId }) {
 }
 
 /* ---- Membership (API) --------------------------------------------------- */
+// A card lets the member book classes whose sessions fall within its dates, at no extra cost. Renewing
+// is buying the package again: checkout starts the new card the day after the current one ends.
 function MembershipTab() {
   const rows = useApi(() => api.memberships.mine(), []);
+  const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
+  const invoices = useApi(() => api.invoices.mine(), []);
   if (rows.loading) return <Loading />;
   const list = rows.data ?? [];
   const today = todayUtcDateString();
-  const current = list.find(
-    (m) => m.status === 1 && String(m.endDate).slice(0, 10) >= today,
-  );
+  const current = list
+    .filter((m) => m.status === 1 && String(m.endDate).slice(0, 10) >= today)
+    .sort((a, b) => String(b.endDate).localeCompare(String(a.endDate)))[0];
   const left = current ? daysUntil(current.endDate) : null;
+  // A package bought on the website waits for reception: its invoice is the payment to follow
+  const pending = list.filter((m) => m.status === 2 && String(m.endDate).slice(0, 10) >= today);
+  const paymentOf = (m) => (invoices.data ?? []).find((i) => i.memberMembershipId === m.id && i.status === 1);
+  const latest = current ?? [...list].sort((a, b) => String(b.endDate).localeCompare(String(a.endDate)))[0];
+  const onSale = latest && (packages.data ?? []).some((p) => p.id === latest.packageId && p.status === 1);
   return (
     <>
       <ErrorNotice error={rows.error} onRetry={rows.reload} />
+      {pending.map((m) => (
+        <Notice
+          key={m.id}
+          tone="warning"
+          title={`${m.packageName} đang chờ xác nhận thanh toán`}
+          action={paymentOf(m) && (
+            <Button size="sm" variant="secondary" to={`/payment/result?paymentId=${paymentOf(m).id}`}>Xem đơn</Button>
+          )}
+        >
+          Thanh toán với lễ tân để kích hoạt thẻ; đơn mua trên web tự hủy sau 30 phút nếu chưa được xác nhận.
+        </Notice>
+      ))}
       {current && (
         <p className="stat-line">
           <span className="display stat-line__num">{current.packageName}</span>
@@ -319,6 +455,21 @@ function MembershipTab() {
             {left !== null && ` · còn ${left} ngày`}
           </span>
         </p>
+      )}
+      {list.length > 0 && (
+        <div className="membership-actions">
+          {onSale && (
+            <Button to={`/memberships/${latest.packageId}/checkout`}>
+              {current ? `Gia hạn ${latest.packageName}` : `Mua lại ${latest.packageName}`}
+            </Button>
+          )}
+          <Button variant="secondary" to="/memberships">{onSale ? "Chọn gói khác" : "Xem các gói tập"}</Button>
+          <p className="muted small">
+            {current
+              ? `Thẻ mới bắt đầu ngay sau ngày ${formatDate(current.endDate)}. Trong thời hạn thẻ, bạn đặt lớp không mất thêm phí.`
+              : "Bạn cần thẻ còn hiệu lực để đặt lớp. Lớp học không thu thêm phí ngoài thẻ."}
+          </p>
+        </div>
       )}
       {list.length ? (
         <div className="table-wrap">
@@ -453,6 +604,9 @@ function InvoicesTab() {
                 <th>Hình thức</th>
                 <th>Số tiền</th>
                 <th>Trạng thái</th>
+                <th>
+                  <span className="visually-hidden">In hóa đơn</span>
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -466,6 +620,17 @@ function InvoicesTab() {
                     <StatusTag tone={InvoiceStatus.tone(i.status)}>
                       {InvoiceStatus.label(i.status)}
                     </StatusTag>
+                  </td>
+                  <td className="cell-actions">
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      to={`/print/invoices/${i.id}`}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      In
+                    </Button>
                   </td>
                 </tr>
               ))}

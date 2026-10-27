@@ -4,18 +4,18 @@ import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import { IMAGES } from '../../lib/images.js';
-import { formatDate, todayUtcDateString } from '../../lib/format.js';
+import { formatDate, formatMoney, todayUtcDateString } from '../../lib/format.js';
 import { PackageCard } from '../../components/cards.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
 
 // Plans come from GET /api/membership-packages. Choosing one opens its checkout page (Checkout.jsx),
-// where a member confirms the dates and pays online.
-const INCLUDED = [
-  ['Mọi lớp tập nhóm', true, true, true],
-  ['Phòng gym & hồ bơi', 'Giờ thấp điểm', true, true],
-  ['Gặp huấn luyện viên', false, 'Hằng tháng', 'Hằng tháng'],
-  ['Kế hoạch tập riêng', false, false, true],
-  ['Đánh giá tiến độ', false, false, true],
+// where a member confirms the dates and pays online. A package carries only a name, description, length
+// and price, so the page compares those; what each package covers is in its description.
+const HOW_IT_WORKS = [
+  ['Chọn gói và đặt mua', 'Đặt mua trên web hoặc tại quầy. Đơn mua trên web được giữ 30 phút.'],
+  ['Thanh toán với lễ tân', 'Lễ tân xác nhận đã nhận tiền, thẻ được kích hoạt và hóa đơn được xuất ngay.'],
+  ['Đặt lớp không mất thêm phí', 'Trong thời hạn thẻ, bạn đặt các lớp có buổi học kế tiếp nằm trong thời hạn đó.'],
+  ['Gia hạn trước khi hết hạn', 'Mua tiếp một gói: thẻ mới bắt đầu ngay sau ngày thẻ cũ hết hạn.'],
 ];
 
 export default function Memberships() {
@@ -37,7 +37,7 @@ export default function Memberships() {
         <div className="plan-hero__shade" />
         <div className="container plan-hero__content">
           <h1 className="display plan-hero__title">Gói tập</h1>
-          <p className="plan-hero__lead">Một thẻ cho mọi lớp học, sân tập và làn bơi. Thanh toán một lần, tập bao nhiêu tùy thích.</p>
+          <p className="plan-hero__lead">Thanh toán một lần cho cả thời hạn của thẻ. Trong thời gian đó, đặt lớp không mất thêm phí.</p>
         </div>
       </section>
 
@@ -68,24 +68,40 @@ export default function Memberships() {
           !packages.error && <EmptyState title="Hiện chưa có gói tập nào đang bán">Hãy hỏi lễ tân về các gói tập.</EmptyState>
         )}
 
-        {active.length > 0 && (
+        <section className="block">
+          <h2 className="section-title">Thẻ thành viên dùng thế nào?</h2>
+          <ol className="how-steps">
+            {HOW_IT_WORKS.map(([title, text], i) => (
+              <li key={title} className="how-steps__item">
+                <span className="how-steps__num display">{i + 1}</span>
+                <p className="cell-strong">{title}</p>
+                <p className="muted">{text}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {active.length > 1 && (
           <section className="block">
-            <h2 className="section-title">Quyền lợi của từng gói</h2>
+            <h2 className="section-title">So sánh các gói</h2>
+            <p className="muted">Các môn và dịch vụ của từng gói ghi trong phần mô tả; hỏi lễ tân nếu bạn chưa rõ.</p>
             <div className="table-wrap">
               <table className="table compare">
                 <thead>
                   <tr>
-                    <th scope="col">Quyền lợi</th>
-                    {active.slice(0, 3).map((p) => <th scope="col" key={p.id}>{p.packageName}</th>)}
+                    <th scope="col">Gói tập</th>
+                    <th scope="col">Thời hạn</th>
+                    <th scope="col">Giá</th>
+                    <th scope="col">Bình quân mỗi ngày</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {INCLUDED.map(([name, ...cols]) => (
-                    <tr key={name}>
-                      <th scope="row">{name}</th>
-                      {cols.slice(0, Math.min(3, active.length)).map((v, i) => (
-                        <td key={i}>{v === true ? 'Có' : v === false ? '—' : v}</td>
-                      ))}
+                  {active.map((p) => (
+                    <tr key={p.id}>
+                      <th scope="row">{p.packageName}</th>
+                      <td className="num">{p.durationDays} ngày</td>
+                      <td className="num">{formatMoney(p.price)}</td>
+                      <td className="num">{formatMoney(Math.round(p.price / Math.max(1, p.durationDays) / 100) * 100)}</td>
                     </tr>
                   ))}
                 </tbody>

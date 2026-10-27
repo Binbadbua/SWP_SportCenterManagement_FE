@@ -17,6 +17,7 @@ import Register from './pages/store/Register.jsx';
 import Account from './pages/store/Account.jsx';
 import Help from './pages/store/Help.jsx';
 import Policy from './pages/store/Policy.jsx';
+import InvoicePrint from './pages/InvoicePrint.jsx';
 import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/staff/Dashboard.jsx';
 import Attendance from './pages/staff/Attendance.jsx';
@@ -83,6 +84,9 @@ export default function App() {
           ))}
           <Route path="*" element={<NotFound />} />
         </Route>
+
+        {/* A bare page, so that only the invoice is printed */}
+        <Route path="print/invoices/:id" element={<InvoicePrint />} />
       </Routes>
       </ErrorBoundary>
     </ToastProvider>

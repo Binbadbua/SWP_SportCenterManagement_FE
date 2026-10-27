@@ -479,6 +479,12 @@
   font-size: clamp(32px, 3.2vw, 48px);
   line-height: 1;
 }
+.kpi dd.kpi__sub { margin: 8px 0 0; color: var(--stone); font-size: 13px; line-height: 1.4; }
+/* A short segmented control (report period) */
+.segmented--auto { display: inline-flex; gap: 2px; }
+.segmented--auto .segmented__btn { min-height: 34px; padding: 0 14px; }
+.bars--dense { gap: 6px; }
+.bars--dense .bars__value { font-size: 11px; }
 .bars-figure {
   margin: 8px 0 0;
 }

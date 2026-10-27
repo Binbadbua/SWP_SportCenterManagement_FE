@@ -52,6 +52,17 @@ export function StatusTag({ tone = 'neutral', children }) {
   return <span className={`tag tag--${tone}`}>{children}</span>;
 }
 
+/* "12/20" with a short bar: places taken in a class */
+export function FillBar({ value, max }) {
+  const pct = max ? Math.min(100, Math.round((value / max) * 100)) : 0;
+  return (
+    <span className="fill">
+      <span className="fill__bar"><span style={{ width: `${pct}%` }} /></span>
+      <span className="num">{value}/{max}</span>
+    </span>
+  );
+}
+
 /* "Preview" marker for UI that has no API behind it yet */
 export function PreviewTag({ children = 'Bản xem trước' }) {
   return (

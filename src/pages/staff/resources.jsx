@@ -12,12 +12,13 @@ import {
   Gender, SupportRequestStatus,
 } from '../../lib/enums.js';
 import {
-  addDaysToDateInput, formatDate, formatDateTime, formatMoney, formatTimeRange, formatWeekday, fromDateInput,
-  realPhone, todayUtcDateString,
+  addDaysToDateInput, daysUntil, formatDate, formatDateTime, formatMoney, formatTimeRange, formatWeekday, fromDateInput,
+  realPhone, todayLocalDateString, todayUtcDateString,
 } from '../../lib/format.js';
+import { cardsOn } from '../../lib/membership.js';
 import { CoachPortrait } from '../../components/cards.jsx';
 import { useToast } from '../../components/Toast.jsx';
-import { Button, ErrorNotice, Field, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
+import { Button, ErrorNotice, Field, FillBar, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
 
 const tag = (E) => (v) => <StatusTag tone={E.tone(v)}>{E.label(v)}</StatusTag>;
 const isManager = (u) => u?.role === 'CenterManager';
@@ -49,6 +50,58 @@ const L = {
 
 // Training plans/results must carry the signed-in coach's ID (the API checks it)
 const coachIdOf = async (u) => u?.coachId ?? (await api.coaches.me()).id;
+
+// The card reception sees beside a member: the active one valid today, else a web order waiting for
+// payment, else the latest one. state: active | expiring (7 days or less left) | pending | none
+function cardOf(cards, memberId) {
+  const mine = cards.filter((m) => m.memberId === memberId);
+  const [active] = cardsOn(mine, todayUtcDateString());
+  if (active) return { card: active, state: daysUntil(active.endDate) <= 7 ? 'expiring' : 'active' };
+  const pending = mine.find((m) => m.status === 2 && String(m.endDate).slice(0, 10) >= todayUtcDateString());
+  if (pending) return { card: pending, state: 'pending' };
+  const [latest] = [...mine].sort((a, b) => String(b.endDate).localeCompare(String(a.endDate)));
+  return { card: latest, state: 'none' };
+}
+const CARD_STATES = [
+  { value: 'active', label: 'Thẻ còn hiệu lực' },
+  { value: 'expiring', label: 'Thẻ sắp hết hạn (7 ngày)' },
+  { value: 'pending', label: 'Đơn mua chờ xác nhận' },
+  { value: 'none', label: 'Chưa có thẻ còn hiệu lực' },
+];
+function CardCell({ info }) {
+  if (!info) return '—';
+  const { card, state } = info;
+  if (state === 'active' || state === 'expiring') {
+    return (
+      <>
+        <StatusTag tone={state === 'active' ? 'success' : 'warning'}>
+          {state === 'active' ? 'Còn hiệu lực' : `Còn ${daysUntil(card.endDate)} ngày`}
+        </StatusTag>
+        <span className="cell-sub">{card.packageName} · đến {formatDate(card.endDate)}</span>
+      </>
+    );
+  }
+  if (state === 'pending') {
+    return (
+      <>
+        <StatusTag tone="warning">Chờ xác nhận</StatusTag>
+        <span className="cell-sub">{card.packageName}</span>
+      </>
+    );
+  }
+  return (
+    <>
+      <StatusTag tone="neutral">Chưa có thẻ</StatusTag>
+      {card && <span className="cell-sub">{card.packageName} · {MembershipStatus.label(card.status).toLowerCase()}</span>}
+    </>
+  );
+}
+
+// "T3 21/10/2026 · 18:00–19:30"
+const sessionLabel = (s) => `${formatWeekday(s.date)} ${formatDate(s.date)} · ${formatTimeRange(s.startTime, s.endTime)}`;
+// A result has no session link (CHANGELOG Part B, B51): it belongs to the session of its plan's class held that day
+const sessionOfResult = (sessions, plan, evaluationDate) =>
+  plan && (sessions ?? []).find((s) => s.classId === plan.classId && String(s.date).slice(0, 10) === String(evaluationDate).slice(0, 10));
 
 // Plans and results only carry IDs; add the names the table shows and searches
 async function coachNames() {
@@ -291,7 +344,11 @@ export const resources = {
       { key: 'className', label: 'Lớp', className: 'cell-strong' },
       { key: 'categoryName', label: 'Môn' },
       { key: 'coachName', label: 'Huấn luyện viên' },
-      { key: 'maxCapacity', label: 'Sĩ số', className: 'num' },
+      // The class list carries currentEnrolled (bookings that hold a place) next to the capacity
+      {
+        key: 'maxCapacity', label: 'Đã đặt / sĩ số',
+        render: (r) => (r.currentEnrolled == null ? <span className="num">{r.maxCapacity}</span> : <FillBar value={r.currentEnrolled} max={r.maxCapacity} />),
+      },
       { key: 'dates', label: 'Thời gian', className: 'num', render: (r) => `${formatDate(r.startDate)} – ${formatDate(r.endDate)}` },
       { key: 'status', label: 'Trạng thái', render: (r) => tag(ClassStatus)(r.status) },
     ],
@@ -498,7 +555,7 @@ export const resources = {
 
   invoices: {
     key: 'invoices', title: 'Hóa đơn', singular: 'Hóa đơn',
-    description: 'Mỗi lần mua thẻ thành viên có một hóa đơn; hóa đơn đã thanh toán thì không xóa được. Gói học viên mua trên web được giữ 30 phút: nhận tiền xong bấm “Xác nhận đã nhận tiền” để kích hoạt thẻ, quá hạn thì máy chủ tự hủy đơn.',
+    description: 'Mỗi lần mua thẻ thành viên có một hóa đơn; hóa đơn đã thanh toán thì không xóa được. Gói học viên mua trên web được giữ 30 phút: nhận tiền xong bấm “Xác nhận đã nhận tiền” để kích hoạt thẻ, quá hạn thì máy chủ tự hủy đơn. “In” mở hóa đơn để in hoặc lưu PDF.',
     source: api.invoices, sample: mock.invoices, canWrite: isFrontDesk, nameOf: (r) => `${r.memberName} · ${r.packageName}`,
     canEditRow: (r) => !awaitingOnline(r),
     rowActions: [
@@ -509,6 +566,8 @@ export const resources = {
         run: (r) => api.payments.confirm(r.id),
         done: (r) => `Đã xác nhận thanh toán: ${r.packageName} của ${r.memberName} đã được kích hoạt.`,
       },
+      // Opens in a new tab so the list stays where it was (pages/InvoicePrint.jsx)
+      { label: 'In', to: (r) => `/print/invoices/${r.id}`, newTab: true },
     ],
     lookups: (u) => ({
       memberships: L.memberships,
@@ -599,19 +658,29 @@ export const resources = {
   // an existing account). Reception and managers edit a member; only a manager may delete one.
   members: {
     key: 'members', title: 'Học viên', singular: 'Học viên',
-    description: 'Tìm kiếm, đăng ký và cập nhật thông tin học viên tại quầy.',
+    description: 'Tìm kiếm, đăng ký và cập nhật thông tin học viên tại quầy. Cột Thẻ thành viên cho biết học viên có đặt lớp được không.',
     source: (u) => ({
-      list: api.members.list,
+      // Each member gets their card from the card list (reception and managers may read it)
+      list: async () => {
+        const [members, cards] = await Promise.all([api.members.list(), api.memberships.list().catch(() => null)]);
+        return cards ? members.map((m) => ({ ...m, card: cardOf(cards, m.id) })) : members;
+      },
       create: (body) => api.auth.register(body),
       update: api.members.update,
       ...(isManager(u) ? { remove: api.members.remove } : {}),
     }),
     sample: mock.members, canWrite: isFrontDesk, canDelete: isManager, nameOf: (r) => r.fullName,
-    searchText: (r) => `${r.fullName} ${r.phone} ${r.email}`,
+    searchText: (r) => `${r.fullName} ${r.phone} ${r.email} ${r.card?.card?.packageName ?? ''}`,
+    filters: [{
+      key: 'card', label: 'Lọc theo thẻ thành viên', all: 'Mọi học viên',
+      options: () => CARD_STATES,
+      match: (r, v) => r.card?.state === v,
+    }],
     columns: [
       { key: 'fullName', label: 'Họ tên', className: 'cell-strong' },
       { key: 'phone', label: 'Số điện thoại', className: 'num', render: (r) => realPhone(r.phone) || '—' },
       { key: 'email', label: 'Email' },
+      { key: 'card', label: 'Thẻ thành viên', render: (r) => <CardCell info={r.card} /> },
       { key: 'gender', label: 'Giới tính', render: (r) => (r.gender ? Gender.label(r.gender) : '—') },
       { key: 'dob', label: 'Ngày sinh', className: 'num', render: (r) => formatDate(r.dob) },
       { key: 'trainingGoal', label: 'Mục tiêu', render: (r) => <span className="clamp">{r.trainingGoal || '—'}</span> },
@@ -825,18 +894,40 @@ export const resources = {
     toRequest: (data) => data,
   },
 
+  // A plan belongs to one member (the API takes one memberId), so a plan "for the whole class" is one copy
+  // for each member booked into the class (CHANGELOG Part B, B49).
   trainingPlans: {
     key: 'trainingPlans', title: 'Kế hoạch tập luyện', singular: 'Kế hoạch',
-    description: 'Kế hoạch bạn lập cho học viên trong lớp của mình.',
+    description: 'Kế hoạch bạn lập cho học viên trong lớp của mình. Chọn “Cả lớp” để lập cùng một kế hoạch cho mọi học viên đã đặt lớp.',
     source: (u) => ({
       list: async () => {
         const [plans, names] = await Promise.all([api.trainingPlans.forCoach(), coachNames()]);
         return plans.map((p) => ({ ...p, memberName: names.member(p.memberId), className: names.className(p.classId) }));
       },
-      create: async (body) => api.trainingPlans.create({ ...body, coachId: await coachIdOf(u) }),
+      create: async ({ scope, ...plan }) => {
+        const coachId = await coachIdOf(u);
+        if (scope !== 'class') return api.trainingPlans.create({ ...plan, coachId });
+        const booked = uniqueBy((await api.coaches.members()).filter((m) => m.classId === plan.classId), 'memberId');
+        if (!booked.length) throw new Error('Lớp này chưa có học viên nào đặt, nên chưa lập được kế hoạch cho cả lớp.');
+        const results = await Promise.allSettled(
+          booked.map((m) => api.trainingPlans.create({ ...plan, memberId: m.memberId, coachId })),
+        );
+        const failed = booked.filter((_, i) => results[i].status === 'rejected');
+        if (failed.length) {
+          const done = booked.length - failed.length;
+          const why = results.find((r) => r.status === 'rejected').reason?.message ?? '';
+          const err = new Error(
+            `Đã lập kế hoạch cho ${done}/${booked.length} học viên. Chưa lập được cho ${failed.map((m) => m.fullName).join(', ')}${why ? `: ${why}` : '.'}`,
+          );
+          err.partial = done > 0;
+          throw err;
+        }
+        return { count: booked.length };
+      },
       update: async (id, body) => api.trainingPlans.update(id, { ...body, coachId: await coachIdOf(u) }),
       remove: (id) => api.trainingPlans.remove(id),
     }),
+    doneMessage: (mode, result) => (result?.count ? `Đã lập kế hoạch cho ${result.count} học viên của lớp.` : undefined),
     sample: mock.trainingPlans,
     lookups: () => ({ members: L.coachMembers, classes: L.coachClasses }),
     nameOf: (r) => r.title,
@@ -849,47 +940,86 @@ export const resources = {
       { key: 'createdDate', label: 'Ngày tạo', className: 'num', render: (r) => formatDate(r.createdDate) },
     ],
     fields: [
-      { name: 'memberId', label: 'Học viên', type: 'select', required: true, optionsFrom: (l) => opt(uniqueBy(l.members, 'memberId'), 'memberId', 'fullName') },
-      { name: 'classId', label: 'Lớp', type: 'select', required: true, optionsFrom: (l) => opt(l.classes, 'classId', 'className') },
+      {
+        name: 'classId', label: 'Lớp', type: 'select', required: true, optionsFrom: (l) => opt(l.classes, 'classId', 'className'),
+        // A member picked for another class does not carry over
+        onChange: (value, { lookups, setFormValues }) =>
+          setFormValues((prev) => ((lookups.members ?? []).some((m) => m.classId === value && m.memberId === prev.memberId)
+            ? prev
+            : { ...prev, memberId: '' })),
+      },
+      {
+        name: 'scope', label: 'Lập cho', type: 'select', required: true, createOnly: true, defaultValue: () => 'one',
+        options: [{ value: 'one', label: 'Một học viên' }, { value: 'class', label: 'Cả lớp (mỗi học viên một bản)' }],
+      },
+      {
+        name: 'memberId', label: 'Học viên', type: 'select', required: true,
+        shown: (v, mode) => mode === 'edit' || v.scope !== 'class',
+        optionsFrom: (l, _u, v) => {
+          const inClass = (l.members ?? []).filter((m) => !v?.classId || m.classId === v.classId);
+          const options = opt(uniqueBy(inClass, 'memberId'), 'memberId', 'fullName');
+          // A plan kept for someone who has since left the class still shows its member
+          if (v?.memberId && !options.some((o) => o.value === v.memberId)) {
+            const m = (l.members ?? []).find((x) => x.memberId === v.memberId);
+            options.push({ value: v.memberId, label: m?.fullName ?? 'Học viên của kế hoạch này' });
+          }
+          return options;
+        },
+        help: 'Những học viên đã đặt lớp đã chọn.',
+      },
       { name: 'title', label: 'Tiêu đề', required: true, full: true },
       { name: 'contentDescription', label: 'Nội dung tập', type: 'textarea' },
       { name: 'createdDate', label: 'Ngày', type: 'date', required: true, defaultValue: todayUtcDateString },
     ],
-    toRequest: (b) => ({
+    toRequest: (b, { mode }) => ({
       memberId: b.memberId,
       classId: b.classId,
       title: b.title,
       contentDescription: b.contentDescription ?? '',
       createdDate: fromDateInput(b.createdDate),
+      ...(mode === 'create' ? { scope: b.scope } : {}),
     }),
     emptyHint: 'Học viên sẽ có trong biểu mẫu sau khi họ đặt một lớp của bạn.',
   },
 
   trainingResults: {
     key: 'trainingResults', title: 'Kết quả tập luyện', singular: 'Kết quả',
-    description: 'Chấm điểm tiến độ của từng học viên theo kế hoạch và ghi nhận xét.',
+    description: 'Sau mỗi buổi, chấm điểm tiến độ của từng học viên theo kế hoạch và ghi nhận xét.',
     source: (u) => ({
       list: async () => {
-        const [results, plans, names] = await Promise.all([
+        const [results, plans, names, sessions] = await Promise.all([
           api.trainingResults.forCoach(), api.trainingPlans.forCoach(), coachNames(),
+          api.schedules.forCoach().catch(() => []),
         ]);
-        return results.map((r) => ({
-          ...r,
-          memberName: r.memberName || names.member(r.memberId),
-          planTitle: r.planTitle || (plans.find((p) => p.id === r.planId)?.title ?? '—'),
-        }));
+        return results.map((r) => {
+          const plan = plans.find((p) => p.id === r.planId);
+          const session = sessionOfResult(sessions, plan, r.evaluationDate);
+          return {
+            ...r,
+            memberName: r.memberName || names.member(r.memberId),
+            planTitle: r.planTitle || (plan?.title ?? '—'),
+            sessionId: session?.id ?? '',
+            sessionText: session ? sessionLabel(session) : '',
+          };
+        });
       },
       create: async (body) => api.trainingResults.create({ ...body, coachId: await coachIdOf(u) }),
       update: async (id, body) => api.trainingResults.update(id, { ...body, coachId: await coachIdOf(u) }),
       remove: (id) => api.trainingResults.remove(id),
     }),
     sample: mock.trainingResults,
-    lookups: () => ({ plans: L.coachPlans, members: L.coachMembers }),
+    lookups: () => ({
+      plans: L.coachPlans, members: L.coachMembers,
+      sessions: { load: () => api.schedules.forCoach(), sample: mock.sessions },
+    }),
     nameOf: (r) => `${r.memberName} · ${r.planTitle}`,
-    searchText: (r) => `${r.memberName} ${r.planTitle} ${r.coachComment}`,
+    searchText: (r) => `${r.memberName} ${r.planTitle} ${r.coachComment} ${r.sessionText ?? ''}`,
     sort: (a, b) => String(b.evaluationDate).localeCompare(String(a.evaluationDate)),
     columns: [
-      { key: 'evaluationDate', label: 'Ngày', className: 'num', render: (r) => formatDate(r.evaluationDate) },
+      {
+        key: 'evaluationDate', label: 'Buổi học', className: 'num',
+        render: (r) => r.sessionText || formatDate(r.evaluationDate),
+      },
       { key: 'memberName', label: 'Học viên', className: 'cell-strong' },
       { key: 'planTitle', label: 'Kế hoạch' },
       { key: 'performanceScore', label: 'Điểm', className: 'num', render: (r) => `${r.performanceScore}/10` },
@@ -902,6 +1032,23 @@ export const resources = {
           const member = (l.members ?? []).find((m) => m.memberId === p.memberId)?.fullName;
           return member ? `${p.title} — ${member}` : p.title;
         }),
+        onChange: (_, { setFormValues }) => setFormValues((prev) => ({ ...prev, sessionId: '' })),
+      },
+      {
+        // Sessions of the plan's class that have taken place, newest first; picking one sets the date
+        name: 'sessionId', label: 'Buổi học', type: 'select', full: true, placeholder: 'Không chọn buổi (tự nhập ngày)',
+        optionsFrom: (l, _u, v) => {
+          const plan = (l.plans ?? []).find((p) => p.id === v?.planId);
+          return (l.sessions ?? [])
+            .filter((s) => plan && s.classId === plan.classId && String(s.date).slice(0, 10) <= todayLocalDateString())
+            .sort((a, b) => `${b.date}${b.startTime}`.localeCompare(`${a.date}${a.startTime}`))
+            .map((s) => ({ value: s.id, label: sessionLabel(s) }));
+        },
+        onChange: (value, { lookups, setFormValues }) => {
+          const s = (lookups.sessions ?? []).find((x) => x.id === value);
+          if (s) setFormValues((prev) => ({ ...prev, evaluationDate: String(s.date).slice(0, 10) }));
+        },
+        help: 'Chọn kế hoạch trước; danh sách gồm các buổi của lớp đó đã diễn ra.',
       },
       { name: 'performanceScore', label: 'Điểm (0–10)', type: 'number', required: true, min: 0, max: 10, step: 0.5 },
       { name: 'evaluationDate', label: 'Ngày', type: 'date', required: true, defaultValue: todayUtcDateString },
@@ -1014,14 +1161,4 @@ export const resources = {
 function uniqueBy(rows, key) {
   const seen = new Set();
   return (rows ?? []).filter((r) => (seen.has(r[key]) ? false : seen.add(r[key])));
-}
-
-function FillBar({ value, max }) {
-  const pct = max ? Math.min(100, Math.round((value / max) * 100)) : 0;
-  return (
-    <span className="fill">
-      <span className="fill__bar"><span style={{ width: `${pct}%` }} /></span>
-      <span>{value}/{max}</span>
-    </span>
-  );
 }

@@ -13,7 +13,11 @@ const dateTimeFmt = {
 };
 const vnd = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND', maximumFractionDigits: 0 });
 
-const toDate = (v) => (v instanceof Date ? v : new Date(v));
+// A session's date comes without a time zone ("2026-10-15T00:00:00", CHANGELOG Part B, B52). The browser would
+// read that on its own clock (15/10 00:00 in Vietnam = 14/10 17:00 UTC) and the UTC formats would show the
+// day before, so a value without a zone is read as UTC like every other date-only value.
+const NO_ZONE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2}(\.\d+)?)?$/;
+const toDate = (v) => (v instanceof Date ? v : new Date(NO_ZONE.test(String(v)) ? `${v}Z` : v));
 const isValid = (d) => d instanceof Date && !Number.isNaN(d.getTime()) && d.getUTCFullYear() > 1;
 
 export const formatDate = (v) => (v && isValid(toDate(v)) ? dayFmt.format(toDate(v)) : '—');
@@ -65,6 +69,35 @@ export const isSessionOver = (s, now = new Date()) => {
   if (day !== today) return day < today;
   const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
   return String(s.endTime ?? '').padEnd(8, ':00').slice(0, 8) <= time;
+};
+
+// 2100000 -> "Hai triệu một trăm nghìn đồng", the "amount in words" line of a printed invoice
+const DIGITS = ['không', 'một', 'hai', 'ba', 'bốn', 'năm', 'sáu', 'bảy', 'tám', 'chín'];
+const SCALES = ['', 'nghìn', 'triệu', 'tỷ', 'nghìn tỷ', 'triệu tỷ'];
+// One group of three digits; `full` reads the zeros a group in the middle of a number needs ("không trăm linh năm")
+const readGroup = (n, full) => {
+  const [h, t, u] = [Math.floor(n / 100), Math.floor(n / 10) % 10, n % 10];
+  const words = [];
+  if (full || h) words.push(DIGITS[h], 'trăm');
+  if (t === 1) words.push('mười');
+  else if (t > 1) words.push(DIGITS[t], 'mươi');
+  else if (u && (full || h)) words.push('linh');
+  if (u === 1 && t > 1) words.push('mốt');
+  else if (u === 4 && t > 1) words.push('tư');
+  else if (u === 5 && t > 0) words.push('lăm');
+  else if (u) words.push(DIGITS[u]);
+  return words;
+};
+export const moneyInWords = (value) => {
+  let n = Math.round(Math.abs(Number(value) || 0));
+  const groups = [];
+  for (; n > 0; n = Math.floor(n / 1000)) groups.push(n % 1000); // lowest group first
+  const text = groups
+    .map((g, i) => (g ? [...readGroup(g, i < groups.length - 1), SCALES[i]].filter(Boolean).join(' ') : ''))
+    .filter(Boolean)
+    .reverse()
+    .join(' ');
+  return text ? `${text[0].toUpperCase()}${text.slice(1)} đồng` : 'Không đồng';
 };
 
 export const initials = (name = '') =>

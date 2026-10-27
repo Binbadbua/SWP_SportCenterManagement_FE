@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { api } from '../api/endpoints.js';
 import { useApi } from '../hooks/useApi.js';
 import { formatDateTime } from '../lib/format.js';
+import { isHomework, withoutHomeworkPrefix } from '../lib/homework.js';
 import { useToast } from './Toast.jsx';
-import { Button, EmptyState, ErrorNotice, IconButton, Loading } from './ui.jsx';
+import { Button, EmptyState, ErrorNotice, IconButton, Loading, StatusTag } from './ui.jsx';
 
 // Notifications of the signed-in account (GET /api/notifications/me), for members and staff.
 // Clicking a message marks it as read.
@@ -51,7 +52,16 @@ export default function NotificationInbox() {
               >
                 <span className="notif__dot" aria-hidden="true" />
                 <span>
-                  <span className="notif__title">{n.title}</span>
+                  <span className="notif__title">
+                    {isHomework(n) ? (
+                      <>
+                        <StatusTag tone="info">Bài tập về nhà</StatusTag>
+                        {withoutHomeworkPrefix(n.title)}
+                      </>
+                    ) : (
+                      n.title
+                    )}
+                  </span>
                   <span className="notif__msg">{n.message}</span>
                   <span className="muted notif__time">{formatDateTime(n.createdAt)}</span>
                 </span>
