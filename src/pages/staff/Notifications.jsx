@@ -5,6 +5,7 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { AccountRole } from "../../lib/enums.js";
 import { formatDate, todayUtcDateString } from "../../lib/format.js";
 import { HOMEWORK_PREFIX } from "../../lib/homework.js";
+import { signed } from "../../lib/notifications.js";
 import { useToast } from "../../components/Toast.jsx";
 import NotificationInbox from "../../components/NotificationInbox.jsx";
 import { Button, ErrorNotice, Field } from "../../components/ui.jsx";
@@ -112,9 +113,11 @@ function CoachSendPanel() {
 }
 
 // `homework` (coaches): the message may be homework, sent as a notification whose title carries
-// HOMEWORK_PREFIX (lib/homework.js) and whose last line is the due date
+// HOMEWORK_PREFIX (lib/homework.js) and whose last line is the due date. Every message is signed with its sender
+// (lib/notifications.js), since the API keeps none.
 function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, homework = false }) {
   const toast = useToast();
+  const { user } = useAuth();
   const [v, setV] = useState({ audience: audiences[0].value, accountId: "", kind: "notice", due: "", title: "", message: "" });
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
@@ -138,7 +141,7 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
       : v.message.trim();
     setSending(true);
     try {
-      await api.notifications.send({ accountIds: recipients, title, message });
+      await api.notifications.send({ accountIds: recipients, title, message: signed(message, user) });
       toast.success(isHomework
         ? `Đã giao bài tập cho ${recipients.length} học viên.`
         : `Đã gửi tới ${recipients.length} tài khoản.`);

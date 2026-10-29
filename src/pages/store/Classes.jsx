@@ -4,6 +4,7 @@ import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
 import { daysUntil } from '../../lib/format.js';
+import { classStarted } from '../../lib/classes.js';
 import Icon from '../../components/Icon.jsx';
 import { ClassCard } from '../../components/cards.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, SampleDataNotice } from '../../components/ui.jsx';
@@ -15,7 +16,7 @@ const SORTS = {
 };
 
 const STATUS_FILTERS = [
-  { value: '1', label: 'Đang nhận đăng ký' },
+  { value: '1', label: 'Sắp khai giảng' },
   { value: '2', label: 'Đang diễn ra' },
   { value: '3', label: 'Đã kết thúc' },
 ];
@@ -28,6 +29,8 @@ export default function Classes() {
   const [showFilters, setShowFilters] = useState(() => window.innerWidth > 960);
   const classes = useApi(() => api.classes.list(), [], { sample: mock.classes });
   const categories = useApi(() => api.categories.list(), [], { sample: mock.categories });
+  // A class whose first session has begun takes no more bookings (lib/classes.js)
+  const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
 
   const sports = readList(params, 'sport');
   const statuses = readList(params, 'status').length ? readList(params, 'status') : ['1', '2'];
@@ -139,7 +142,9 @@ export default function Classes() {
             <Loading />
           ) : visible.length ? (
             <div className={`product-grid ${showFilters ? 'product-grid--3' : 'product-grid--4'}`}>
-              {visible.map((c) => <ClassCard key={c.id} item={c} />)}
+              {visible.map((c) => (
+                <ClassCard key={c.id} item={c} started={sessions.data ? classStarted(c, sessions.data) : undefined} />
+              ))}
             </div>
           ) : (
             <EmptyState

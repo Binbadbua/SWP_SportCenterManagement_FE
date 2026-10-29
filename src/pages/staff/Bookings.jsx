@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
-import { BookingStatus, PaymentMethod } from '../../lib/enums.js';
+import { BookingStatus, DESK_METHODS } from '../../lib/enums.js';
 import { daysUntil, formatDate, formatMoney, isSessionOver, realPhone, todayUtcDateString } from '../../lib/format.js';
+import { classStarted } from '../../lib/classes.js';
 import { cardCheck, cardsOn } from '../../lib/membership.js';
 import { discountFor, hasClassPrices, priceAfter } from '../../lib/pricing.js';
 import { useToast } from '../../components/Toast.jsx';
@@ -96,7 +97,8 @@ export default function Bookings() {
   // Before class fees: the member's cards against each class's next session (null while either is unknown)
   const cardFor = (id) => (!priced && cardsKnown && sessionsKnown ? cardCheck(memberCards.data, sessions.data, id) : null);
   const deal = priced && cardsKnown ? discountFor(memberCards.data, packages.data) : { percent: 0 };
-  // Classes open for booking; one that can't take this member says why and can't be picked
+  // Classes open for booking; one that can't take this member says why and can't be picked. A class takes members only
+  // before it starts (team rule, 28/10/2026), at the desk as on the web.
   const classOptions = (classes.data ?? [])
     .filter((c) => c.status === 1 || c.status === 2)
     .sort((a, b) => a.className.localeCompare(b.className, 'vi'))
@@ -104,13 +106,15 @@ export default function Bookings() {
       const left = c.currentEnrolled == null ? null : c.maxCapacity - c.currentEnrolled;
       const blocked = heldByMember.has(c.id)
         ? 'đã đặt'
-        : left !== null && left <= 0
-          ? 'đã đủ chỗ'
-          : sessionsKnown && !withSessionsLeft.has(c.id)
-            ? 'hết buổi học'
-            : cardFor(c.id)?.ok === false
-              ? 'thẻ không còn hiệu lực vào buổi tới'
-              : null;
+        : classStarted(c, sessionsKnown ? sessions.data : [])
+          ? 'đã bắt đầu'
+          : left !== null && left <= 0
+            ? 'đã đủ chỗ'
+            : sessionsKnown && !withSessionsLeft.has(c.id)
+              ? 'hết buổi học'
+              : cardFor(c.id)?.ok === false
+                ? 'thẻ không còn hiệu lực vào buổi tới'
+                : null;
       const spots = left === null ? null : `còn ${left} chỗ`;
       const fee = priced ? (c.price > 0 ? formatMoney(c.price) : 'miễn phí') : null;
       return {
@@ -172,20 +176,33 @@ export default function Bookings() {
     }
   };
 
-  // A paid class is refunded at the desk when cancelled before its first session (the API refuses later)
+  // The cancel rules of 28/10/2026 (B55): a paid class is refunded in full before it starts — through MoMo when the
+  // member paid online, at the desk otherwise — and not at all once it has started
+  const startedOf = (b) => {
+    const c = (classes.data ?? []).find((x) => x.id === b.classId);
+    return c ? classStarted(c, sessionsKnown ? sessions.data : []) : false;
+  };
   const cancel = async (b) => {
+    const late = startedOf(b);
+    const online = b.paymentMethod === 4 || b.paymentMethod === 5;
     const question = paid(b)
-      ? `Hủy lượt đặt lớp ${b.className} của ${b.memberName} và hoàn ${formatMoney(b.price)}? Chỉ hoàn được khi buổi đầu chưa bắt đầu.`
+      ? late
+        ? `Lớp ${b.className} đã bắt đầu: hủy lượt đặt của ${b.memberName} sẽ KHÔNG hoàn ${formatMoney(b.price)} học phí. Vẫn hủy?`
+        : `Hủy lượt đặt lớp ${b.className} của ${b.memberName} và hoàn đủ ${formatMoney(b.price)}?`
       : b.status === 4
         ? `Hủy lượt đặt lớp ${b.className} đang chờ thanh toán của ${b.memberName}?`
-        : `Hủy lượt đặt lớp ${b.className} của ${b.memberName}?`;
+        : late
+          ? `Lớp ${b.className} đã bắt đầu: sau khi hủy, ${b.memberName} không đặt lại được lớp này. Vẫn hủy?`
+          : `Hủy lượt đặt lớp ${b.className} của ${b.memberName}?`;
     if (!window.confirm(question)) return;
     try {
       await api.bookings.cancel(b.id, b.memberId);
       toast.success(
-        paid(b)
-          ? `Đã hủy lượt đặt lớp ${b.className} và ghi hoàn ${formatMoney(b.price)}. Trả tiền cho ${b.memberName} tại quầy.`
-          : `Đã hủy lượt đặt lớp ${b.className} của ${b.memberName}.`,
+        paid(b) && !late
+          ? online
+            ? `Đã hủy lượt đặt lớp ${b.className}; ${formatMoney(b.price)} được hoàn về MoMo của ${b.memberName}.`
+            : `Đã hủy lượt đặt lớp ${b.className} và ghi hoàn ${formatMoney(b.price)}. Trả tiền cho ${b.memberName} tại quầy.`
+          : `Đã hủy lượt đặt lớp ${b.className} của ${b.memberName}${paid(b) ? ' (không hoàn tiền)' : ''}.`,
       );
       bookings.reload();
       if (b.memberId === memberId) memberBookings.reload();
@@ -251,8 +268,8 @@ export default function Bookings() {
               !memberId
                 ? 'Chọn học viên trước để biết họ có thể vào những lớp nào.'
                 : priced
-                  ? 'Không chọn được lớp học viên đã đặt, lớp đã đủ chỗ và lớp đã hết buổi học.'
-                  : 'Không chọn được lớp học viên đã đặt, lớp đã đủ chỗ, lớp đã hết buổi học và lớp có buổi kế tiếp nằm ngoài thời hạn thẻ của học viên.'
+                  ? 'Không chọn được lớp học viên đã đặt, lớp đã bắt đầu, lớp đã đủ chỗ và lớp đã hết buổi học.'
+                  : 'Không chọn được lớp học viên đã đặt, lớp đã bắt đầu, lớp đã đủ chỗ, lớp đã hết buổi học và lớp có buổi kế tiếp nằm ngoài thời hạn thẻ của học viên.'
             }
           />
           {fee > 0 && (
@@ -274,7 +291,7 @@ export default function Bookings() {
                 required
                 value={method}
                 onChange={(_, v) => setMethod(v)}
-                options={PaymentMethod.options.map((o) => ({ value: String(o.value), label: o.label }))}
+                options={DESK_METHODS.map((o) => ({ value: String(o.value), label: o.label }))}
                 placeholder="Chọn hình thức…"
                 help="Thu tiền xong mới bấm nút bên dưới: lớp được đặt và hóa đơn đã thanh toán được xuất ngay."
               />
@@ -299,8 +316,8 @@ export default function Bookings() {
             placeholder={memberPlaceholder}
             help={
               priced
-                ? 'Lượt đã thanh toán chỉ hủy được trước buổi học đầu, kèm hoàn tiền cho học viên; lượt chờ thanh toán hủy lúc nào cũng được.'
-                : 'Lượt đặt chỉ hủy được khi học viên chưa tham gia buổi nào.'
+                ? 'Lượt đã thanh toán hủy trước buổi học đầu thì hoàn đủ học phí; lớp đã bắt đầu thì hủy không hoàn tiền. Lượt chờ thanh toán hủy lúc nào cũng được.'
+                : 'Lớp đã bắt đầu thì sau khi hủy, học viên không đặt lại được lớp đó.'
             }
           />
 
@@ -325,7 +342,7 @@ export default function Bookings() {
                       <StatusTag tone={BookingStatus.tone(b.status)}>{BookingStatus.label(b.status)}</StatusTag>
                       {(b.status === 1 || b.status === 4) && (
                         <Button variant="ghost" size="sm" onClick={() => cancel(b)}>
-                          {paid(b) ? 'Hủy, hoàn tiền' : 'Hủy'}
+                          {paid(b) ? (startedOf(b) ? 'Hủy, không hoàn tiền' : 'Hủy, hoàn tiền') : 'Hủy'}
                         </Button>
                       )}
                     </li>

@@ -131,25 +131,25 @@ export const managers = [
 ];
 
 export const packages = [
-  { id: id('pk', 1), packageName: 'Gói Khởi Động', description: 'Trải nghiệm trung tâm trong một tháng: mọi lớp nhóm, phòng gym giờ thấp điểm.', durationDays: 30, price: 690000, status: 1 },
-  { id: id('pk', 2), packageName: 'Gói Mỗi Ngày', description: 'Không giới hạn lớp học và phòng gym, mọi khung giờ, kèm một buổi gặp huấn luyện viên mỗi tháng.', durationDays: 90, price: 1790000, status: 1 },
-  { id: id('pk', 3), packageName: 'Gói Vận Động Viên', description: 'Mười hai tháng dùng mọi dịch vụ, có kế hoạch tập riêng và đánh giá tiến độ hằng tháng.', durationDays: 365, price: 5990000, status: 1 },
-  { id: id('pk', 4), packageName: 'Gói Hè Sinh Viên', description: 'Thẻ mùa hè dành cho sinh viên có thẻ sinh viên hợp lệ.', durationDays: 60, price: 890000, status: 2 },
+  { id: id('pk', 1), packageName: 'Gói 1 tháng', description: 'Giá chuẩn, dùng cho mọi môn trong 30 ngày.\n- Tự tập không giới hạn ở khu gym, cardio và hồ bơi\n- Tủ đồ dùng trong ngày\n- Đo thể trạng khi bắt đầu', durationDays: 30, price: 800000, status: 1, categoryIds: [] },
+  { id: id('pk', 2), packageName: 'Gói 6 tháng', description: 'Rẻ hơn 15% so với 6 lần gói 1 tháng, tặng thêm 1 tuần.\n- Mọi quyền lợi của Gói 1 tháng\n- Tặng 7 ngày tập (187 ngày)\n- Đo thể trạng mỗi tháng\n- Khăn tập mỗi buổi', durationDays: 187, price: 4080000, status: 1, categoryIds: [] },
+  { id: id('pk', 3), packageName: 'Gói 1 năm', description: 'Rẻ hơn 30% so với 12 lần gói 1 tháng, tặng thêm 1 tháng.\n- Mọi quyền lợi của Gói 6 tháng\n- Tặng 30 ngày tập (395 ngày)\n- Tủ đồ riêng cả năm\n- 2 buổi tập 1-1 với huấn luyện viên', durationDays: 395, price: 6720000, status: 1, categoryIds: [] },
+  { id: id('pk', 4), packageName: 'Gói Hè Sinh Viên', description: 'Gói cũ, đã ngừng bán.', durationDays: 60, price: 890000, status: 2, categoryIds: [] },
 ];
 
 export const memberships = [
-  { id: id('mm', 1), memberId: members[0].id, memberName: members[0].fullName, packageId: packages[1].id, packageName: 'Gói Mỗi Ngày', startDate: day(-40), endDate: day(50), status: 1 },
-  { id: id('mm', 2), memberId: members[1].id, memberName: members[1].fullName, packageId: packages[0].id, packageName: 'Gói Khởi Động', startDate: day(-25), endDate: day(5), status: 1 },
-  { id: id('mm', 3), memberId: members[2].id, memberName: members[2].fullName, packageId: packages[2].id, packageName: 'Gói Vận Động Viên', startDate: day(-100), endDate: day(265), status: 1 },
-  { id: id('mm', 4), memberId: members[4].id, memberName: members[4].fullName, packageId: packages[0].id, packageName: 'Gói Khởi Động', startDate: day(-70), endDate: day(-40), status: 3 },
-  { id: id('mm', 5), memberId: members[3].id, memberName: members[3].fullName, packageId: packages[1].id, packageName: 'Gói Mỗi Ngày', startDate: day(-2), endDate: day(88), status: 1 },
+  { id: id('mm', 1), memberId: members[0].id, memberName: members[0].fullName, packageId: packages[1].id, packageName: 'Gói 6 tháng', startDate: day(-40), endDate: day(50), status: 1 },
+  { id: id('mm', 2), memberId: members[1].id, memberName: members[1].fullName, packageId: packages[0].id, packageName: 'Gói 1 tháng', startDate: day(-25), endDate: day(5), status: 1 },
+  { id: id('mm', 3), memberId: members[2].id, memberName: members[2].fullName, packageId: packages[2].id, packageName: 'Gói 1 năm', startDate: day(-100), endDate: day(265), status: 1 },
+  { id: id('mm', 4), memberId: members[4].id, memberName: members[4].fullName, packageId: packages[0].id, packageName: 'Gói 1 tháng', startDate: day(-70), endDate: day(-40), status: 3 },
+  { id: id('mm', 5), memberId: members[3].id, memberName: members[3].fullName, packageId: packages[1].id, packageName: 'Gói 6 tháng', startDate: day(-2), endDate: day(88), status: 1 },
 ];
 
 export const invoices = [
-  { id: id('iv', 1), receptionistId: receptionists[0].id, receptionistName: receptionists[0].fullName, memberMembershipId: memberships[0].id, memberName: memberships[0].memberName, packageName: 'Gói Mỗi Ngày', amount: 1790000, paymentMethod: 2, paymentDate: stamp(-40), status: 2 },
-  { id: id('iv', 2), receptionistId: receptionists[0].id, receptionistName: receptionists[0].fullName, memberMembershipId: memberships[1].id, memberName: memberships[1].memberName, packageName: 'Gói Khởi Động', amount: 690000, paymentMethod: 1, paymentDate: stamp(-25), status: 2 },
-  { id: id('iv', 3), receptionistId: receptionists[1].id, receptionistName: receptionists[1].fullName, memberMembershipId: memberships[2].id, memberName: memberships[2].memberName, packageName: 'Gói Vận Động Viên', amount: 5990000, paymentMethod: 3, paymentDate: stamp(-100), status: 2 },
-  { id: id('iv', 4), receptionistId: receptionists[1].id, receptionistName: receptionists[1].fullName, memberMembershipId: memberships[4].id, memberName: memberships[4].memberName, packageName: 'Gói Mỗi Ngày', amount: 1790000, paymentMethod: 2, paymentDate: stamp(-2), status: 1 },
+  { id: id('iv', 1), receptionistId: receptionists[0].id, receptionistName: receptionists[0].fullName, memberMembershipId: memberships[0].id, memberName: memberships[0].memberName, packageName: 'Gói 6 tháng', amount: 4080000, paymentMethod: 2, paymentDate: stamp(-40), status: 2 },
+  { id: id('iv', 2), receptionistId: receptionists[0].id, receptionistName: receptionists[0].fullName, memberMembershipId: memberships[1].id, memberName: memberships[1].memberName, packageName: 'Gói 1 tháng', amount: 800000, paymentMethod: 1, paymentDate: stamp(-25), status: 2 },
+  { id: id('iv', 3), receptionistId: receptionists[1].id, receptionistName: receptionists[1].fullName, memberMembershipId: memberships[2].id, memberName: memberships[2].memberName, packageName: 'Gói 1 năm', amount: 6720000, paymentMethod: 3, paymentDate: stamp(-100), status: 2 },
+  { id: id('iv', 4), receptionistId: receptionists[1].id, receptionistName: receptionists[1].fullName, memberMembershipId: memberships[4].id, memberName: memberships[4].memberName, packageName: 'Gói 6 tháng', amount: 4080000, paymentMethod: 2, paymentDate: stamp(-2), status: 1 },
 ];
 
 export const bookings = [
@@ -192,7 +192,7 @@ export const trainingResults = [
 export const notifications = [
   { id: id('nt', 1), title: 'Đổi giờ buổi học', message: 'Lớp Chạy Bộ Thứ Ba tuần này dời sang 18:45 vì đường chạy có sự kiện của trường.', isRead: false, createdAt: stamp(-1, 8) },
   { id: id('nt', 2), title: 'Đã đặt lớp', message: 'Bạn đã đặt lớp Yoga Bình Minh. Buổi đầu tiên bắt đầu sau 3 ngày.', isRead: false, createdAt: stamp(-1, 7) },
-  { id: id('nt', 3), title: 'Thẻ sắp hết hạn', message: 'Thẻ Gói Mỗi Ngày của bạn hết hạn sau 50 ngày. Hãy gia hạn tại quầy lễ tân.', isRead: true, createdAt: stamp(-6, 9) },
+  { id: id('nt', 3), title: 'Thẻ sắp hết hạn', message: 'Thẻ Gói 6 tháng của bạn hết hạn sau 50 ngày. Hãy gia hạn ở Tài khoản của tôi → Thẻ thành viên.', isRead: true, createdAt: stamp(-6, 9) },
 ];
 
 export const accounts = [

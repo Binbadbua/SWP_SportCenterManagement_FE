@@ -64,7 +64,7 @@ export default function Home() {
             ))}
           </h1>
           <p className="hero__lead">
-            Yoga lúc bình minh, tạ sau giờ làm, cầu lông đôi ngày thứ Bảy. Chọn lớp, đặt chỗ và chúng tôi sẽ giữ chỗ cho bạn.
+            Tập tạ. Chọn lớp, đặt chỗ và chúng tôi sẽ giữ chỗ cho bạn.
           </p>
           <div className="hero__actions">
             <Button variant="offset" size="lg" to="/classes" iconAfter="arrowRight">Đặt lớp ngay</Button>
@@ -130,7 +130,8 @@ export default function Home() {
           <div className="band__head">
             <h2 className="band__title display">Một thẻ.<br />Mọi sân tập.</h2>
             <p className="band__lead">
-              Thẻ thành viên dùng cho mọi lớp nhóm, phòng gym và hồ bơi. Bạn chọn thời hạn phù hợp với mình.
+              Một thẻ cho mọi môn: tự tập ở phòng gym, cardio, hồ bơi và đặt các lớp có huấn luyện viên. Bạn chọn thời hạn
+              phù hợp với mình.
             </p>
           </div>
           {plans.loading ? (
@@ -149,7 +150,7 @@ export default function Home() {
               </Link>
             </p>
           )}
-          <p className="band__note">Đăng ký và thanh toán trực tuyến ngay trên web, hoặc tại quầy lễ tân.</p>
+          <p className="band__note">Đăng ký và thanh toán trực tuyến ngay trên web.</p>
         </div>
       </section>
 

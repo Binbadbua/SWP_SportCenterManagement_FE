@@ -2,28 +2,30 @@
 //
 //   source: api.xxx (or (user) => ({ list, create?, update?, remove? })) -> the back-end endpoints;
 //   edit and delete buttons only appear when the source has update / remove.
-import { useState } from 'react';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
 import { AUDIT_VERBS, groupEntries } from '../../lib/audit.js';
 import {
-  AccountRole, AccountStatus, BookingStatus, ClassStatus, InvoiceStatus, MembershipStatus, PaymentMethod, RoomStatus,
+  AccountRole, AccountStatus, BookingStatus, ClassStatus, DESK_METHODS, InvoiceStatus, MembershipStatus, PaymentMethod, RoomStatus,
   Gender, SupportRequestStatus,
 } from '../../lib/enums.js';
 import {
   addDaysToDateInput, daysUntil, formatDate, formatDateTime, formatMoney, formatTimeRange, formatWeekday, fromDateInput,
   realPhone, todayLocalDateString, todayUtcDateString,
 } from '../../lib/format.js';
+import { classRunning, classStarted } from '../../lib/classes.js';
 import { cardsOn } from '../../lib/membership.js';
 import { hasClassPrices, hasPackageDiscounts } from '../../lib/pricing.js';
 import { CoachPortrait } from '../../components/cards.jsx';
-import { useToast } from '../../components/Toast.jsx';
-import { Button, ErrorNotice, Field, FillBar, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
+import { ErrorNotice, FillBar, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
 
 const tag = (E) => (v) => <StatusTag tone={E.tone(v)}>{E.label(v)}</StatusTag>;
 const isManager = (u) => u?.role === 'CenterManager';
 const isFrontDesk = (u) => u?.role === 'CenterManager' || u?.role === 'Receptionist';
+// Selling at the desk (new members, cards, renewals, invoices, printing) is reception's job alone (team rule,
+// 28/10/2026): a manager sees and corrects those lists but does not take money
+const isReception = (u) => u?.role === 'Receptionist';
 // A package bought on the website: unpaid and no receptionist yet. Staff confirm it within 30 minutes
 // (api.payments.confirm); editing it to Paid instead would leave the card inactive (CHANGELOG Part B, B43).
 const awaitingOnline = (r) => r.status === 1 && !r.receptionistId;
@@ -286,56 +288,6 @@ function AuditDetail({ row, lookups }) {
   );
 }
 
-/* ---- Membership renewal by a manager ------------------------------------ */
-// The API bills a renewal to a receptionist: reception bill it to themselves, a manager picks who
-function RenewAsManager({ row, lookups, close, reload }) {
-  const toast = useToast();
-  const options = opt(lookups.receptionists, 'id', (r) => (r.phone ? `${r.fullName} · ${r.phone}` : r.fullName));
-  const [receptionistId, setReceptionistId] = useState(options[0]?.value ?? '');
-  const [error, setError] = useState(null);
-  const [busy, setBusy] = useState(false);
-
-  const renew = async (e) => {
-    e.preventDefault();
-    if (!receptionistId) return setError('Vui lòng chọn lễ tân lập hóa đơn.');
-    setBusy(true);
-    setError(null);
-    try {
-      await api.memberships.renew(row.id, receptionistId);
-      toast.success(`Đã gia hạn thẻ của ${row.memberName}; hóa đơn chờ thanh toán đã được tạo.`);
-      reload();
-      close();
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  return (
-    <form className="renew-form" onSubmit={renew} noValidate>
-      <p>
-        Gia hạn {row.packageName} của {row.memberName} thêm một chu kỳ. Hệ thống tạo kỳ mới nối tiếp kỳ cũ và
-        một hóa đơn chờ thanh toán đứng tên lễ tân bạn chọn.
-      </p>
-      <Field
-        label="Lễ tân lập hóa đơn"
-        name="receptionistId"
-        type="select"
-        required
-        value={receptionistId}
-        onChange={(_, v) => setReceptionistId(v)}
-        options={options}
-        error={error}
-      />
-      <div className="form-actions">
-        <Button variant="ghost" onClick={close} disabled={busy}>Hủy</Button>
-        <Button type="submit" disabled={busy}>{busy ? 'Đang gia hạn…' : 'Gia hạn'}</Button>
-      </div>
-    </form>
-  );
-}
-
 /* ======================================================================
    API-backed pages
    ====================================================================== */
@@ -348,13 +300,18 @@ export const resources = {
     source: {
       ...api.classes,
       list: async () => {
-        const rows = await api.classes.list();
+        const [rows, sessions] = await Promise.all([api.classes.list(), api.schedules.list().catch(() => null)]);
         carries.price = hasClassPrices(rows);
-        return rows;
+        // Whether each class has begun, as members see it (lib/classes.js): the delete lock below
+        return sessions ? rows.map((c) => ({ ...c, started: classStarted(c, sessions) })) : rows;
       },
     },
     sample: mock.classes, lookups: () => ({ categories: L.categories, coaches: L.coaches }),
     canWrite: isManager, nameOf: (r) => r.className,
+    // Deleting a running class would leave its members to be refunded and told by hand (team rule, 28/10/2026)
+    deleteLocked: (r) => (classRunning(r)
+      ? 'Lớp đang diễn ra nên không xóa được. Chỉ xóa lớp chưa bắt đầu, đã kết thúc hoặc đã hủy.'
+      : null),
     searchText: (r) => `${r.className} ${r.categoryName} ${r.coachName}`,
     sort: (a, b) => a.startDate.localeCompare(b.startDate),
     columns: [
@@ -580,10 +537,12 @@ export const resources = {
 
   invoices: {
     key: 'invoices', title: 'Hóa đơn', singular: 'Hóa đơn',
-    description: 'Mỗi lần mua thẻ thành viên hoặc đặt lớp có học phí có một hóa đơn; hóa đơn đã thanh toán thì không xóa được. Đơn học viên đặt trên web được giữ 30 phút: nhận tiền xong bấm “Xác nhận đã nhận tiền” để kích hoạt thẻ hoặc giữ chỗ trong lớp, quá hạn thì máy chủ tự hủy đơn. “In” mở hóa đơn để in hoặc lưu PDF.',
-    source: api.invoices, sample: mock.invoices, canWrite: isFrontDesk, nameOf: (r) => `${r.memberName} · ${itemOf(r)}`,
-    // A class's invoice follows its booking (B53): it changes through confirm, cancel and refund, not by hand
-    canEditRow: (r) => !awaitingOnline(r) && !r.classBookingId,
+    description: (u) => `Mỗi lần mua thẻ thành viên hoặc đặt lớp có học phí có một hóa đơn; hóa đơn đã thanh toán thì không xóa được. Đơn thanh toán qua MoMo tự xác nhận khi MoMo báo đã nhận tiền; đơn chuyển khoản trên web được giữ 30 phút: nhận tiền xong bấm “Xác nhận đã nhận tiền”, quá hạn thì máy chủ tự hủy đơn.${isReception(u) ? ' “In” mở hóa đơn để in hoặc lưu PDF.' : ' Lễ tân lập và in hóa đơn tại quầy.'}`,
+    source: (u) => (isReception(u) ? api.invoices : { list: api.invoices.list, update: api.invoices.update, remove: api.invoices.remove }),
+    sample: mock.invoices, canWrite: isFrontDesk, nameOf: (r) => `${r.memberName} · ${itemOf(r)}`,
+    // A class's invoice follows its booking (B53) and a MoMo invoice follows MoMo (B54): they change through confirm,
+    // cancel and refund, not by hand
+    canEditRow: (r) => !awaitingOnline(r) && !r.classBookingId && r.paymentMethod !== 4 && r.paymentMethod !== 5,
     rowActions: [
       {
         label: 'Xác nhận đã nhận tiền',
@@ -595,7 +554,7 @@ export const resources = {
           : `Đã xác nhận thanh toán: ${r.packageName} của ${r.memberName} đã được kích hoạt.`),
       },
       // Opens in a new tab so the list stays where it was (pages/InvoicePrint.jsx)
-      { label: 'In', to: (r) => `/print/invoices/${r.id}`, newTab: true },
+      { label: 'In', to: (r) => `/print/invoices/${r.id}`, newTab: true, hidden: (r, u) => !isReception(u) },
     ],
     lookups: (u) => ({
       memberships: L.memberships,
@@ -640,7 +599,7 @@ export const resources = {
         optionsFrom: (l) => opt(l.receptionists, 'id', 'fullName'), defaultValue: (u) => u?.receptionistId ?? '',
       },
       { name: 'amount', label: 'Số tiền (VND)', type: 'number', required: true, min: 1, createOnly: true },
-      { name: 'paymentMethod', label: 'Hình thức thanh toán', type: 'select', numeric: true, required: true, options: PaymentMethod.options },
+      { name: 'paymentMethod', label: 'Hình thức thanh toán', type: 'select', numeric: true, required: true, options: DESK_METHODS },
       { name: 'status', label: 'Trạng thái', type: 'select', numeric: true, required: true, options: InvoiceStatus.options, defaultValue: () => '1' },
     ],
   },
@@ -686,14 +645,16 @@ export const resources = {
   // an existing account). Reception and managers edit a member; only a manager may delete one.
   members: {
     key: 'members', title: 'Học viên', singular: 'Học viên',
-    description: 'Tìm kiếm, đăng ký và cập nhật thông tin học viên tại quầy. Cột Thẻ thành viên cho biết học viên có đặt lớp được không.',
+    description: (u) => (isReception(u)
+      ? 'Tìm kiếm, đăng ký và cập nhật thông tin học viên tại quầy. Cột Thẻ thành viên cho biết học viên có đặt lớp được không.'
+      : 'Tìm kiếm và cập nhật thông tin học viên; lễ tân đăng ký học viên mới tại quầy. Cột Thẻ thành viên cho biết học viên có đặt lớp được không.'),
     source: (u) => ({
       // Each member gets their card from the card list (reception and managers may read it)
       list: async () => {
         const [members, cards] = await Promise.all([api.members.list(), api.memberships.list().catch(() => null)]);
         return cards ? members.map((m) => ({ ...m, card: cardOf(cards, m.id) })) : members;
       },
-      create: (body) => api.auth.register(body),
+      ...(isReception(u) ? { create: (body) => api.auth.register(body) } : {}),
       update: api.members.update,
       ...(isManager(u) ? { remove: api.members.remove } : {}),
     }),
@@ -839,9 +800,14 @@ export const resources = {
   // fixed once sold. Renew and Cancel have their own endpoints.
   memberships: {
     key: 'memberships', title: 'Thẻ thành viên', singular: 'Thẻ thành viên',
-    description: 'Học viên nào đang dùng gói nào và đến ngày nào. Gia hạn tạo một kỳ mới nối tiếp kỳ cũ cùng một hóa đơn chờ thanh toán.',
-    source: api.memberships, sample: mock.memberships, canWrite: isFrontDesk, canDelete: isManager,
-    lookups: (u) => ({ members: L.members, packages: L.packages, ...(isManager(u) ? { receptionists: L.receptionists } : {}) }),
+    description: (u) => (isReception(u)
+      ? 'Học viên nào đang dùng gói nào và đến ngày nào. Gia hạn tạo một kỳ mới nối tiếp kỳ cũ cùng một hóa đơn chờ thanh toán.'
+      : 'Học viên nào đang dùng gói nào và đến ngày nào. Lễ tân bán, gia hạn và hủy thẻ tại quầy.'),
+    source: (u) => (isReception(u)
+      ? api.memberships
+      : { list: api.memberships.list, update: api.memberships.update, remove: api.memberships.remove }),
+    sample: mock.memberships, canWrite: isFrontDesk, canDelete: isManager,
+    lookups: () => ({ members: L.members, packages: L.packages }),
     nameOf: (r) => `${r.memberName} · ${r.packageName}`,
     searchText: (r) => `${r.memberName} ${r.packageName}`,
     sort: (a, b) => String(b.startDate).localeCompare(String(a.startDate)),
@@ -888,23 +854,14 @@ export const resources = {
         // Package names already start with "Thẻ …", so the messages name the package alone
         confirm: (r) => `Gia hạn ${r.packageName} của ${r.memberName} thêm một chu kỳ? Hệ thống tạo kỳ mới và một hóa đơn chờ thanh toán.`,
         done: (r) => `Đã gia hạn thẻ của ${r.memberName}; hóa đơn chờ thanh toán đã được tạo.`,
-        hidden: (r, u) => isManager(u),
-      },
-      {
-        // The API bills a manager's renewal to a receptionist the manager picks
-        label: 'Gia hạn',
-        modal: {
-          title: (r) => `Gia hạn thẻ của ${r.memberName}`,
-          render: (r, l, ctx) => <RenewAsManager row={r} lookups={l} {...ctx} />,
-        },
-        hidden: (r, u) => !isManager(u),
+        hidden: (r, u) => !isReception(u),
       },
       {
         label: 'Hủy thẻ',
         run: (r) => api.memberships.cancel(r.id),
         confirm: (r) => `Hủy ${r.packageName} của ${r.memberName}?`,
         done: (r) => `Đã hủy thẻ của ${r.memberName}.`,
-        hidden: (r) => r.status !== 1,
+        hidden: (r, u) => r.status !== 1 || !isReception(u),
       },
     ],
     emptyHint: 'Hãy có học viên và gói tập trước, rồi bán thẻ thành viên ở đây.',

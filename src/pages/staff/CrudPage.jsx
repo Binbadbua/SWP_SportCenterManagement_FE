@@ -77,6 +77,7 @@ function Pager({ page, pageCount, total, onPage }) {
  *               shown false = the field is not drawn, checked or sent (e.g. "member" when a plan is for the whole class)
  *   searchText?(row), sort?(a, b), validate?(values), toRequest?(values, ctx), canWrite?(user), canDelete?(user),
  *   canEditRow?(row, user)                      // false hides that row's edit button
+ *   deleteLocked?(row, user)                    // a reason string = that row's delete button is shown disabled
  *   doneMessage?(mode, result)                  // toast after a save instead of "Đã thêm …" / "Đã lưu …"
  *   rowActions?: [{ label, icon?, to?(row), newTab?, modal?: { title(row), render(row, lookups, { close, reload }) },
  *                   run?(row), confirm?(row), done?(row), hidden?(row, user, lookups) }],
@@ -309,6 +310,8 @@ export default function CrudPage({ config }) {
   const remove = async () => {
     const row = confirm;
     setConfirm(null);
+    const locked = config.deleteLocked?.(row, user);
+    if (locked) return toast.error(locked);
     try {
       await source.remove(row.id);
       toast.success(`Đã xóa ${config.singular.toLowerCase()} “${nameOf(row)}”.`);
@@ -477,9 +480,9 @@ export default function CrudPage({ config }) {
                       {canDelete && (
                         <IconButton
                           icon="trash"
-                          label={`Xóa ${nameOf(row)}`}
+                          label={config.deleteLocked?.(row, user) || `Xóa ${nameOf(row)}`}
                           onClick={() => setConfirm(row)}
-                          disabled={offline}
+                          disabled={offline || !!config.deleteLocked?.(row, user)}
                         />
                       )}
                     </td>

@@ -12,6 +12,7 @@ import Memberships from './pages/store/Memberships.jsx';
 import Coaches from './pages/store/Coaches.jsx';
 import CoachDetail from './pages/store/CoachDetail.jsx';
 import Checkout from './pages/store/Checkout.jsx';
+import UpgradeCheckout from './pages/store/UpgradeCheckout.jsx';
 import PaymentResult from './pages/store/PaymentResult.jsx';
 import Login from './pages/store/Login.jsx';
 import Register from './pages/store/Register.jsx';
@@ -23,6 +24,7 @@ import NotFound from './pages/NotFound.jsx';
 import Dashboard from './pages/staff/Dashboard.jsx';
 import Attendance from './pages/staff/Attendance.jsx';
 import Bookings from './pages/staff/Bookings.jsx';
+import CheckIns from './pages/staff/CheckIns.jsx';
 import StaffNotifications from './pages/staff/Notifications.jsx';
 import CrudPage from './pages/staff/CrudPage.jsx';
 import { resources } from './pages/staff/resources.jsx';
@@ -63,6 +65,7 @@ export default function App() {
           <Route path="schedule" element={<Schedule />} />
           <Route path="memberships" element={<Memberships />} />
           <Route path="memberships/:id/checkout" element={<Checkout />} />
+          <Route path="memberships/upgrade" element={<UpgradeCheckout />} />
           <Route path="payment/result" element={<PaymentResult />} />
           <Route path="coaches" element={<Coaches />} />
           <Route path="coaches/:id" element={<CoachDetail />} />
@@ -79,6 +82,7 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="bookings" element={<Bookings />} />
+          <Route path="check-ins" element={<CheckIns />} />
           <Route path="notifications" element={<StaffNotifications />} />
           {Object.entries(CRUD_ROUTES).map(([path, key]) => (
             // key= forces a fresh page (and fresh hooks) when moving between list pages

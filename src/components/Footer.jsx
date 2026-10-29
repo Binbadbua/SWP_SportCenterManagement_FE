@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { FRONT_DESK_PHONE } from '../lib/contact.js';
 import Logo from './Logo.jsx';
 
 export default function Footer() {
@@ -30,12 +31,12 @@ export default function Footer() {
           <address>
             SportCenter<br />
             Mở cửa hằng ngày 05:30–22:30<br />
-            Lễ tân: 0900 000 000
+            Lễ tân: <a href={`tel:${FRONT_DESK_PHONE.replace(/\s/g, '')}`}>{FRONT_DESK_PHONE}</a>
           </address>
         </div>
       </div>
       <div className="container site-footer__base">
-        <span>© {new Date().getFullYear()} SportCenter · Dự án SWP</span>
+        <span>© {new Date().getFullYear()} SportCenter</span>
         <span>
           <Link to="/terms">Điều khoản</Link>
           <Link to="/privacy">Bảo mật</Link>

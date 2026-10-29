@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { api } from "../../api/endpoints.js";
 import * as mock from "../../api/mockData.js";
 import { useApi } from "../../hooks/useApi.js";
+import { usePaymentOptions } from "../../hooks/usePricing.js";
 import { isMember, useAuth } from "../../context/AuthContext.jsx";
 import { sportImage, IMAGES, classThumbnails } from "../../lib/images.js";
 import {
@@ -15,10 +16,13 @@ import {
   isSessionOver,
 } from "../../lib/format.js";
 import { ClassStatus } from "../../lib/enums.js";
+import { classStarted } from "../../lib/classes.js";
 import { cardCheck } from "../../lib/membership.js";
 import { discountFor, maxDiscount, priceAfter } from "../../lib/pricing.js";
 import Icon from "../../components/Icon.jsx";
+import CancelBooking from "../../components/CancelBooking.jsx";
 import { classEyebrow, CoachPortrait } from "../../components/cards.jsx";
+import { useToast } from "../../components/Toast.jsx";
 import {
   Button,
   EmptyState,
@@ -71,12 +75,15 @@ export default function ClassDetail() {
     skip: !member,
   });
   const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
+  const opts = usePaymentOptions();
+  const toast = useToast();
 
   const [showAll, setShowAll] = useState(false);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState(null);
   const [booked, setBooked] = useState(null); // confirmation panel
   const [newBooking, setNewBooking] = useState(null); // booking made on this page
+  const [asking, setAsking] = useState(false); // the cancel dialog
 
   if (cls.loading)
     return (
@@ -107,9 +114,11 @@ export default function ClassDetail() {
   const knownTaken = enrolled !== undefined && enrolled !== null;
   const taken = knownTaken ? enrolled : 0;
   const spotsLeft = Math.max(0, c.maxCapacity - taken);
-  const eyebrow = classEyebrow(c, knownTaken ? spotsLeft : undefined);
   const category = (categories.data ?? []).find((x) => x.id === c.categoryId);
   const allSessions = sessions.data ?? [];
+  // Only a class that has not started takes bookings (team rule, 28/10/2026)
+  const started = classStarted(c, allSessions);
+  const eyebrow = classEyebrow(c, knownTaken ? spotsLeft : undefined, started);
   const shownSessions = showAll
     ? allSessions
     : allSessions.slice(0, SESSIONS_SHOWN);
@@ -136,6 +145,10 @@ export default function ClassDetail() {
   const topDiscount = priced ? maxDiscount(packages.data) : 0;
   const withFee = priced && c.price > 0;
   const paidBooking = priced && myBooking?.status === 1 && Number(myBooking.price ?? 0) > 0;
+  // With MoMo (B54–B55) members cancel a paid class themselves and the API refunds it before the class starts;
+  // before that reception cancel and refund paid classes at the desk
+  const selfRefund = !!opts?.online;
+  const hold = opts?.holdMinutes ?? 30;
 
   // A class with a fee is booked through its checkout page, like a package
   const startBooking = () => {
@@ -177,10 +190,17 @@ export default function ClassDetail() {
     setActionError(null);
     try {
       await api.bookings.cancel(myBooking.id, myBooking.memberId ?? memberId);
+      toast.success(
+        myBooking.status === 1 && Number(myBooking.price ?? 0) > 0 && !started
+          ? `Đã hủy đặt lớp ${c.className}. Học phí được hoàn về nơi bạn đã trả.`
+          : `Đã hủy đặt lớp ${c.className}.`,
+      );
+      setAsking(false);
       setNewBooking(null);
       roster.reload();
       myBookings.reload();
     } catch (e) {
+      setAsking(false);
       setActionError(e.message);
     } finally {
       setBusy(false);
@@ -206,15 +226,16 @@ export default function ClassDetail() {
           <Icon name="clock" size={20} strokeWidth={2} /> Đang chờ thanh toán
         </div>
         <p className="muted small">
-          Chỗ của bạn được giữ 30 phút. Thanh toán
-          {myBooking.price ? ` ${formatMoney(myBooking.price)}` : ""} với lễ tân; quá hạn thì lượt đặt tự hủy.
+          {selfRefund
+            ? `Chỗ của bạn được giữ ${hold} phút. Thanh toán${myBooking.price ? ` ${formatMoney(myBooking.price)}` : ""} qua MoMo; quá hạn thì lượt đặt tự hủy.`
+            : `Chỗ của bạn được giữ ${hold} phút để lễ tân đối soát chuyển khoản${myBooking.price ? ` ${formatMoney(myBooking.price)}` : ""}; quá hạn thì lượt đặt tự hủy.`}
         </p>
         {myBooking.invoiceId && (
           <Button size="lg" block to={`/payment/result?paymentId=${myBooking.invoiceId}`}>
-            Xem đơn thanh toán
+            {selfRefund ? "Tiếp tục thanh toán" : "Xem đơn thanh toán"}
           </Button>
         )}
-        <Button variant="secondary" size="lg" block onClick={cancel} disabled={busy}>
+        <Button variant="secondary" size="lg" block onClick={() => setAsking(true)} disabled={busy}>
           Hủy đặt lớp
         </Button>
       </>
@@ -226,27 +247,37 @@ export default function ClassDetail() {
           <Icon name="check" size={20} strokeWidth={2} /> Bạn đã đặt lớp
           này
         </div>
-        {/* A paid class is cancelled and refunded by reception, before its first session (B53) */}
-        {paidBooking ? (
+        {/* Before MoMo a paid class is cancelled and refunded by reception, before its first session (B53) */}
+        {paidBooking && !selfRefund ? (
           <p className="muted small">
             Đã thanh toán {formatMoney(myBooking.price)}. Muốn hủy và nhận lại tiền, hãy báo lễ tân trước buổi học
             đầu tiên.
           </p>
         ) : (
-          <Button
-            variant="secondary"
-            size="lg"
-            block
-            onClick={cancel}
-            disabled={busy}
-          >
-            Hủy đặt lớp
-          </Button>
+          <>
+            {paidBooking && (
+              <p className="muted small">
+                Đã thanh toán {formatMoney(myBooking.price)}.{" "}
+                {started
+                  ? "Lớp đã bắt đầu nên hủy bây giờ sẽ không được hoàn học phí."
+                  : "Hủy trước buổi học đầu tiên thì được hoàn đủ học phí."}
+              </p>
+            )}
+            <Button
+              variant="secondary"
+              size="lg"
+              block
+              onClick={() => setAsking(true)}
+              disabled={busy}
+            >
+              Hủy đặt lớp
+            </Button>
+          </>
         )}
       </>
     );
   } else {
-    const open = !closed && !noSessionsLeft && spotsLeft > 0;
+    const open = !closed && !started && !noSessionsLeft && spotsLeft > 0;
     cta = (
       <>
         <Button
@@ -259,18 +290,28 @@ export default function ClassDetail() {
             ? "Đã đóng đăng ký"
             : noSessionsLeft
               ? "Không còn buổi học sắp tới"
-              : spotsLeft === 0
-                ? "Lớp đã đủ chỗ"
-                : busy
-                  ? "Đang đặt…"
-                  : needsCard
-                    ? "Cần thẻ thành viên còn hiệu lực"
-                    : !user
-                      ? "Đăng nhập để đặt lớp"
-                      : withFee
-                        ? "Đặt lớp và thanh toán"
-                        : "Đặt lớp này"}
+              : started
+                ? "Lớp đã bắt đầu"
+                : spotsLeft === 0
+                  ? "Lớp đã đủ chỗ"
+                  : busy
+                    ? "Đang đặt…"
+                    : needsCard
+                      ? "Cần thẻ thành viên còn hiệu lực"
+                      : !user
+                        ? "Đăng nhập để đặt lớp"
+                        : withFee
+                          ? "Đặt lớp và thanh toán"
+                          : "Đặt lớp này"}
         </Button>
+        {!closed && !noSessionsLeft && started && (
+          <p className="muted small">
+            Lớp đã bắt đầu nên không nhận đặt thêm: mỗi lớp chỉ nhận học viên trước buổi học đầu tiên.{" "}
+            <Link className="text-link" to={`/classes?sport=${c.categoryId}`}>
+              Xem các lớp {c.categoryName} khác
+            </Link>
+          </p>
+        )}
         {!closed && noSessionsLeft && (
           <p className="muted small">
             {allSessions.length
@@ -285,7 +326,9 @@ export default function ClassDetail() {
         )}
         {open && withFee && (
           <p className="muted small">
-            Đặt trên web thì chỗ được giữ 30 phút để bạn thanh toán với lễ tân.
+            {selfRefund
+              ? `Bấm đặt lớp để sang trang thanh toán MoMo; chỗ được giữ ${hold} phút trong lúc bạn thanh toán.`
+              : `Bấm đặt lớp để sang trang thanh toán; chỗ được giữ ${hold} phút để lễ tân đối soát chuyển khoản.`}
           </p>
         )}
         {open && member && myCards.error && (
@@ -524,14 +567,33 @@ export default function ClassDetail() {
             </details>
             <details>
               <summary>Hủy đặt lớp</summary>
-              <p>
-                Bạn có thể tự hủy trên web cho đến khi học buổi đầu tiên. Sau đó, hãy
-                nhờ lễ tân hỗ trợ.
-              </p>
+              {/* The cancel rules of 28/10/2026 (lib/classes.js → cancelTerms) */}
+              <ul className="facts facts--plain">
+                <li>Lượt đặt đang chờ thanh toán: hủy lúc nào cũng được, chưa có khoản tiền nào bị trừ.</li>
+                {withFee && !selfRefund ? (
+                  <li>Lớp đã thanh toán: báo lễ tân trước buổi học đầu tiên để hủy và nhận lại học phí.</li>
+                ) : (
+                  <li>
+                    Trước buổi học đầu tiên: tự hủy trên web{withFee ? " và được hoàn đủ học phí về nơi bạn đã trả" : ""}.
+                  </li>
+                )}
+                <li>
+                  Lớp đã bắt đầu: vẫn hủy được nhưng {withFee ? "không hoàn học phí, và " : ""}không đặt lại được lớp
+                  đó.
+                </li>
+              </ul>
             </details>
           </div>
         </div>
       </div>
+
+      <CancelBooking
+        booking={asking ? { ...myBooking, className: myBooking?.className ?? c.className } : null}
+        started={started}
+        busy={busy}
+        onConfirm={cancel}
+        onClose={() => setAsking(false)}
+      />
 
       {booked && (
         <div className="booked-panel" role="status">

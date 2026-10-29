@@ -24,6 +24,9 @@ export const formatDate = (v) => (v && isValid(toDate(v)) ? dayFmt.format(toDate
 export const formatShortDate = (v) => (v && isValid(toDate(v)) ? shortDayFmt.format(toDate(v)) : '—');
 export const formatWeekday = (v) => (v && isValid(toDate(v)) ? weekdayFmt.format(toDate(v)) : '');
 export const formatDateTime = (v) => (v && isValid(toDate(v)) ? dateTimeFmt.format(toDate(v)) : '—');
+// The time of day of a timestamp on the visitor's clock: "08:46"
+export const formatClock = (v) =>
+  v && isValid(toDate(v)) ? `${pad2(toDate(v).getHours())}:${pad2(toDate(v).getMinutes())}` : '—';
 export const formatMoney = (v) => (v === null || v === undefined || v === '' ? '—' : vnd.format(Number(v)));
 
 // "07:00:00" -> "07:00"
@@ -98,6 +101,16 @@ export const moneyInWords = (value) => {
     .reverse()
     .join(' ');
   return text ? `${text[0].toUpperCase()}${text.slice(1)} đồng` : 'Không đồng';
+};
+
+// A session has begun once its day is before today, or it is today and its start time has passed
+export const isSessionStarted = (s, now = new Date()) => {
+  const pad = (n) => String(n).padStart(2, '0');
+  const today = todayLocalDateString(now);
+  const day = String(s.date).slice(0, 10);
+  if (day !== today) return day < today;
+  const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  return String(s.startTime ?? '').padEnd(8, ':00').slice(0, 8) <= time;
 };
 
 export const initials = (name = '') =>

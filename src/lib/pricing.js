@@ -26,6 +26,10 @@ export const priceAfter = (price, percent) => Math.round((Number(price) * (100 -
 export const maxDiscount = (packages) =>
   Math.max(0, ...(packages ?? []).filter((p) => p.status === 1).map((p) => Number(p.discountPercent ?? 0)));
 
-// The services a package lists, one per line
-export const benefitsOf = (pkg) =>
-  String(pkg?.benefits ?? '').split('\n').map((line) => line.trim()).filter(Boolean);
+// The perks a package lists, one per line: its `benefits` (B53), else the lines of its description after the first.
+// The three plans of 28/10/2026 keep their perks in the description ("- …" lines) until the API has the field.
+const linesOf = (text) =>
+  String(text ?? '').split('\n').map((line) => line.replace(/^\s*[-•*]\s*/, '').trim()).filter(Boolean);
+export const benefitsOf = (pkg) => (pkg?.benefits ? linesOf(pkg.benefits) : linesOf(pkg?.description).slice(1));
+// The description without the perks benefitsOf() took from it
+export const summaryOf = (pkg) => (pkg?.benefits ? String(pkg.description ?? '') : linesOf(pkg?.description)[0] ?? '');

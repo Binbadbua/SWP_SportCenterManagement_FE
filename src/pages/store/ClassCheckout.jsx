@@ -1,29 +1,33 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { api, isMissingRoute } from '../../api/endpoints.js';
-import { apiUrl } from '../../api/client.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
+import { usePaymentOptions } from '../../hooks/usePricing.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import {
   formatDate, formatMoney, formatTimeRange, formatWeekday, isSessionOver, realPhone,
 } from '../../lib/format.js';
+import { classStarted } from '../../lib/classes.js';
+import { afterCheckout } from '../../lib/payments.js';
 import { discountFor, maxDiscount, priceAfter } from '../../lib/pricing.js';
 import Icon from '../../components/Icon.jsx';
-import PayMethods, { WEB_METHODS } from '../../components/PayMethods.jsx';
+import PayMethods from '../../components/PayMethods.jsx';
 import { AgreeToPolicies } from '../../components/Policies.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice } from '../../components/ui.jsx';
 
 // A member books a class with a fee (CHANGELOG Part B, B53): POST /api/payments/class-checkout holds a place with a
-// pending invoice for 30 minutes while the member pays reception, like a package bought on the website. The API works
-// out the amount (the class fee less the discount of the member's card); this page shows the same figure beforehand.
-// A free class is booked straight from its page.
+// pending invoice while the member pays — online through MoMo (B54, 15 minutes), or before that a bank transfer that
+// reception confirms (30 minutes). The API works out the amount (the class fee less the discount of the member's card);
+// this page shows the same figure beforehand. Only a class that has not started takes bookings. A free class is
+// booked straight from its page.
 export default function ClassCheckout() {
   const { id } = useParams();
   const { user } = useAuth();
   const member = isMember(user);
   const navigate = useNavigate();
   const location = useLocation();
+  const opts = usePaymentOptions();
   const cls = useApi(() => api.classes.get(id), [id]);
   const sessions = useApi(() => api.schedules.byClass(id), [id]);
   const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
@@ -31,7 +35,7 @@ export default function ClassCheckout() {
   const me = useApi(() => api.members.me.get(), [user?.accountId], { skip: !member });
   const mine = useApi(() => api.bookings.mine(), [user?.accountId], { skip: !member });
 
-  const [method, setMethod] = useState(WEB_METHODS[0].value);
+  const [picked, setPicked] = useState(null); // null = the first method the API takes
   const [agree, setAgree] = useState(false);
   const [agreeError, setAgreeError] = useState(null);
   const [paying, setPaying] = useState(false);
@@ -50,8 +54,10 @@ export default function ClassCheckout() {
     .filter((s) => !isSessionOver(s))
     .sort((a, b) => `${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`));
   const full = c?.currentEnrolled != null && c.currentEnrolled >= c.maxCapacity;
-  const open = c && (c.status === 1 || c.status === 2) && upcoming.length > 0 && !full;
-  if (!c || typeof c.price !== 'number' || c.price <= 0 || !open) {
+  const started = c ? classStarted(c, sessions.data) : false;
+  const priced = typeof c?.price === 'number' && c.price > 0;
+  const open = c && c.status === 1 && !started && upcoming.length > 0 && !full;
+  if (!c || !priced || !open) {
     return (
       <div className="container page">
         <ErrorNotice error={cls.error?.status === 404 ? null : cls.error} onRetry={cls.reload} />
@@ -59,17 +65,21 @@ export default function ClassCheckout() {
           title={
             !c
               ? 'Không tìm thấy lớp học này'
-              : typeof c.price !== 'number' || c.price <= 0
+              : !priced
                 ? 'Lớp này không cần thanh toán trước'
-                : 'Lớp này không nhận đặt thêm'
+                : started && c.status !== 3 && c.status !== 4
+                  ? 'Lớp này đã bắt đầu'
+                  : 'Lớp này không nhận đặt thêm'
           }
           action={<Button to={c ? `/classes/${c.id}` : '/classes'}>{c ? 'Về trang lớp' : 'Xem các lớp học'}</Button>}
         >
           {!c
             ? 'Có thể lớp đã bị xóa hoặc đường dẫn không đúng.'
-            : typeof c.price !== 'number' || c.price <= 0
+            : !priced
               ? 'Bạn đặt lớp này ngay trên trang lớp.'
-              : 'Lớp đã đủ chỗ, đã kết thúc hoặc không còn buổi học sắp tới.'}
+              : started && c.status !== 3 && c.status !== 4
+                ? 'Chỉ nhận đặt các lớp chưa khai giảng. Hãy chọn một lớp sắp khai giảng cùng môn.'
+                : 'Lớp đã đủ chỗ, đã kết thúc hoặc không còn buổi học sắp tới.'}
         </EmptyState>
       </div>
     );
@@ -81,6 +91,8 @@ export default function ClassCheckout() {
   const top = maxDiscount(packages.data);
   const next = upcoming[0];
   const profile = me.data;
+  const method = picked ?? opts?.methods[0];
+  const hold = opts?.holdMinutes ?? 30;
 
   const pay = async (e) => {
     e.preventDefault();
@@ -88,16 +100,19 @@ export default function ClassCheckout() {
       setAgreeError('Bạn cần đồng ý với điều khoản trước khi thanh toán.');
       return;
     }
+    if (!method) return;
     setAgreeError(null);
     setPaying(true);
     setFailure(null);
     setUnavailable(false);
     try {
-      const res = await api.payments.classCheckout({ classId: c.id, paymentMethod: method });
-      if (res?.paymentUrl) window.location.assign(apiUrl(res.paymentUrl));
-      else if (res?.paymentId) navigate(`/payment/result?paymentId=${encodeURIComponent(res.paymentId)}`);
+      const res = await api.payments.classCheckout({
+        classId: c.id,
+        paymentMethod: method,
+        returnUrl: `${window.location.origin}/payment/result`,
+      });
       // Nothing to pay after all (the API books it at once)
-      else navigate('/account?tab=bookings');
+      if (afterCheckout(res, method, navigate) === null) navigate('/account?tab=bookings');
     } catch (err) {
       if (isMissingRoute(err)) setUnavailable(true);
       else setFailure(err.message || 'Không tạo được giao dịch thanh toán.');
@@ -114,8 +129,9 @@ export default function ClassCheckout() {
       <header className="checkout__head">
         <h1 className="checkout__title">Đặt lớp và thanh toán</h1>
         <p className="muted">
-          Học phí trả một lần cho cả khóa. Đơn giữ chỗ cho bạn 30 phút để thanh toán với lễ tân; lễ tân xác nhận xong
-          là bạn có chỗ trong lớp.
+          {opts?.online
+            ? `Học phí trả một lần cho cả khóa, thanh toán trực tuyến qua MoMo. Chỗ của bạn được giữ ${hold} phút; MoMo báo đã nhận tiền là bạn có chỗ trong lớp.`
+            : `Học phí trả một lần cho cả khóa, bằng chuyển khoản. Chỗ của bạn được giữ ${hold} phút để lễ tân đối soát; lễ tân xác nhận xong là bạn có chỗ trong lớp.`}
         </p>
       </header>
 
@@ -140,17 +156,21 @@ export default function ClassCheckout() {
             </Notice>
           ) : already ? (
             <Notice
-              tone="info"
+              tone={already.status === 4 ? 'warning' : 'info'}
               title={already.status === 4 ? 'Bạn đang có một đơn chờ thanh toán cho lớp này' : 'Bạn đã đặt lớp này'}
               action={
                 already.status === 4 && already.invoiceId ? (
-                  <Button size="sm" variant="secondary" to={`/payment/result?paymentId=${already.invoiceId}`}>Xem đơn</Button>
+                  <Button size="sm" to={`/payment/result?paymentId=${already.invoiceId}`}>
+                    {opts?.online ? 'Tiếp tục thanh toán' : 'Xem đơn'}
+                  </Button>
                 ) : (
                   <Button size="sm" variant="secondary" to="/account?tab=bookings">Lớp đã đặt</Button>
                 )
               }
             >
-              Mỗi học viên đặt một lớp một lần.
+              {already.status === 4
+                ? 'Chỗ của bạn đang được giữ trong lúc chờ thanh toán. Mỗi học viên đặt một lớp một lần, nên không tạo thêm đơn mới.'
+                : 'Mỗi học viên đặt một lớp một lần.'}
             </Notice>
           ) : (
             <form id="class-checkout-form" className="checkout__form" onSubmit={pay} noValidate>
@@ -170,18 +190,22 @@ export default function ClassCheckout() {
                   <div><dt>Huấn luyện viên</dt><dd>{c.coachName}</dd></div>
                   <div><dt>Thời gian</dt><dd className="num">{formatDate(c.startDate)} – {formatDate(c.endDate)}</dd></div>
                   <div>
-                    <dt>Buổi kế tiếp</dt>
+                    <dt>Buổi đầu tiên</dt>
                     <dd className="num">
                       {formatWeekday(next.date)} {formatDate(next.date)} · {formatTimeRange(next.startTime, next.endTime)}
                     </dd>
                   </div>
-                  <div><dt>Số buổi còn lại</dt><dd className="num">{upcoming.length}</dd></div>
+                  <div><dt>Số buổi</dt><dd className="num">{upcoming.length}</dd></div>
                 </dl>
               </section>
 
               <section className="checkout__step">
                 <h2 className="checkout__step-title"><span className="checkout__num">3</span> Phương thức thanh toán</h2>
-                <PayMethods value={method} onChange={setMethod} />
+                {opts ? (
+                  <PayMethods value={method} onChange={setPicked} methods={opts.methods} />
+                ) : (
+                  <Loading label="Đang tải cách thanh toán" />
+                )}
                 <label className={`check check--terms ${agreeError ? 'check--error' : ''}`}>
                   <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                   <span><AgreeToPolicies lead="Tôi đồng ý với" termsNote="(gồm quy định hủy lớp và hoàn tiền)" /></span>
@@ -221,12 +245,14 @@ export default function ClassCheckout() {
                 </Notice>
               )}
               {failure && <p className="field__error" role="alert">{failure}</p>}
-              <Button type="submit" form="class-checkout-form" size="lg" block disabled={paying}>
+              <Button type="submit" form="class-checkout-form" size="lg" block disabled={paying || !opts}>
                 {paying ? 'Đang tạo giao dịch…' : `Đặt lớp và thanh toán ${formatMoney(total)}`}
               </Button>
               <p className="checkout__safe muted">
-                <Icon name="check" size={16} strokeWidth={2} /> Bước này chưa trừ tiền: bạn thanh toán với lễ tân; quá 30 phút
-                chưa xác nhận thì lượt đặt tự hủy và chỗ được trả lại.
+                <Icon name="check" size={16} strokeWidth={2} />{' '}
+                {opts?.online
+                  ? `Bước này chưa trừ tiền: bạn quét mã QR hoặc nhập thẻ ở bước sau; quá ${hold} phút chưa thanh toán thì lượt đặt tự hủy và chỗ được trả lại.`
+                  : `Bước này chưa trừ tiền: bạn chuyển khoản ở bước sau; quá ${hold} phút lễ tân chưa xác nhận thì lượt đặt tự hủy và chỗ được trả lại.`}
               </p>
             </>
           )}

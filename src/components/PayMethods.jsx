@@ -1,25 +1,21 @@
-// The two ways to pay for a web order (values are PaymentMethod in lib/enums.js); cash stays at the reception desk.
-// Used by the package checkout and the class checkout.
-export const WEB_METHODS = [
-  { value: 2, title: 'Chuyển khoản ngân hàng', text: 'Chuyển khoản theo hướng dẫn của lễ tân, ghi mã giao dịch trong nội dung chuyển khoản.' },
-  { value: 3, title: 'Thẻ ATM / Visa / Mastercard', text: 'Quẹt thẻ tại quầy lễ tân, đọc mã giao dịch cho lễ tân.' },
-];
+// The ways a member pays for an order made on the website (values are PaymentMethod in lib/enums.js): online only,
+// never at the desk. Once the API takes MoMo (CHANGELOG Part B, B54) the money is checked by MoMo; before that a bank
+// transfer is checked by reception. Used by the package, class and upgrade checkouts with usePaymentOptions().methods.
+const METHODS = {
+  2: { title: 'Chuyển khoản ngân hàng', text: 'Chuyển khoản qua ứng dụng ngân hàng, ghi mã giao dịch trong nội dung; lễ tân đối soát rồi xác nhận.' },
+  4: { title: 'Ví MoMo', text: 'Quét mã QR bằng ứng dụng MoMo, hoặc mở thẳng ứng dụng MoMo nếu bạn đang dùng điện thoại.' },
+  5: { title: 'Thẻ ATM nội địa (qua MoMo)', text: 'Nhập thẻ ATM có đăng ký thanh toán trực tuyến trên trang thanh toán của MoMo.' },
+};
 
-export default function PayMethods({ value, onChange }) {
+export default function PayMethods({ value, onChange, methods = [2] }) {
   return (
     <div className="pay-methods" role="radiogroup" aria-label="Phương thức thanh toán">
-      {WEB_METHODS.map((m) => (
-        <label key={m.value} className={`pay-method ${value === m.value ? 'is-active' : ''}`}>
-          <input
-            type="radio"
-            name="paymentMethod"
-            value={m.value}
-            checked={value === m.value}
-            onChange={() => onChange(m.value)}
-          />
+      {methods.filter((m) => METHODS[m]).map((m) => (
+        <label key={m} className={`pay-method ${value === m ? 'is-active' : ''}`}>
+          <input type="radio" name="paymentMethod" value={m} checked={value === m} onChange={() => onChange(m)} />
           <span className="pay-method__text">
-            <strong>{m.title}</strong>
-            <span className="muted">{m.text}</span>
+            <strong>{METHODS[m].title}</strong>
+            <span className="muted">{METHODS[m].text}</span>
           </span>
         </label>
       ))}

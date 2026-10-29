@@ -34,6 +34,11 @@ export const STAFF_NAV = [
     group: "Quầy lễ tân",
     items: [
       {
+        to: "/staff/check-ins",
+        label: "Vào cửa",
+        roles: ["Receptionist", "CenterManager"],
+      },
+      {
         to: "/staff/bookings",
         label: "Đặt lớp",
         roles: ["Receptionist"],

@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { api, isMissingRoute } from "../../api/endpoints.js";
 import * as mock from "../../api/mockData.js";
 import { useApi } from "../../hooks/useApi.js";
+import { usePaymentOptions } from "../../hooks/usePricing.js";
 import { isStaff, useAuth } from "../../context/AuthContext.jsx";
 import { sportImage } from "../../lib/images.js";
 import {
@@ -31,8 +32,10 @@ import {
   todayLocalDateString,
   todayUtcDateString,
 } from "../../lib/format.js";
-import { cardsOn } from "../../lib/membership.js";
+import { classStarted } from "../../lib/classes.js";
+import { cardsOn, upgradeTargets } from "../../lib/membership.js";
 import { hasClassPrices, hasPackageDiscounts } from "../../lib/pricing.js";
+import CancelBooking from "../../components/CancelBooking.jsx";
 import { useToast } from "../../components/Toast.jsx";
 import NotificationInbox from "../../components/NotificationInbox.jsx";
 import {
@@ -165,19 +168,36 @@ function BookingsTab({ memberId }) {
   });
   const sportOf = (classId) =>
     (classes.data ?? []).find((c) => c.id === classId)?.categoryName;
+  // Whether a booked class has started: no refund on cancelling then, and no booking it again
+  const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
+  const startedOf = (b) => {
+    const c = (classes.data ?? []).find((x) => x.id === b.classId);
+    return c
+      ? classStarted(c, sessions.data)
+      : !!b.classStartDate && String(b.classStartDate).slice(0, 10) < todayLocalDateString();
+  };
+  // With MoMo (B54–B55) a member cancels a paid class themself and the API refunds it before the class starts;
+  // before that reception cancel and refund paid classes
+  const opts = usePaymentOptions();
+  const selfRefund = !!opts?.online;
   const [busyId, setBusyId] = useState(null);
+  const [asking, setAsking] = useState(null); // the booking the cancel dialog is about
 
   const cancel = async (b) => {
-    if (!window.confirm(`Hủy đặt lớp ${b.className}?`)) return;
     setBusyId(b.id);
     try {
       await api.bookings.cancel(b.id, b.memberId ?? memberId);
-      toast.success(`Đã hủy đặt lớp ${b.className}.`);
+      toast.success(
+        b.status === 1 && Number(b.price ?? 0) > 0 && !startedOf(b)
+          ? `Đã hủy đặt lớp ${b.className}. Học phí được hoàn về nơi bạn đã trả.`
+          : `Đã hủy đặt lớp ${b.className}.`,
+      );
       bookings.reload();
     } catch (e) {
       toast.error(e.message);
     } finally {
       setBusyId(null);
+      setAsking(null);
     }
   };
 
@@ -217,14 +237,21 @@ function BookingsTab({ memberId }) {
                   Khai giảng {formatDate(b.classStartDate)} · đặt ngày{" "}
                   {formatDate(b.bookingDate)}
                 </p>
-                {/* Class fees (B53): what the booking costs, and who cancels a paid one */}
+                {/* Class fees (B53): what the booking costs, and what cancelling it gives back */}
                 {Number(b.price ?? 0) > 0 && (
                   <p className="muted small">
                     Học phí {formatMoney(b.price)}
                     {Number(b.discountPercent ?? 0) > 0 && ` (đã giảm ${b.discountPercent}%)`}
                     {b.status === 4
-                      ? " · thanh toán với lễ tân trong 30 phút"
-                      : b.status === 1 && " · hủy và hoàn tiền: báo lễ tân trước buổi đầu"}
+                      ? selfRefund
+                        ? " · chờ thanh toán qua MoMo"
+                        : " · chờ lễ tân xác nhận chuyển khoản"
+                      : b.status === 1 &&
+                        (!selfRefund
+                          ? " · hủy và hoàn tiền: báo lễ tân trước buổi đầu"
+                          : startedOf(b)
+                            ? " · lớp đã bắt đầu: hủy không được hoàn tiền"
+                            : " · hủy trước buổi đầu được hoàn đủ")}
                   </p>
                 )}
               </div>
@@ -238,14 +265,14 @@ function BookingsTab({ memberId }) {
                 </Button>
                 {b.status === 4 && b.invoiceId && (
                   <Button size="sm" to={`/payment/result?paymentId=${b.invoiceId}`}>
-                    Xem đơn
+                    {selfRefund ? "Thanh toán" : "Xem đơn"}
                   </Button>
                 )}
-                {(b.status === 4 || (b.status === 1 && !(Number(b.price ?? 0) > 0))) && (
+                {(b.status === 4 || (b.status === 1 && (selfRefund || !(Number(b.price ?? 0) > 0)))) && (
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => cancel(b)}
+                    onClick={() => setAsking(b)}
                     disabled={busyId === b.id}
                   >
                     {busyId === b.id ? "Đang hủy…" : "Hủy"}
@@ -256,6 +283,13 @@ function BookingsTab({ memberId }) {
           ))}
         </ul>
       )}
+      <CancelBooking
+        booking={asking}
+        started={asking ? startedOf(asking) : false}
+        busy={!!asking && busyId === asking.id}
+        onConfirm={() => cancel(asking)}
+        onClose={() => setAsking(null)}
+      />
     </>
   );
 }
@@ -439,11 +473,13 @@ function AttendanceTab({ memberId }) {
 /* ---- Membership (API) --------------------------------------------------- */
 // Before class fees (B53) a card lets the member book classes whose sessions fall within its dates; with them it
 // takes its package's discount off every class. Renewing is buying the package again: checkout starts the new
-// card the day after the current one ends.
+// card the day after the current one ends. Upgrading (B54) moves the card in use today to a longer package at once,
+// less what is left of it.
 function MembershipTab() {
   const rows = useApi(() => api.memberships.mine(), []);
   const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
   const invoices = useApi(() => api.invoices.mine(), []);
+  const opts = usePaymentOptions();
   if (rows.loading) return <Loading />;
   const list = rows.data ?? [];
   const today = todayUtcDateString();
@@ -458,28 +494,41 @@ function MembershipTab() {
   const onSale = latest && (packages.data ?? []).some((p) => p.id === latest.packageId && p.status === 1);
   const discounts = hasPackageDiscounts(packages.data);
   const currentDiscount = Number((packages.data ?? []).find((p) => p.id === current?.packageId)?.discountPercent ?? 0);
+  // "Nâng cấp gói" only for the card in use today, and only to a longer package
+  const [inUse] = cardsOn(list, today);
+  const targets = upgradeTargets(inUse, packages.data);
   const rule = discounts
     ? current
-      ? `Thẻ mới bắt đầu ngay sau ngày ${formatDate(current.endDate)}.${currentDiscount > 0 ? ` Trong thời hạn thẻ, bạn được giảm ${currentDiscount}% học phí mọi lớp.` : ""}`
+      ? `Gia hạn thì thẻ mới bắt đầu ngay sau ngày ${formatDate(current.endDate)}.${targets.length ? " Nâng cấp thì gói dài hơn có hiệu lực ngay hôm nay, phần còn lại của thẻ cũ được trừ vào giá." : ""}${currentDiscount > 0 ? ` Trong thời hạn thẻ, bạn được giảm ${currentDiscount}% học phí mọi lớp.` : ""}`
       : "Không có thẻ bạn vẫn đặt lớp được với học phí gốc; thẻ còn hiệu lực được giảm học phí theo gói."
     : current
-      ? `Thẻ mới bắt đầu ngay sau ngày ${formatDate(current.endDate)}. Trong thời hạn thẻ, bạn đặt lớp không mất thêm phí.`
+      ? `Gia hạn thì thẻ mới bắt đầu ngay sau ngày ${formatDate(current.endDate)}.${targets.length ? " Nâng cấp thì gói dài hơn có hiệu lực ngay hôm nay, phần còn lại của thẻ cũ được trừ vào giá." : ""} Trong thời hạn thẻ, bạn đặt lớp không mất thêm phí.`
       : "Bạn cần thẻ còn hiệu lực để đặt lớp. Lớp học không thu thêm phí ngoài thẻ.";
   return (
     <>
       <ErrorNotice error={rows.error} onRetry={rows.reload} />
-      {pending.map((m) => (
-        <Notice
-          key={m.id}
-          tone="warning"
-          title={`${m.packageName} đang chờ xác nhận thanh toán`}
-          action={paymentOf(m) && (
-            <Button size="sm" variant="secondary" to={`/payment/result?paymentId=${paymentOf(m).id}`}>Xem đơn</Button>
-          )}
-        >
-          Thanh toán với lễ tân để kích hoạt thẻ; đơn mua trên web tự hủy sau 30 phút nếu chưa được xác nhận.
-        </Notice>
-      ))}
+      {pending.map((m) => {
+        const order = paymentOf(m);
+        const online = order && !order.receptionistId;
+        return (
+          <Notice
+            key={m.id}
+            tone="warning"
+            title={`${m.packageName} đang chờ thanh toán`}
+            action={online && (
+              <Button size="sm" variant="secondary" to={`/payment/result?paymentId=${order.id}`}>
+                {opts?.online ? "Tiếp tục thanh toán" : "Xem đơn"}
+              </Button>
+            )}
+          >
+            {!online
+              ? "Lễ tân đã lập hóa đơn gia hạn cho bạn: thanh toán tại quầy để kích hoạt thẻ."
+              : opts?.online
+                ? `Thanh toán qua MoMo để kích hoạt thẻ; đơn tự hủy nếu quá ${opts.holdMinutes} phút chưa thanh toán.`
+                : "Chuyển khoản để kích hoạt thẻ: lễ tân đối soát rồi xác nhận; đơn tự hủy sau 30 phút nếu chưa được xác nhận."}
+          </Notice>
+        );
+      })}
       {current && (
         <p className="stat-line">
           <span className="display stat-line__num">{current.packageName}</span>
@@ -496,7 +545,11 @@ function MembershipTab() {
               {current ? `Gia hạn ${latest.packageName}` : `Mua lại ${latest.packageName}`}
             </Button>
           )}
-          <Button variant="secondary" to="/memberships">{onSale ? "Chọn gói khác" : "Xem các gói tập"}</Button>
+          {targets.length ? (
+            <Button variant="secondary" to="/memberships/upgrade">Nâng cấp gói</Button>
+          ) : (
+            (!inUse || !onSale) && <Button variant="secondary" to="/memberships">Xem các gói tập</Button>
+          )}
           <p className="muted small">{rule}</p>
         </div>
       )}
@@ -533,9 +586,34 @@ function MembershipTab() {
             title="Bạn chưa có thẻ thành viên"
             action={<Button to="/memberships">Xem gói tập</Button>}
           >
-            Chọn một gói ở trang Gói tập để đăng ký và thanh toán (hoặc thanh toán tại quầy lễ tân), thẻ sẽ hiện ở đây kèm ngày hết hạn.
+            Chọn một gói ở trang Gói tập để đăng ký và thanh toán trực tuyến; thẻ sẽ hiện ở đây kèm ngày hết hạn.
           </EmptyState>
         )
+      )}
+      {list.length > 0 && <CheckInHistory />}
+    </>
+  );
+}
+
+/* The member's visits to train on their own, logged by reception at the door (CHANGELOG Part B, B47) */
+function CheckInHistory() {
+  const rows = useApi(() => api.checkIns.mine(), []);
+  if (rows.loading || isMissingRoute(rows.error)) return null;
+  return (
+    <>
+      <h2 className="panel-title">Lượt vào cửa gần đây</h2>
+      <ErrorNotice error={rows.error} onRetry={rows.reload} />
+      {rows.data?.length ? (
+        <ul className="visit-list">
+          {rows.data.slice(0, 10).map((v) => (
+            <li key={v.id}>
+              <span className="num">{formatDateTime(v.checkInTime)}</span>
+              <span className="muted">{v.packageName}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        !rows.error && <p className="muted">Chưa có lượt nào. Lễ tân ghi lượt vào khi bạn đến trung tâm tự tập.</p>
       )}
     </>
   );

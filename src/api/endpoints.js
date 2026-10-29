@@ -182,6 +182,15 @@ export const api = {
       http.del(`/api/class-bookings/${bookingId}/member/${memberId}`),
   },
 
+  // A member coming in to train on their own (CHANGELOG Part B, B47): reception check the card valid today and log
+  // the visit. { memberId } → { memberName, packageName, membershipEndDate, daysRemaining, checkInTime }. Paged.
+  checkIns: {
+    create: (memberId) => http.post("/api/check-ins", { memberId }),
+    // date "YYYY-MM-DD" (Vietnam), newest first
+    list: (date) => listOf(`/api/check-ins?${ALL}${date ? `&date=${date}` : ""}`)(),
+    mine: listOf("/api/members/me/check-ins?pageSize=20"),
+  },
+
   attendance: {
     mine: listOf("/api/members/me/attendances"),
     byMember: (memberId) => http.get(`/api/attendances/member/${memberId}`),
@@ -218,13 +227,22 @@ export const api = {
   //   get(paymentId) → { paymentId, status, amount, packageName, membershipId, invoiceId, paidAt }
   //   confirm(paymentId) — reception / manager only: invoice paid, card active
   payments: {
+    // What the API takes online (CHANGELOG Part B, B54): { provider: "MoMo", methods: [4, 5], holdMinutes, upgrade }.
+    // An API without MoMo answers 404: the website keeps orders that reception confirms.
+    options: () => http.get("/api/payments/options"),
     checkout: (body) => http.post("/api/payments/checkout", body),
+    // Move the member's current card to a longer package at once (B54): { membershipId, membershipPackageId,
+    // paymentMethod, returnUrl }; the API takes off what is left of the current card
+    upgradeCheckout: (body) => http.post("/api/payments/upgrade-checkout", body),
     // Booking a class with a fee (CHANGELOG Part B, B53): { classId, paymentMethod } → { paymentId, bookingId,
     // originalAmount, discountPercent, amount, status (1 waiting for reception, 2 booked), paymentUrl, expiresAt }.
     // The API works out the amount from the class's fee and the member's card.
     classCheckout: (body) => http.post("/api/payments/class-checkout", body),
+    // With MoMo the order also carries payUrl, qrCodeUrl, deeplink and expiresAt while it waits (B54)
     get: (id) => http.get(`/api/payments/${id}`),
     confirm: (id) => http.post(`/api/payments/${id}/confirm`),
+    // The member drops their own order while it waits for MoMo (B54): nothing was taken, a class place is freed
+    cancel: (id) => http.post(`/api/payments/${id}/cancel`),
   },
 
   // Photos: the API keeps only a link (avatar ≤ 500 characters). The file goes to the API's Cloudinary store

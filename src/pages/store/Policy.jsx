@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { POLICIES, POLICY_UPDATED, TERMS_WITH_CLASS_FEES } from '../../components/Policies.jsx';
 import { useClassPricing } from '../../hooks/usePricing.js';
+import { FRONT_DESK_PHONE } from '../../lib/contact.js';
 
 // /terms and /privacy: the policies linked from the agree boxes on Register and Checkout. Once classes have
 // fees (CHANGELOG Part B, B53) the terms about cards, bookings and refunds read as TERMS_WITH_CLASS_FEES.
@@ -26,7 +27,7 @@ export default function Policy({ kind }) {
       </ol>
       <p className="policy-page__more">
         Xem thêm <Link className="text-link" to={other.path}>{other.title}</Link>. Còn thắc mắc? Gửi câu hỏi ở{' '}
-        <Link className="text-link" to="/account?tab=support">Tài khoản của tôi → Hỗ trợ</Link> hoặc gọi lễ tân 0900 000 000.
+        <Link className="text-link" to="/account?tab=support">Tài khoản của tôi → Hỗ trợ</Link> hoặc gọi lễ tân {FRONT_DESK_PHONE}.
       </p>
     </div>
   );

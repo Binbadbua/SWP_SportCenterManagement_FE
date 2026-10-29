@@ -4,6 +4,7 @@ import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
 import { formatShortDate, formatTimeRange, formatWeekday, todayLocalDateString } from '../../lib/format.js';
 import Icon from '../../components/Icon.jsx';
+import { classStarted } from '../../lib/classes.js';
 import { ClassCard, CoachPortrait } from '../../components/cards.jsx';
 import { CoachFacts, classesOf, sportsOf } from '../../components/CoachFacts.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, SampleDataNotice } from '../../components/ui.jsx';
@@ -94,7 +95,7 @@ export default function CoachDetail() {
           <Loading />
         ) : mine.length ? (
           <div className="product-grid product-grid--4">
-            {mine.map((k) => <ClassCard key={k.id} item={k} />)}
+            {mine.map((k) => <ClassCard key={k.id} item={k} started={sessions.data ? classStarted(k, sessions.data) : undefined} />)}
           </div>
         ) : (
           !classes.error && <p className="muted">Hiện chưa phụ trách lớp nào.</p>

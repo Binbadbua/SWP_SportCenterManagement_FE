@@ -1,32 +1,34 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { api, isMissingRoute } from '../../api/endpoints.js';
-import { apiUrl } from '../../api/client.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
+import { usePaymentOptions } from '../../hooks/usePricing.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import { addDaysToDateInput, formatDate, formatMoney, fromDateInput, realPhone, todayUtcDateString } from '../../lib/format.js';
+import { afterCheckout, waitingOrder } from '../../lib/payments.js';
 import Icon from '../../components/Icon.jsx';
-import PayMethods, { WEB_METHODS } from '../../components/PayMethods.jsx';
+import PayMethods from '../../components/PayMethods.jsx';
 import { AgreeToPolicies } from '../../components/Policies.jsx';
 import { Button, EmptyState, Field, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
 
-// A member confirms a package: POST /api/payments/checkout creates the membership (inactive) + a pending
-// invoice. The API has no payment gateway yet (paymentUrl is null), so the member goes to /payment/result
-// while reception or a manager confirms the money within 30 minutes; after that the API cancels the order.
-// A paymentUrl, once the API has a real gateway, is followed instead.
+// A member confirms a package: POST /api/payments/checkout creates the membership (inactive) + a pending invoice.
+// With MoMo (CHANGELOG Part B, B54) the member pays online straight away (QR code or ATM card) and the card is active
+// as soon as MoMo tells the API; before that the order waits 30 minutes for reception to confirm a bank transfer.
 export default function Checkout() {
   const { id } = useParams();
   const { user } = useAuth();
   const member = isMember(user);
   const navigate = useNavigate();
   const location = useLocation();
+  const opts = usePaymentOptions();
   const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
   const me = useApi(() => api.members.me.get(), [user?.accountId], { skip: !member });
   const mine = useApi(() => api.memberships.mine(), [user?.accountId], { skip: !member });
+  const invoices = useApi(() => api.invoices.mine(), [user?.accountId], { skip: !member });
 
   const [startDate, setStartDate] = useState(null); // null = the suggested day
-  const [method, setMethod] = useState(WEB_METHODS[0].value);
+  const [picked, setPicked] = useState(null); // null = the first method the API takes
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState({});
   const [paying, setPaying] = useState(false);
@@ -41,6 +43,9 @@ export default function Checkout() {
   const start = startDate ?? (current ? addDaysToDateInput(String(current.endDate).slice(0, 10), 1) : today);
   const pkg = (packages.data ?? []).find((p) => p.id === id);
   const end = pkg ? addDaysToDateInput(start, pkg.durationDays - 1) : '';
+  const waiting = waitingOrder(mine.data, invoices.data, today);
+  const method = picked ?? opts?.methods[0];
+  const hold = opts?.holdMinutes ?? 30;
 
   if (packages.loading) {
     return (
@@ -65,7 +70,7 @@ export default function Checkout() {
     if (!start || start < today) found.startDate = 'Ngày bắt đầu phải từ hôm nay trở đi.';
     if (!agree) found.agree = 'Bạn cần đồng ý với điều khoản trước khi thanh toán.';
     setErrors(found);
-    if (Object.keys(found).length) return;
+    if (Object.keys(found).length || !method) return;
     setPaying(true);
     setFailure(null);
     setUnavailable(false);
@@ -76,8 +81,7 @@ export default function Checkout() {
         paymentMethod: method,
         returnUrl: `${window.location.origin}/payment/result`,
       });
-      if (res?.paymentUrl) window.location.assign(apiUrl(res.paymentUrl));
-      else navigate(`/payment/result?paymentId=${encodeURIComponent(res?.paymentId ?? '')}`);
+      afterCheckout(res, method, navigate);
     } catch (err) {
       if (isMissingRoute(err)) setUnavailable(true);
       else setFailure(err.message || 'Không tạo được giao dịch thanh toán.');
@@ -95,8 +99,9 @@ export default function Checkout() {
       <header className="checkout__head">
         <h1 className="checkout__title">Xác nhận đăng ký và thanh toán</h1>
         <p className="muted">
-          Kiểm tra gói tập, chọn ngày bắt đầu và cách thanh toán. Đơn được giữ 30 phút để lễ tân xác nhận thanh toán;
-          thẻ được kích hoạt và hóa đơn được xuất ngay khi lễ tân xác nhận.
+          {opts?.online
+            ? `Kiểm tra gói tập, chọn ngày bắt đầu rồi thanh toán trực tuyến qua MoMo. Đơn được giữ ${hold} phút; thẻ được kích hoạt và hóa đơn được xuất ngay khi MoMo báo đã nhận tiền.`
+            : `Kiểm tra gói tập, chọn ngày bắt đầu rồi chuyển khoản. Đơn được giữ ${hold} phút để lễ tân đối soát; thẻ được kích hoạt và hóa đơn được xuất ngay khi lễ tân xác nhận.`}
         </p>
       </header>
       {packages.usingSample && <SampleDataNotice onRetry={packages.reload} />}
@@ -123,6 +128,19 @@ export default function Checkout() {
             >
               Học viên tự đăng ký gói trên web. Để tạo thẻ cho học viên tại quầy, dùng Khu vực nhân viên → Thẻ thành viên.
             </Notice>
+          ) : waiting ? (
+            <Notice
+              tone="warning"
+              title={`Bạn đang có đơn ${waiting.card.packageName} chờ thanh toán`}
+              action={
+                <Button size="sm" to={`/payment/result?paymentId=${waiting.invoice.id}`}>
+                  {opts?.online ? 'Tiếp tục thanh toán' : 'Xem đơn'}
+                </Button>
+              }
+            >
+              Mỗi lần chỉ có một đơn chờ thanh toán. Hãy thanh toán đơn đó{opts?.online ? ', hủy nó' : ''} hoặc chờ đơn tự
+              hết hạn rồi đặt gói này.
+            </Notice>
           ) : (
             <form id="checkout-form" className="checkout__form" onSubmit={pay} noValidate>
               <section className="checkout__step">
@@ -143,6 +161,12 @@ export default function Checkout() {
                   <Notice tone="info" title={`Bạn đang dùng ${current.packageName}`}>
                     Thẻ hiện tại còn hiệu lực đến {formatDate(current.endDate)}, nên thẻ mới bắt đầu từ ngày hôm sau.
                     Bạn vẫn có thể chọn ngày khác.
+                    {opts?.upgrade && (
+                      <>
+                        {' '}Muốn đổi sang gói dài hơn ngay hôm nay thì dùng{' '}
+                        <Link className="text-link" to="/account?tab=membership">Nâng cấp gói</Link> ở thẻ thành viên.
+                      </>
+                    )}
                   </Notice>
                 )}
                 <div className="form-grid">
@@ -166,7 +190,11 @@ export default function Checkout() {
 
               <section className="checkout__step">
                 <h2 className="checkout__step-title"><span className="checkout__num">3</span> Phương thức thanh toán</h2>
-                <PayMethods value={method} onChange={setMethod} />
+                {opts ? (
+                  <PayMethods value={method} onChange={setPicked} methods={opts.methods} />
+                ) : (
+                  <Loading label="Đang tải cách thanh toán" />
+                )}
                 <label className={`check check--terms ${errors.agree ? 'check--error' : ''}`}>
                   <input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} />
                   <span><AgreeToPolicies lead="Tôi đồng ý với" termsNote="(gồm quy định hoàn tiền, bảo lưu)" /></span>
@@ -191,7 +219,7 @@ export default function Checkout() {
             )}
             <div className="checkout__total"><dt>Tổng thanh toán</dt><dd className="num">{formatMoney(pkg.price)}</dd></div>
           </dl>
-          {member && (
+          {member && !waiting && (
             <>
               {unavailable && (
                 <Notice tone="info" title="Cổng thanh toán chưa sẵn sàng">
@@ -201,11 +229,14 @@ export default function Checkout() {
                 </Notice>
               )}
               {failure && <p className="field__error" role="alert">{failure}</p>}
-              <Button type="submit" form="checkout-form" size="lg" block disabled={paying}>
+              <Button type="submit" form="checkout-form" size="lg" block disabled={paying || !opts}>
                 {paying ? 'Đang tạo giao dịch…' : `Xác nhận và thanh toán ${formatMoney(pkg.price)}`}
               </Button>
               <p className="checkout__safe muted">
-                <Icon name="check" size={16} strokeWidth={2} /> Bước này chưa trừ tiền: bạn thanh toán với lễ tân, quá 30 phút chưa xác nhận thì đơn tự hủy.
+                <Icon name="check" size={16} strokeWidth={2} />{' '}
+                {opts?.online
+                  ? `Bước này chưa trừ tiền: bạn quét mã QR hoặc nhập thẻ ở bước sau; quá ${hold} phút chưa thanh toán thì đơn tự hủy.`
+                  : `Bước này chưa trừ tiền: bạn chuyển khoản ở bước sau; quá ${hold} phút lễ tân chưa xác nhận thì đơn tự hủy.`}
               </p>
             </>
           )}

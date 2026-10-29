@@ -100,6 +100,11 @@ p {
   line-height: 1.1;
   letter-spacing: -0.005em;
 }
+/* Stacked marks (Ỗ, Ế, Ữ) rise about a quarter of the font size above the line box: a display heading right
+   under another element (an eyebrow, a label, a date) gets that room, or its marks run into the words above */
+* + .display:not(.num) {
+  padding-top: 0.25em;
+}
 
 /* Condensed, spaced caps — used for eyebrows, tags and nav in the staff area */
 .label {

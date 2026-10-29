@@ -2,33 +2,37 @@ import { useNavigate } from 'react-router-dom';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
+import { usePaymentOptions } from '../../hooks/usePricing.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import { IMAGES } from '../../lib/images.js';
 import { formatDate, formatMoney, todayUtcDateString } from '../../lib/format.js';
-import { hasPackageDiscounts } from '../../lib/pricing.js';
+import { hasPackageDiscounts, summaryOf } from '../../lib/pricing.js';
 import { PackageCard } from '../../components/cards.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
 
-// Plans come from GET /api/membership-packages. Choosing one opens its checkout page (Checkout.jsx),
-// where a member confirms the dates and pays online. Once the API bills classes (CHANGELOG Part B, B53) a
-// package carries the discount it gives on every class and the services that come with it; before that a
-// package carries only a name, description, length and price, and a card is what a booking needs.
-const HOW_IT_WORKS = [
-  ['Chọn gói và đặt mua', 'Đặt mua trên web hoặc tại quầy. Đơn mua trên web được giữ 30 phút.'],
-  ['Thanh toán với lễ tân', 'Lễ tân xác nhận đã nhận tiền, thẻ được kích hoạt và hóa đơn được xuất ngay.'],
-  ['Đặt lớp không mất thêm phí', 'Trong thời hạn thẻ, bạn đặt các lớp có buổi học kế tiếp nằm trong thời hạn đó.'],
-  ['Gia hạn trước khi hết hạn', 'Mua tiếp một gói: thẻ mới bắt đầu ngay sau ngày thẻ cũ hết hạn.'],
-];
-const HOW_IT_WORKS_WITH_FEES = [
-  ['Chọn gói và đặt mua', 'Gói dùng cho mọi môn. Đặt mua trên web hoặc tại quầy; đơn mua trên web được giữ 30 phút.'],
-  ['Thanh toán với lễ tân', 'Lễ tân xác nhận đã nhận tiền, thẻ được kích hoạt và hóa đơn được xuất ngay.'],
-  ['Giảm học phí mọi lớp', 'Mỗi lớp có học phí cả khóa. Trong thời hạn thẻ, bạn được giảm theo mức của gói; không có thẻ thì trả giá gốc.'],
-  ['Gia hạn trước khi hết hạn', 'Mua tiếp một gói: thẻ mới bắt đầu ngay sau ngày thẻ cũ hết hạn.'],
+// Plans come from GET /api/membership-packages: the three plans of 28/10/2026 (1 month, 6 months, 1 year) for every
+// sport, their perks one per line. Choosing one opens its checkout page (Checkout.jsx). A card is the member's way in
+// to train on their own (reception check them in at the door, B47); classes are coached courses booked apart. Once the
+// API bills classes (CHANGELOG Part B, B53) a card takes its package's discount off every class; before that a card
+// is what a booking needs.
+const howItWorks = ({ online, fees }) => [
+  [
+    'Chọn gói và thanh toán',
+    online
+      ? 'Gói dùng cho mọi môn. Thanh toán trực tuyến qua MoMo (quét mã QR hoặc thẻ ATM); thẻ được kích hoạt ngay khi MoMo báo đã nhận tiền.'
+      : 'Gói dùng cho mọi môn. Đặt mua trên web rồi chuyển khoản; lễ tân đối soát xong thì thẻ được kích hoạt và hóa đơn được xuất.',
+  ],
+  ['Vào cửa bằng thẻ', 'Đến trung tâm, lễ tân kiểm tra thẻ và ghi lượt vào. Trong thời hạn thẻ bạn tự tập không giới hạn ở khu gym, cardio và hồ bơi.'],
+  fees
+    ? ['Giảm học phí mọi lớp', 'Lớp học có huấn luyện viên và học phí cả khóa riêng. Trong thời hạn thẻ bạn được giảm theo mức của gói; không có thẻ thì trả giá gốc.']
+    : ['Đặt lớp trong thời hạn thẻ', 'Lớp học có huấn luyện viên. Bạn đặt được các lớp chưa bắt đầu có buổi học kế tiếp nằm trong thời hạn thẻ.'],
+  ['Gia hạn hoặc nâng cấp', 'Gia hạn: thẻ mới nối tiếp ngay sau thẻ cũ. Nâng cấp lên gói dài hơn: có hiệu lực ngay hôm nay, phần còn lại của thẻ cũ được trừ vào giá.'],
 ];
 
 export default function Memberships() {
   const { user } = useAuth();
   const member = isMember(user);
+  const opts = usePaymentOptions();
   const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
   const mine = useApi(() => api.memberships.mine(), [user?.accountId], { skip: !member });
   const navigate = useNavigate();
@@ -38,7 +42,7 @@ export default function Memberships() {
   const today = todayUtcDateString();
   const current = (mine.data ?? []).find((m) => m.status === 1 && String(m.endDate).slice(0, 10) >= today);
   const discounts = hasPackageDiscounts(packages.data);
-  const steps = discounts ? HOW_IT_WORKS_WITH_FEES : HOW_IT_WORKS;
+  const steps = howItWorks({ online: !!opts?.online, fees: discounts });
 
   return (
     <>
@@ -49,16 +53,21 @@ export default function Memberships() {
           <h1 className="display plan-hero__title">Gói tập</h1>
           <p className="plan-hero__lead">
             {discounts
-              ? 'Một thẻ cho mọi môn: giảm học phí mọi lớp trong thời hạn thẻ, kèm các dịch vụ của trung tâm.'
-              : 'Thanh toán một lần cho cả thời hạn của thẻ. Trong thời gian đó, đặt lớp không mất thêm phí.'}
+              ? 'Một thẻ cho mọi môn: tự tập không giới hạn ở khu gym, cardio, hồ bơi và được giảm học phí mọi lớp trong thời hạn thẻ.'
+              : 'Một thẻ cho mọi môn: tự tập không giới hạn ở khu gym, cardio, hồ bơi và đặt các lớp có buổi học trong thời hạn thẻ.'}
           </p>
         </div>
       </section>
 
       <div className="container page">
         {current && (
-          <Notice tone="success" title={`Bạn đang dùng ${current.packageName}`}>
-            Còn hiệu lực đến {formatDate(current.endDate)}. Xem tất cả thẻ của bạn ở Tài khoản của tôi → Thẻ thành viên.
+          <Notice
+            tone="success"
+            title={`Bạn đang dùng ${current.packageName}`}
+            action={<Button size="sm" variant="secondary" to="/account?tab=membership">Thẻ của tôi</Button>}
+          >
+            Còn hiệu lực đến {formatDate(current.endDate)}. Muốn chuyển sang gói dài hơn ngay hôm nay, dùng “Nâng cấp gói” ở
+            Tài khoản của tôi → Thẻ thành viên.
           </Notice>
         )}
         {packages.usingSample && <SampleDataNotice onRetry={packages.reload} />}
@@ -95,14 +104,43 @@ export default function Memberships() {
           </ol>
         </section>
 
+        {/* The line between the two (team rule, 28/10/2026): a card is access, a class is a coached course */}
+        <section className="block">
+          <h2 className="section-title">Thẻ thành viên và lớp học khác nhau thế nào?</h2>
+          <div className="table-wrap">
+            <table className="table compare">
+              <thead>
+                <tr>
+                  <th scope="col"><span className="visually-hidden">Mục</span></th>
+                  <th scope="col">Thẻ thành viên</th>
+                  <th scope="col">Lớp học</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">Là gì</th>
+                  <td>Quyền vào trung tâm tự tập (gym, cardio, hồ bơi) không giới hạn trong thời hạn thẻ</td>
+                  <td>Khóa học có huấn luyện viên, lịch cố định, sĩ số giới hạn, có kế hoạch và đánh giá tiến độ</td>
+                </tr>
+                <tr>
+                  <th scope="row">Trả tiền</th>
+                  <td>Một lần cho cả thời hạn thẻ</td>
+                  <td>{discounts ? 'Học phí riêng, một lần cho cả khóa; có thẻ thì được giảm' : 'Không thu thêm khi bạn có thẻ còn hiệu lực'}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Dùng thế nào</th>
+                  <td>Lễ tân kiểm tra thẻ khi bạn vào cửa</td>
+                  <td>Đặt lớp trước khi lớp bắt đầu; huấn luyện viên điểm danh từng buổi</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         {active.length > 1 && (
           <section className="block">
             <h2 className="section-title">So sánh các gói</h2>
-            <p className="muted">
-              {discounts
-                ? 'Dịch vụ đi kèm của từng gói ghi trên thẻ gói ở trên; nhân viên phục vụ tại trung tâm.'
-                : 'Các môn và dịch vụ của từng gói ghi trong phần mô tả; hỏi lễ tân nếu bạn chưa rõ.'}
-            </p>
+            <p className="muted">Quyền lợi của từng gói ghi trên thẻ gói ở trên; nhân viên phục vụ tại trung tâm.</p>
             <div className="table-wrap">
               <table className="table compare">
                 <thead>
@@ -112,6 +150,7 @@ export default function Memberships() {
                     <th scope="col">Giá</th>
                     <th scope="col">Bình quân mỗi ngày</th>
                     {discounts && <th scope="col">Giảm học phí</th>}
+                    <th scope="col">Ưu đãi</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -122,6 +161,7 @@ export default function Memberships() {
                       <td className="num">{formatMoney(p.price)}</td>
                       <td className="num">{formatMoney(Math.round(p.price / Math.max(1, p.durationDays) / 100) * 100)}</td>
                       {discounts && <td className="num">{p.discountPercent ?? 0}%</td>}
+                      <td>{summaryOf(p) || '—'}</td>
                     </tr>
                   ))}
                 </tbody>

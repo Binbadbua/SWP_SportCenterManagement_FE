@@ -64,7 +64,12 @@ export const PaymentMethod = enumOf([
   { value: 1, label: 'Tiền mặt' },
   { value: 2, label: 'Chuyển khoản' },
   { value: 3, label: 'Thẻ' },
+  // Online through MoMo (CHANGELOG Part B, B54): the wallet's QR code, or a domestic ATM card on MoMo's page
+  { value: 4, label: 'Ví MoMo' },
+  { value: 5, label: 'Thẻ ATM qua MoMo' },
 ]);
+// What reception take at the desk (MoMo is only paid online, by the member)
+export const DESK_METHODS = PaymentMethod.options.filter((o) => o.value <= 3);
 
 export const RoomStatus = enumOf([
   { value: 1, label: 'Sẵn sàng', tone: 'success' },
@@ -84,6 +89,9 @@ export const PaymentStatus = enumOf([
   { value: 2, label: 'Thành công', tone: 'success' },
   { value: 3, label: 'Thất bại', tone: 'danger' },
   { value: 4, label: 'Đã hủy', tone: 'neutral' },
+  // MoMo (CHANGELOG Part B, B54): not paid within the hold time; a paid class cancelled before its first session
+  { value: 5, label: 'Hết hạn', tone: 'neutral' },
+  { value: 6, label: 'Đã hoàn tiền', tone: 'neutral' },
 ]);
 
 // SWP_SportCenter.Repository/Entity/SupportRequest.cs
