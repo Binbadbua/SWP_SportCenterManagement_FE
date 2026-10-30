@@ -29,21 +29,39 @@ function PaymentView({ paymentId }) {
   const [now, setNow] = useState(Date.now);
   const [cancelling, setCancelling] = useState(false);
   const [checkError, setCheckError] = useState(null);
+  const [checking, setChecking] = useState(false);
+  const refreshInFlight = useRef(null);
   const [qrFailed, setQrFailed] = useState(false);
   const p = fresh ?? payment.data;
   const status = p?.status;
   const expiresAt = p?.expiresAt;
   const refundPending = !!p?.refundPending;
   const sepay = p?.provider === 'SePay';
-  const check = useCallback(async () => {
+  const check = useCallback(async (manual = false) => {
+    if (manual) setChecking(true);
     try {
-      const answer = await api.payments.get(paymentId);
-      if (answer) setFresh(answer);
+      // Polling and a manual click share one read, so slow responses cannot build up.
+      if (!refreshInFlight.current) {
+        refreshInFlight.current = api.payments.get(paymentId).finally(() => { refreshInFlight.current = null; });
+      }
+      const answer = await refreshInFlight.current;
+      if (!answer) throw new Error('Chưa đọc được trạng thái giao dịch. Vui lòng thử lại.');
+      setFresh(answer);
       setCheckError(null);
+      if (manual) {
+        if (answer.refundPending) toast.info('Giao dịch vẫn đang chờ lễ tân xác nhận hoàn tiền.');
+        else if (answer.status === 1) toast.info('Hệ thống chưa xác nhận nhận tiền cho đơn này. Nếu đã chuyển khoản, vui lòng chờ đối soát và không chuyển lại.');
+        else if (answer.status === 4 || answer.status === 5) toast.info('Đơn đã hủy hoặc hết hạn. Nếu đã chuyển tiền, hãy liên hệ lễ tân kèm mã giao dịch để đối soát; không chuyển lại.');
+        else if (answer.status === 3) toast.info('Giao dịch vẫn chưa hoàn tất. Nếu đã chuyển tiền, hãy liên hệ lễ tân để đối soát.');
+        else if (answer.status === 6) toast.success('Hệ thống đã ghi nhận hoàn tiền.');
+      }
     } catch (error) {
       setCheckError(error);
+      if (manual) toast.error(error.message || 'Không kiểm tra được giao dịch. Vui lòng thử lại.');
+    } finally {
+      if (manual) setChecking(false);
     }
-  }, [paymentId]);
+  }, [paymentId, toast]);
 
   useEffect(() => {
     if (status !== 1 && !refundPending) return undefined;
@@ -63,7 +81,7 @@ function PaymentView({ paymentId }) {
 
   const seen = useRef();
   useEffect(() => {
-    if (seen.current === 1 && status === 2) toast.success('Thanh toán thành công. Bạn có thể xem hóa đơn trong tài khoản.');
+    if (seen.current !== undefined && seen.current !== 2 && status === 2) toast.success('Thanh toán thành công. Bạn có thể xem hóa đơn trong tài khoản.');
     if (status !== undefined) seen.current = status;
   }, [status, toast]);
 
@@ -134,7 +152,7 @@ function PaymentView({ paymentId }) {
       <p className="label">Kết quả thanh toán</p>
       <h1 className="pay-result__title">{title}</h1>
       <p className="muted">{text}</p>
-      <ErrorNotice error={checkError} onRetry={check} />
+      <ErrorNotice error={checkError} onRetry={() => check(true)} />
       {waiting && sepay && (
         <div className="pay-qr">
           {p.qrCodeUrl && !qrFailed ? (
@@ -157,7 +175,7 @@ function PaymentView({ paymentId }) {
               {p.bankAccountNumber && <Button variant="secondary" size="sm" onClick={() => copy(p.bankAccountNumber)}>Sao chép số tài khoản</Button>}
               {p.paymentReference && <Button variant="secondary" size="sm" onClick={() => copy(p.paymentReference)}>Sao chép nội dung</Button>}
               <Button variant="secondary" size="sm" onClick={() => copy(p.amount)}>Sao chép số tiền</Button>
-              <Button variant="ghost" onClick={cancel} disabled={cancelling}>{cancelling ? 'Đang hủy…' : 'Hủy đơn'}</Button>
+              <Button variant="ghost" onClick={cancel} disabled={cancelling || checking}>{cancelling ? 'Đang hủy…' : 'Hủy đơn'}</Button>
             </div>
             <p className="muted small">Giữ nguyên nội dung chuyển khoản để hệ thống nhận đúng đơn. Không chuyển tiền vào mã QR của đơn đã hủy hoặc hết hạn.</p>
           </div>
@@ -185,9 +203,14 @@ function PaymentView({ paymentId }) {
         {status === 2 && !refundPending ? <>
           <Button to={kind === 'class' ? '/account?tab=schedule' : '/account?tab=membership'}>{kind === 'class' ? 'Xem lịch tập' : 'Xem thẻ thành viên'}</Button>
           <Button variant="secondary" to="/account?tab=invoices">Xem hóa đơn</Button>
-        </> : refundPending || status === 6 ? <><Button to="/account?tab=invoices">Xem hóa đơn</Button>{refundPending && <Button variant="secondary" onClick={check}>Kiểm tra lại</Button>}</>
-          : waiting || overdue ? <Button variant="secondary" icon="refresh" onClick={check}>Kiểm tra lại</Button>
+        </> : refundPending || status === 6 ? <Button to="/account?tab=invoices">Xem hóa đơn</Button>
+          : waiting || overdue ? null
           : <Button to={retryTo}>{kind === 'class' ? 'Đặt lại lớp' : kind === 'upgrade' ? 'Nâng cấp lại' : 'Chọn lại gói tập'}</Button>}
+        {(status !== 2 && status !== 6 || refundPending) && (
+          <Button variant="secondary" icon="refresh" onClick={() => check(true)} disabled={checking || cancelling} aria-busy={checking}>
+            {checking ? 'Đang kiểm tra…' : 'Kiểm tra lại'}
+          </Button>
+        )}
       </div>
     </div>
   );

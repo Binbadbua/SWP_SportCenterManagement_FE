@@ -1,0 +1,43 @@
+{
+  "recordedAt": "2026-10-30T06:30:00.735Z",
+  "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+  "reference": "SWP8D0D7C0313844457855404F957796EEB",
+  "paymentId": "8d0d7c03-1384-4457-8554-04f957796eeb",
+  "payment": {
+    "httpStatus": 200,
+    "data": {
+      "kind": "Class",
+      "provider": "SePay",
+      "paymentMethod": 2,
+      "payUrl": null,
+      "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+      "className": "Zumba Sôi Động Cuối Tuần",
+      "bookingId": "800d422b-96a4-4ba7-878d-2571e2987a85",
+      "packageId": null,
+      "originalAmount": 8000,
+      "discountPercent": 0,
+      "creditAmount": 0,
+      "fromPackageName": null,
+      "refundAmount": null,
+      "refundPending": false,
+      "refundReference": null,
+      "qrCodeUrl": null,
+      "paymentReference": "SWP8D0D7C0313844457855404F957796EEB",
+      "expiresAt": "2026-10-30T06:25:20.529858+00:00",
+      "bankBin": "970403",
+      "bankAccountNumber": "050133548731",
+      "paymentId": "8d0d7c03-1384-4457-8554-04f957796eeb",
+      "status": 5,
+      "amount": 8000,
+      "packageName": "",
+      "membershipId": null,
+      "invoiceId": "8d0d7c03-1384-4457-8554-04f957796eeb",
+      "paidAt": null
+    }
+  },
+  "invoice": {
+    "httpStatus": 0,
+    "data": null
+  },
+  "scope": "Read only. No confirm, cancel, refund, webhook or bank operation performed."
+}

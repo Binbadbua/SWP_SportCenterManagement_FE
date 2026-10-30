@@ -1,0 +1,62 @@
+{
+  "recordedAt": "2026-10-30T06:20:59.421Z",
+  "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+  "reference": "SWP8D0D7C0313844457855404F957796EEB",
+  "paymentId": "8d0d7c03-1384-4457-8554-04f957796eeb",
+  "payment": {
+    "httpStatus": 200,
+    "data": {
+      "kind": "Class",
+      "provider": "SePay",
+      "paymentMethod": 2,
+      "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=8000&des=SWP8D0D7C0313844457855404F957796EEB",
+      "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+      "className": "Zumba Sôi Động Cuối Tuần",
+      "bookingId": "800d422b-96a4-4ba7-878d-2571e2987a85",
+      "packageId": null,
+      "originalAmount": 8000,
+      "discountPercent": 0,
+      "creditAmount": 0,
+      "fromPackageName": null,
+      "refundAmount": null,
+      "refundPending": false,
+      "refundReference": null,
+      "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=8000&des=SWP8D0D7C0313844457855404F957796EEB",
+      "paymentReference": "SWP8D0D7C0313844457855404F957796EEB",
+      "expiresAt": "2026-10-30T06:25:20.529858+00:00",
+      "bankBin": "970403",
+      "bankAccountNumber": "050133548731",
+      "paymentId": "8d0d7c03-1384-4457-8554-04f957796eeb",
+      "status": 1,
+      "amount": 8000,
+      "packageName": "",
+      "membershipId": null,
+      "invoiceId": "8d0d7c03-1384-4457-8554-04f957796eeb",
+      "paidAt": null
+    }
+  },
+  "invoice": {
+    "httpStatus": 200,
+    "data": {
+      "id": "8d0d7c03-1384-4457-8554-04f957796eeb",
+      "receptionistId": null,
+      "receptionistName": "",
+      "memberMembershipId": null,
+      "classBookingId": "800d422b-96a4-4ba7-878d-2571e2987a85",
+      "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+      "className": "Zumba Sôi Động Cuối Tuần",
+      "kind": "Class",
+      "originalAmount": 8000,
+      "discountPercent": 0,
+      "creditAmount": 0,
+      "refundPending": false,
+      "memberName": "Nguyễn Văn A",
+      "packageName": "",
+      "amount": 8000,
+      "paymentMethod": 2,
+      "paymentDate": null,
+      "status": 1
+    }
+  },
+  "scope": "Read only. No confirm, cancel, refund, webhook or bank operation performed."
+}
