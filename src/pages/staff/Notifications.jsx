@@ -3,9 +3,8 @@ import { api } from "../../api/endpoints.js";
 import { useApi } from "../../hooks/useApi.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { AccountRole } from "../../lib/enums.js";
-import { formatDate, todayUtcDateString } from "../../lib/format.js";
+import { formatDate, todayCenterDateString } from "../../lib/format.js";
 import { HOMEWORK_PREFIX } from "../../lib/homework.js";
-import { signed } from "../../lib/notifications.js";
 import { useToast } from "../../components/Toast.jsx";
 import NotificationInbox from "../../components/NotificationInbox.jsx";
 import { Button, ErrorNotice, Field } from "../../components/ui.jsx";
@@ -132,7 +131,7 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
     else if (!recipients.length) found.audience = "Nhóm này không có tài khoản nào đang hoạt động.";
     if (!v.title.trim()) found.title = "Vui lòng nhập tiêu đề.";
     if (!v.message.trim()) found.message = "Vui lòng nhập nội dung.";
-    if (isHomework && v.due && v.due < todayUtcDateString()) found.due = "Hạn hoàn thành phải từ hôm nay trở đi.";
+    if (isHomework && v.due && v.due < todayCenterDateString()) found.due = "Hạn hoàn thành phải từ hôm nay trở đi.";
     setErrors(found);
     if (Object.keys(found).length) return;
     const title = isHomework ? `${HOMEWORK_PREFIX}${v.title.trim()}` : v.title.trim();
@@ -141,7 +140,7 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
       : v.message.trim();
     setSending(true);
     try {
-      await api.notifications.send({ accountIds: recipients, title, message: signed(message, user) });
+      await api.notifications.send({ accountIds: recipients, title, message });
       toast.success(isHomework
         ? `Đã giao bài tập cho ${recipients.length} học viên.`
         : `Đã gửi tới ${recipients.length} tài khoản.`);
@@ -216,7 +215,7 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
           label="Hạn hoàn thành"
           name="due"
           type="date"
-          min={todayUtcDateString()}
+          min={todayCenterDateString()}
           value={v.due}
           onChange={set}
           error={errors.due}

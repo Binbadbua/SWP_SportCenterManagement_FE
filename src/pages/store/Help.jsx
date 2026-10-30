@@ -1,14 +1,14 @@
 import { useClassPricing, usePaymentOptions } from '../../hooks/usePricing.js';
 import { Button } from '../../components/ui.jsx';
 
-// The answers follow what the API does today: class fees once it bills classes (CHANGELOG Part B, B53), MoMo once it
+// The answers follow what the API does today: class fees once it bills classes (CHANGELOG Part B, B53), SePay once it
 // takes online payments (B54); before them a booking needs a card and a web order waits for reception.
 function faq({ fees, online, hold }) {
   return [
     [
       'Làm sao để đặt lớp?',
       fees
-        ? `Mở trang lớp, xem học phí và các buổi học rồi bấm “Đặt lớp và thanh toán”. Chỉ đặt được lớp chưa bắt đầu; một lần đặt là tham gia được mọi buổi của lớp. ${online ? `Bạn thanh toán trực tuyến qua MoMo (quét mã QR hoặc thẻ ATM); chỗ được giữ ${hold} phút, MoMo báo đã nhận tiền là đặt lớp xong.` : `Bạn chuyển khoản; chỗ được giữ ${hold} phút, lễ tân đối soát xong là đặt lớp xong.`} Lớp miễn phí thì đặt ngay.`
+        ? `Mở trang lớp, xem học phí và các buổi học rồi bấm “Đặt lớp và thanh toán”. Chỉ đặt được lớp chưa bắt đầu; một lần đặt là tham gia được mọi buổi của lớp. ${online ? `Bạn thanh toán trực tuyến qua SePay (quét mã VietQR bằng ứng dụng ngân hàng); chỗ được giữ ${hold} phút, SePay báo đã nhận tiền là đặt lớp xong.` : `Bạn chuyển khoản; chỗ được giữ ${hold} phút, lễ tân đối soát xong là đặt lớp xong.`} Lớp miễn phí thì đặt ngay.`
         : 'Mở trang lớp, xem các buổi học rồi bấm “Đặt lớp này”. Chỉ đặt được lớp chưa bắt đầu; một lần đặt là tham gia được mọi buổi của lớp. Bạn cần một thẻ thành viên còn hiệu lực vào ngày của buổi học kế tiếp; lớp học không thu thêm phí.',
     ],
     [
@@ -19,7 +19,7 @@ function faq({ fees, online, hold }) {
     [
       'Thanh toán gói tập thế nào?',
       online
-        ? `Ở trang Gói tập, bấm “Chọn” ở gói bạn muốn, kiểm tra ngày bắt đầu rồi chọn Ví MoMo hoặc thẻ ATM. Trang thanh toán hiện mã QR: mở ứng dụng MoMo, quét mã và xác nhận. Thanh toán xong, thẻ được kích hoạt và hóa đơn được xuất ngay; quá ${hold} phút chưa thanh toán thì đơn tự hủy. Đơn trên web không trả tại quầy; nếu đến trực tiếp, lễ tân bán thẻ cho bạn tại quầy.`
+        ? `Ở trang Gói tập, bấm “Chọn” ở gói bạn muốn, kiểm tra ngày bắt đầu rồi chọn Chuyển khoản ngân hàng qua SePay. Trang thanh toán hiện mã QR: mở ứng dụng ngân hàng, quét mã và xác nhận. Thanh toán xong, thẻ được kích hoạt và hóa đơn được xuất ngay; quá ${hold} phút chưa thanh toán thì đơn tự hủy. Đơn trên web không trả tại quầy; nếu đến trực tiếp, lễ tân bán thẻ cho bạn tại quầy.`
         : `Ở trang Gói tập, bấm “Chọn” ở gói bạn muốn, kiểm tra ngày bắt đầu rồi đặt mua và chuyển khoản, ghi mã giao dịch trong nội dung. Lễ tân đối soát xong thì thẻ được kích hoạt và hóa đơn được xuất; quá ${hold} phút chưa xác nhận thì đơn tự hủy. Nếu đến trực tiếp, lễ tân bán thẻ cho bạn tại quầy.`,
     ],
     ['Gia hạn hay nâng cấp thẻ thế nào?', 'Ở Tài khoản của tôi → Thẻ thành viên. Gia hạn: mua tiếp một gói, thẻ mới bắt đầu ngay sau ngày thẻ cũ hết hạn. Nâng cấp: bấm “Nâng cấp gói” để chuyển sang gói dài hơn ngay hôm nay; phần còn lại của thẻ cũ (theo số ngày chưa dùng) được trừ vào giá gói mới.'],
@@ -33,7 +33,7 @@ function faq({ fees, online, hold }) {
     [
       'Tôi có hủy được không?',
       fees && online
-        ? 'Được, ở Tài khoản của tôi → Lớp đã đặt. Lượt chờ thanh toán: hủy lúc nào cũng được, chưa bị trừ tiền. Trước khi lớp bắt đầu: hoàn đủ học phí về ví hoặc thẻ bạn đã trả qua MoMo. Lớp đã bắt đầu: vẫn hủy được nhưng không hoàn học phí và không đặt lại được; web hỏi lại trước khi hủy.'
+        ? 'Được, ở Tài khoản của tôi → Lớp đã đặt. Lượt chờ thanh toán: hủy lúc nào cũng được, chưa bị trừ tiền. Trước khi lớp bắt đầu: hoàn đủ học phí qua lễ tân bằng chuyển khoản hoặc tiền mặt. Lớp đã bắt đầu: vẫn hủy được nhưng không hoàn học phí và không đặt lại được; web hỏi lại trước khi hủy.'
         : fees
           ? 'Lượt chưa thanh toán: tự hủy ở Tài khoản của tôi → Lớp đã đặt. Lớp đã thanh toán: báo lễ tân trước khi lớp bắt đầu để hủy và nhận lại học phí; lớp đã bắt đầu thì không hoàn học phí.'
           : 'Được, ở Tài khoản của tôi → Lớp đã đặt. Lớp đã bắt đầu vẫn hủy được, nhưng sau đó bạn không đặt lại được lớp đó vì lớp không nhận đặt thêm; web hỏi lại trước khi hủy.',

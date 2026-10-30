@@ -12,12 +12,13 @@ import {
 } from '../../lib/enums.js';
 import {
   addDaysToDateInput, daysUntil, formatDate, formatDateTime, formatMoney, formatTimeRange, formatWeekday, fromDateInput,
-  realPhone, todayLocalDateString, todayUtcDateString,
+  realPhone, todayLocalDateString, todayCenterDateString,
 } from '../../lib/format.js';
 import { classRunning, classStarted } from '../../lib/classes.js';
 import { cardsOn } from '../../lib/membership.js';
 import { hasClassPrices, hasPackageDiscounts } from '../../lib/pricing.js';
 import { CoachPortrait } from '../../components/cards.jsx';
+import ConfirmRefund from '../../components/ConfirmRefund.jsx';
 import { ErrorNotice, FillBar, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
 
 const tag = (E) => (v) => <StatusTag tone={E.tone(v)}>{E.label(v)}</StatusTag>;
@@ -64,9 +65,9 @@ const coachIdOf = async (u) => u?.coachId ?? (await api.coaches.me()).id;
 // payment, else the latest one. state: active | expiring (7 days or less left) | pending | none
 function cardOf(cards, memberId) {
   const mine = cards.filter((m) => m.memberId === memberId);
-  const [active] = cardsOn(mine, todayUtcDateString());
+  const [active] = cardsOn(mine, todayCenterDateString());
   if (active) return { card: active, state: daysUntil(active.endDate) <= 7 ? 'expiring' : 'active' };
-  const pending = mine.find((m) => m.status === 2 && String(m.endDate).slice(0, 10) >= todayUtcDateString());
+  const pending = mine.find((m) => m.status === 2 && String(m.endDate).slice(0, 10) >= todayCenterDateString());
   if (pending) return { card: pending, state: 'pending' };
   const [latest] = [...mine].sort((a, b) => String(b.endDate).localeCompare(String(a.endDate)));
   return { card: latest, state: 'none' };
@@ -373,7 +374,7 @@ export const resources = {
     fields: [
       { name: 'classId', label: 'Lớp', type: 'select', required: true, full: true, optionsFrom: (l) => opt(l.classes, 'id', 'className') },
       { name: 'roomId', label: 'Phòng', type: 'select', required: true, optionsFrom: (l) => opt(l.rooms, 'id', (r) => `${r.roomName} · ${r.capacity} người${r.status === 2 ? ' (tạm ngưng)' : ''}`) },
-      { name: 'date', label: 'Ngày', type: 'date', required: true, defaultValue: todayUtcDateString },
+      { name: 'date', label: 'Ngày', type: 'date', required: true, defaultValue: todayCenterDateString },
       { name: 'startTime', label: 'Bắt đầu', type: 'time', required: true },
       { name: 'endTime', label: 'Kết thúc', type: 'time', required: true },
     ],
@@ -537,24 +538,31 @@ export const resources = {
 
   invoices: {
     key: 'invoices', title: 'Hóa đơn', singular: 'Hóa đơn',
-    description: (u) => `Mỗi lần mua thẻ thành viên hoặc đặt lớp có học phí có một hóa đơn; hóa đơn đã thanh toán thì không xóa được. Đơn thanh toán qua MoMo tự xác nhận khi MoMo báo đã nhận tiền; đơn chuyển khoản trên web được giữ 30 phút: nhận tiền xong bấm “Xác nhận đã nhận tiền”, quá hạn thì máy chủ tự hủy đơn.${isReception(u) ? ' “In” mở hóa đơn để in hoặc lưu PDF.' : ' Lễ tân lập và in hóa đơn tại quầy.'}`,
-    source: (u) => (isReception(u) ? api.invoices : { list: api.invoices.list, update: api.invoices.update, remove: api.invoices.remove }),
-    sample: mock.invoices, canWrite: isFrontDesk, nameOf: (r) => `${r.memberName} · ${itemOf(r)}`,
-    // A class's invoice follows its booking (B53) and a MoMo invoice follows MoMo (B54): they change through confirm,
+    description: 'Đơn chuyển khoản SePay được ngân hàng xác nhận tự động, giữ trong 15 phút. Hóa đơn có yêu cầu hoàn tiền chỉ chuyển sang Đã hoàn tiền sau khi lễ tân đã trả tiền và ghi mã xác nhận. Lễ tân lập và in hóa đơn tại quầy.',
+    source: (u) => (isReception(u) ? api.invoices : { list: api.invoices.list }),
+    sample: mock.invoices, canWrite: isReception, nameOf: (r) => `${r.memberName} · ${itemOf(r)}`,
+    // A class's invoice follows its booking (B53) and a SePay invoice follows SePay (B54): they change through confirm,
     // cancel and refund, not by hand
-    canEditRow: (r) => !awaitingOnline(r) && !r.classBookingId && r.paymentMethod !== 4 && r.paymentMethod !== 5,
+    canEditRow: (r) => !!r.receptionistId && !r.classBookingId && !r.refundPending,
+    deleteLocked: (r) => r.status !== 1 || r.refundPending ? 'Chỉ xóa được hóa đơn chờ thanh toán và không có yêu cầu hoàn tiền.' : null,
     rowActions: [
       {
-        label: 'Xác nhận đã nhận tiền',
-        hidden: (r) => !awaitingOnline(r),
-        confirm: (r) => `Xác nhận đã nhận ${formatMoney(r.amount)} của ${r.memberName} cho ${itemOf(r)}? ${r.className ? 'Học viên có chỗ trong lớp ngay.' : 'Thẻ sẽ được kích hoạt ngay.'}`,
-        run: (r) => api.payments.confirm(r.id),
-        done: (r) => (r.className
-          ? `Đã xác nhận thanh toán: ${r.memberName} đã có chỗ trong lớp ${r.className}.`
-          : `Đã xác nhận thanh toán: ${r.packageName} của ${r.memberName} đã được kích hoạt.`),
+        label: 'Xác nhận đã hoàn tiền',
+        hidden: (r, u) => !isReception(u) || !r.refundPending,
+        modal: {
+          title: (r) => 'Xác nhận hoàn tiền · ' + r.memberName,
+          render: (r, _l, { close, reload }) => <ConfirmRefund invoice={r} onClose={close} onDone={reload} />,
+        },
       },
-      // Opens in a new tab so the list stays where it was (pages/InvoicePrint.jsx)
-      { label: 'In', to: (r) => `/print/invoices/${r.id}`, newTab: true, hidden: (r, u) => !isReception(u) },
+      {
+        // Kept for older APIs only. New SePay invoices always carry kind and settle through the webhook.
+        label: 'Xác nhận đã nhận tiền',
+        hidden: (r, u) => !isReception(u) || !awaitingOnline(r) || !!r.kind,
+        confirm: (r) => 'Xác nhận đã nhận ' + formatMoney(r.amount) + ' của ' + r.memberName + '?',
+        run: (r) => api.payments.confirm(r.id),
+        done: () => 'Đã xác nhận thanh toán.',
+      },
+      { label: 'In', to: (r) => '/print/invoices/' + r.id, newTab: true, hidden: (r, u) => !isReception(u) },
     ],
     lookups: (u) => ({
       memberships: L.memberships,
@@ -576,10 +584,10 @@ export const resources = {
       { key: 'packageName', label: 'Nội dung', render: (r) => itemOf(r) },
       { key: 'amount', label: 'Số tiền', className: 'num', render: (r) => formatMoney(r.amount) },
       { key: 'paymentMethod', label: 'Hình thức', render: (r) => PaymentMethod.label(r.paymentMethod) },
-      { key: 'status', label: 'Trạng thái', render: (r) => tag(InvoiceStatus)(r.status) },
+      { key: 'status', label: 'Trạng thái', render: (r) => r.refundPending ? <StatusTag tone="warning">Chờ hoàn tiền</StatusTag> : tag(InvoiceStatus)(r.status) },
       {
         key: 'receptionistName', label: 'Người thu',
-        render: (r) => r.receptionistName || (awaitingOnline(r) ? 'Mua trên web · chờ xác nhận' : 'Mua trên web'),
+        render: (r) => r.receptionistName || (awaitingOnline(r) ? 'SePay · chờ chuyển khoản' : 'Thanh toán trực tuyến'),
       },
     ],
     fields: [
@@ -803,10 +811,8 @@ export const resources = {
     description: (u) => (isReception(u)
       ? 'Học viên nào đang dùng gói nào và đến ngày nào. Gia hạn tạo một kỳ mới nối tiếp kỳ cũ cùng một hóa đơn chờ thanh toán.'
       : 'Học viên nào đang dùng gói nào và đến ngày nào. Lễ tân bán, gia hạn và hủy thẻ tại quầy.'),
-    source: (u) => (isReception(u)
-      ? api.memberships
-      : { list: api.memberships.list, update: api.memberships.update, remove: api.memberships.remove }),
-    sample: mock.memberships, canWrite: isFrontDesk, canDelete: isManager,
+    source: (u) => (isReception(u) ? api.memberships : { list: api.memberships.list }),
+    sample: mock.memberships, canWrite: isReception, canDelete: isManager,
     lookups: () => ({ members: L.members, packages: L.packages }),
     nameOf: (r) => `${r.memberName} · ${r.packageName}`,
     searchText: (r) => `${r.memberName} ${r.packageName}`,
@@ -830,7 +836,7 @@ export const resources = {
         },
       },
       {
-        name: 'startDate', label: 'Ngày bắt đầu', type: 'date', required: true, defaultValue: todayUtcDateString,
+        name: 'startDate', label: 'Ngày bắt đầu', type: 'date', required: true, defaultValue: todayCenterDateString,
         onChange: (value, { lookups, setFormValues }) =>
           setFormValues((prev) => {
             const days = (lookups.packages ?? []).find((p) => p.id === prev.packageId)?.durationDays;
@@ -976,7 +982,7 @@ export const resources = {
       },
       { name: 'title', label: 'Tiêu đề', required: true, full: true },
       { name: 'contentDescription', label: 'Nội dung tập', type: 'textarea' },
-      { name: 'createdDate', label: 'Ngày', type: 'date', required: true, defaultValue: todayUtcDateString },
+      { name: 'createdDate', label: 'Ngày', type: 'date', required: true, defaultValue: todayCenterDateString },
     ],
     toRequest: (b, { mode }) => ({
       memberId: b.memberId,
@@ -1058,7 +1064,7 @@ export const resources = {
         help: 'Chọn kế hoạch trước; danh sách gồm các buổi của lớp đó đã diễn ra.',
       },
       { name: 'performanceScore', label: 'Điểm (0–10)', type: 'number', required: true, min: 0, max: 10, step: 0.5 },
-      { name: 'evaluationDate', label: 'Ngày', type: 'date', required: true, defaultValue: todayUtcDateString },
+      { name: 'evaluationDate', label: 'Ngày', type: 'date', required: true, defaultValue: todayCenterDateString },
       { name: 'coachComment', label: 'Nhận xét', type: 'textarea', required: true },
     ],
     // The member must be the plan's member (the API checks it)

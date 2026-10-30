@@ -3,7 +3,7 @@ import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
 import { BookingStatus, DESK_METHODS } from '../../lib/enums.js';
-import { daysUntil, formatDate, formatMoney, isSessionOver, realPhone, todayUtcDateString } from '../../lib/format.js';
+import { daysUntil, formatDate, formatMoney, isSessionOver, realPhone, todayCenterDateString } from '../../lib/format.js';
 import { classStarted } from '../../lib/classes.js';
 import { cardCheck, cardsOn } from '../../lib/membership.js';
 import { discountFor, hasClassPrices, priceAfter } from '../../lib/pricing.js';
@@ -21,7 +21,7 @@ function CardStatus({ cards, priced, discount }) {
   if (cards.loading) return <p className="muted small">Đang kiểm tra thẻ thành viên…</p>;
   if (cards.error) return <ErrorNotice error={cards.error} onRetry={cards.reload} />;
   const list = cards.data ?? [];
-  const today = todayUtcDateString();
+  const today = todayCenterDateString();
   const [active] = cardsOn(list, today);
   if (active) {
     return (
@@ -176,7 +176,7 @@ export default function Bookings() {
     }
   };
 
-  // The cancel rules of 28/10/2026 (B55): a paid class is refunded in full before it starts — through MoMo when the
+  // The cancel rules of 28/10/2026 (B55): a paid class is refunded in full before it starts — through SePay when the
   // member paid online, at the desk otherwise — and not at all once it has started
   const startedOf = (b) => {
     const c = (classes.data ?? []).find((x) => x.id === b.classId);
@@ -196,11 +196,13 @@ export default function Bookings() {
           : `Hủy lượt đặt lớp ${b.className} của ${b.memberName}?`;
     if (!window.confirm(question)) return;
     try {
-      await api.bookings.cancel(b.id, b.memberId);
+      const cancellation = await api.bookings.cancel(b.id, b.memberId);
       toast.success(
-        paid(b) && !late
+        cancellation?.refundPending
+          ? "Đã hủy lớp. Hãy hoàn tiền rồi xác nhận ở Hóa đơn → Xác nhận đã hoàn tiền."
+          : paid(b) && !late
           ? online
-            ? `Đã hủy lượt đặt lớp ${b.className}; ${formatMoney(b.price)} được hoàn về MoMo của ${b.memberName}.`
+            ? `Đã hủy lượt đặt lớp ${b.className}; ${formatMoney(b.price)} được ghi nhận hoàn cho ${b.memberName}.`
             : `Đã hủy lượt đặt lớp ${b.className} và ghi hoàn ${formatMoney(b.price)}. Trả tiền cho ${b.memberName} tại quầy.`
           : `Đã hủy lượt đặt lớp ${b.className} của ${b.memberName}${paid(b) ? ' (không hoàn tiền)' : ''}.`,
       );

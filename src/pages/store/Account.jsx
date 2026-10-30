@@ -30,7 +30,7 @@ import {
   realPhone,
   toDateInput,
   todayLocalDateString,
-  todayUtcDateString,
+  todayCenterDateString,
 } from "../../lib/format.js";
 import { classStarted } from "../../lib/classes.js";
 import { cardsOn, upgradeTargets } from "../../lib/membership.js";
@@ -176,7 +176,7 @@ function BookingsTab({ memberId }) {
       ? classStarted(c, sessions.data)
       : !!b.classStartDate && String(b.classStartDate).slice(0, 10) < todayLocalDateString();
   };
-  // With MoMo (B54–B55) a member cancels a paid class themself and the API refunds it before the class starts;
+  // With SePay (B54–B55) a member cancels a paid class themself and requests a full refund before the class starts; reception confirms the actual refund.
   // before that reception cancel and refund paid classes
   const opts = usePaymentOptions();
   const selfRefund = !!opts?.online;
@@ -186,10 +186,12 @@ function BookingsTab({ memberId }) {
   const cancel = async (b) => {
     setBusyId(b.id);
     try {
-      await api.bookings.cancel(b.id, b.memberId ?? memberId);
+      const cancellation = await api.bookings.cancel(b.id, b.memberId ?? memberId);
       toast.success(
-        b.status === 1 && Number(b.price ?? 0) > 0 && !startedOf(b)
-          ? `Đã hủy đặt lớp ${b.className}. Học phí được hoàn về nơi bạn đã trả.`
+        cancellation?.refundPending
+          ? "Đã hủy đặt lớp. Lễ tân sẽ xử lý và xác nhận hoàn tiền."
+          : b.status === 1 && Number(b.price ?? 0) > 0 && !startedOf(b)
+          ? `Đã hủy đặt lớp ${b.className}. Yêu cầu hoàn học phí đã được ghi nhận.`
           : `Đã hủy đặt lớp ${b.className}.`,
       );
       bookings.reload();
@@ -244,7 +246,7 @@ function BookingsTab({ memberId }) {
                     {Number(b.discountPercent ?? 0) > 0 && ` (đã giảm ${b.discountPercent}%)`}
                     {b.status === 4
                       ? selfRefund
-                        ? " · chờ thanh toán qua MoMo"
+                        ? " · chờ thanh toán qua SePay"
                         : " · chờ lễ tân xác nhận chuyển khoản"
                       : b.status === 1 &&
                         (!selfRefund
@@ -482,7 +484,7 @@ function MembershipTab() {
   const opts = usePaymentOptions();
   if (rows.loading) return <Loading />;
   const list = rows.data ?? [];
-  const today = todayUtcDateString();
+  const today = todayCenterDateString();
   const current = list
     .filter((m) => m.status === 1 && String(m.endDate).slice(0, 10) >= today)
     .sort((a, b) => String(b.endDate).localeCompare(String(a.endDate)))[0];
@@ -524,7 +526,7 @@ function MembershipTab() {
             {!online
               ? "Lễ tân đã lập hóa đơn gia hạn cho bạn: thanh toán tại quầy để kích hoạt thẻ."
               : opts?.online
-                ? `Thanh toán qua MoMo để kích hoạt thẻ; đơn tự hủy nếu quá ${opts.holdMinutes} phút chưa thanh toán.`
+                ? `Thanh toán qua SePay để kích hoạt thẻ; đơn tự hủy nếu quá ${opts.holdMinutes} phút chưa thanh toán.`
                 : "Chuyển khoản để kích hoạt thẻ: lễ tân đối soát rồi xác nhận; đơn tự hủy sau 30 phút nếu chưa được xác nhận."}
           </Notice>
         );

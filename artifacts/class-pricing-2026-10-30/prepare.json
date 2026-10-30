@@ -1,0 +1,758 @@
+{
+  "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+  "mode": "prepare",
+  "recordedAt": "2026-10-30T04:23:59.370Z",
+  "results": [
+    {
+      "id": "class-pricing-prepare-001",
+      "name": "Every requested demo class matched exactly once",
+      "passed": true
+    },
+    {
+      "id": "class-pricing-prepare-002",
+      "name": "All sample fees are positive integer dong values",
+      "passed": true
+    }
+  ],
+  "changes": [],
+  "checks": [],
+  "limitations": [],
+  "plan": [
+    {
+      "id": "786ef6a4-e18a-4716-9565-d5166545599b",
+      "className": "Boxing Đốt Mỡ Cấp Tốc",
+      "beforePrice": 0,
+      "price": 1500000
+    },
+    {
+      "id": "2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "className": "Yoga Chào Mặt Trời",
+      "beforePrice": 0,
+      "price": 900000
+    },
+    {
+      "id": "9d3564fa-4f3d-4b5a-be17-a5e07a4d4cc9",
+      "className": "Bơi Lội Trẻ Em K2",
+      "beforePrice": 0,
+      "price": 1200000
+    },
+    {
+      "id": "a6b6a5cf-243b-4c65-bb1f-6b84c00c1e9b",
+      "className": "Pilates Trị Liệu Cột Sống",
+      "beforePrice": 0,
+      "price": 1800000
+    },
+    {
+      "id": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+      "className": "Zumba Sôi Động Cuối Tuần",
+      "beforePrice": 0,
+      "price": 800000
+    },
+    {
+      "id": "ffbc7d88-54ad-4816-bb8b-d2ba11034780",
+      "className": "Kickboxing Căn Bản Nữ",
+      "beforePrice": 0,
+      "price": 1600000
+    },
+    {
+      "id": "e1dc7406-601f-4446-95b7-5bf1acbc6d14",
+      "className": "Cầu Lông Sinh Viên",
+      "beforePrice": 0,
+      "price": 600000
+    },
+    {
+      "id": "a4d4d664-b8a5-4720-a08a-a4ab53aa19ce",
+      "className": "Bóng Rổ Thiếu Niên U15",
+      "beforePrice": 0,
+      "price": 1000000
+    },
+    {
+      "id": "5d5241c6-acff-429c-9f5c-82f42536b4ae",
+      "className": "Gym Kỹ Thuật Nâng Cao",
+      "beforePrice": 0,
+      "price": 2000000
+    },
+    {
+      "id": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+      "className": "Đạp Xe Cardio Giảm Cân",
+      "beforePrice": 0,
+      "price": 900000
+    },
+    {
+      "id": "8090d08c-4d1e-4612-9727-ee442ab69353",
+      "className": "Tennis Cơ Bản Cho Người Mới",
+      "beforePrice": 0,
+      "price": 2400000
+    },
+    {
+      "id": "d8f0dd81-4d63-40ff-b955-1e18dacc6b4d",
+      "className": "Bóng Bàn Phản Xạ Nhanh",
+      "beforePrice": 0,
+      "price": 1000000
+    },
+    {
+      "id": "ba5e2254-1f4d-4ac3-a01a-2ce90c0d7dc1",
+      "className": "Futsal Phong Trào Tối Thứ 3-5",
+      "beforePrice": 0,
+      "price": 750000
+    },
+    {
+      "id": "45a21785-5eb5-42b8-b959-8e703cb820e8",
+      "className": "Chạy Bộ 10K Buổi Sáng",
+      "beforePrice": 0,
+      "price": 600000
+    },
+    {
+      "id": "d425f60e-7d91-4515-a259-d7a1b0caea7c",
+      "className": "HIIT Đốt Mỡ 45 Phút",
+      "beforePrice": 0,
+      "price": 1200000
+    },
+    {
+      "id": "e4c6b5d8-7d62-44fb-90ba-04bccc985316",
+      "className": "Bóng Chuyền Hơi Nam Nữ",
+      "beforePrice": 0,
+      "price": 650000
+    },
+    {
+      "id": "426d67ee-5f3a-453d-925d-06496e174ce3",
+      "className": "Taekwondo Thiếu Niên",
+      "beforePrice": 0,
+      "price": 1500000
+    },
+    {
+      "id": "bdf8b867-49be-47c9-97b6-0375eb4d1536",
+      "className": "Muay Thai Kỹ Thuật Đối Kháng",
+      "beforePrice": 0,
+      "price": 1800000
+    },
+    {
+      "id": "8fb4e521-c0e7-463d-96da-af756c72d2b1",
+      "className": "Pickleball Nhập Môn",
+      "beforePrice": 0,
+      "price": 1600000
+    },
+    {
+      "id": "ed5fce4c-e834-4faf-9317-0b07cffa112f",
+      "className": "Leo Núi Trong Nhà Cơ Bản",
+      "beforePrice": 0,
+      "price": 2200000
+    }
+  ],
+  "calls": [
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 2110,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "demo_manager"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "role": "manager",
+      "status": 200,
+      "ms": 523,
+      "body": [
+        {
+          "price": 0,
+          "id": "786ef6a4-e18a-4716-9565-d5166545599b",
+          "className": "Boxing Đốt Mỡ Cấp Tốc",
+          "categoryId": "1f87f71f-bd7b-49d9-ac66-89146c561827",
+          "categoryName": "Boxing",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 12,
+          "currentEnrolled": 3,
+          "spotsLeft": 9,
+          "startDate": "2026-01-09T00:00:00Z",
+          "endDate": "2026-12-01T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:27.585913+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "2ee6a923-2688-41bb-92c5-3104e9b9b625",
+          "className": "Yoga Chào Mặt Trời",
+          "categoryId": "a7345a3c-52e3-4354-a31c-020986ce62f1",
+          "categoryName": "Yoga",
+          "coachId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "coachName": "Trần Thanh Bình",
+          "maxCapacity": 20,
+          "currentEnrolled": 3,
+          "spotsLeft": 17,
+          "startDate": "2026-10-15T00:00:00Z",
+          "endDate": "2026-11-15T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:27.192544+00:00",
+          "updatedAt": "2026-10-29T14:13:26.320489+00:00"
+        },
+        {
+          "price": 0,
+          "id": "9d3564fa-4f3d-4b5a-be17-a5e07a4d4cc9",
+          "className": "Bơi Lội Trẻ Em K2",
+          "categoryId": "2b7d4171-5a37-476f-8af2-d40679900c99",
+          "categoryName": "Bơi lội",
+          "coachId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "coachName": "Lê Hoàng Yến",
+          "maxCapacity": 15,
+          "currentEnrolled": 0,
+          "spotsLeft": 15,
+          "startDate": "2026-01-06T00:00:00Z",
+          "endDate": "2026-01-09T00:00:00Z",
+          "status": 3,
+          "createdAt": "2026-10-26T14:41:27.68521+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "a6b6a5cf-243b-4c65-bb1f-6b84c00c1e9b",
+          "className": "Pilates Trị Liệu Cột Sống",
+          "categoryId": "13921296-7fdc-4cec-b38b-9ac4d6a08231",
+          "categoryName": "Pilates",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 12,
+          "currentEnrolled": 3,
+          "spotsLeft": 9,
+          "startDate": "2026-10-15T00:00:00Z",
+          "endDate": "2026-12-15T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:27.88908+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần",
+          "categoryId": "73e63b9e-8373-4519-a63d-a3ad7a1325ab",
+          "categoryName": "Zumba",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 30,
+          "currentEnrolled": 3,
+          "spotsLeft": 27,
+          "startDate": "2026-11-01T00:00:00Z",
+          "endDate": "2026-12-31T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:27.788476+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "ffbc7d88-54ad-4816-bb8b-d2ba11034780",
+          "className": "Kickboxing Căn Bản Nữ",
+          "categoryId": "eadc7c78-73c4-4f78-b3e3-87e118a5b324",
+          "categoryName": "Kickboxing",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 10,
+          "currentEnrolled": 1,
+          "spotsLeft": 9,
+          "startDate": "2026-10-20T00:00:00Z",
+          "endDate": "2026-12-21T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.242247+00:00",
+          "updatedAt": "2026-10-29T14:13:26.320489+00:00"
+        },
+        {
+          "price": 0,
+          "id": "e1dc7406-601f-4446-95b7-5bf1acbc6d14",
+          "className": "Cầu Lông Sinh Viên",
+          "categoryId": "ca0330ee-aae6-4aeb-afc0-f7260217a6fe",
+          "categoryName": "Cầu lông",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 8,
+          "currentEnrolled": 1,
+          "spotsLeft": 7,
+          "startDate": "2026-10-01T00:00:00Z",
+          "endDate": "2026-12-31T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.31138+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "a4d4d664-b8a5-4720-a08a-a4ab53aa19ce",
+          "className": "Bóng Rổ Thiếu Niên U15",
+          "categoryId": "1f96a13c-1dee-46c0-ad94-6dffaccb1e57",
+          "categoryName": "Bóng rổ",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 24,
+          "currentEnrolled": 0,
+          "spotsLeft": 24,
+          "startDate": "2026-11-01T00:00:00Z",
+          "endDate": "2027-01-31T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:27.989723+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "5d5241c6-acff-429c-9f5c-82f42536b4ae",
+          "className": "Gym Kỹ Thuật Nâng Cao",
+          "categoryId": "77e8f964-1036-4319-b07b-5b3749841adb",
+          "categoryName": "Gym",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 5,
+          "currentEnrolled": 0,
+          "spotsLeft": 5,
+          "startDate": "2026-08-01T00:00:00Z",
+          "endDate": "2026-09-30T00:00:00Z",
+          "status": 3,
+          "createdAt": "2026-10-26T14:41:28.394514+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân",
+          "categoryId": "5e121bb4-ff37-4535-9f1b-f4f7a274f1bf",
+          "categoryName": "Đạp xe trong nhà",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 20,
+          "currentEnrolled": 4,
+          "spotsLeft": 16,
+          "startDate": "2026-10-01T00:00:00Z",
+          "endDate": "2026-11-30T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.154042+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "8090d08c-4d1e-4612-9727-ee442ab69353",
+          "className": "Tennis Cơ Bản Cho Người Mới",
+          "categoryId": "1c7cb609-f516-44c2-b8c9-6af3b7ab5792",
+          "categoryName": "Tennis",
+          "coachId": "a0fa0412-ccf8-4c40-81b1-4423033b34f8",
+          "coachName": "Phạm Quốc Tuấn",
+          "maxCapacity": 8,
+          "currentEnrolled": 3,
+          "spotsLeft": 5,
+          "startDate": "2026-10-02T00:00:00Z",
+          "endDate": "2026-12-22T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.556925+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "d8f0dd81-4d63-40ff-b955-1e18dacc6b4d",
+          "className": "Bóng Bàn Phản Xạ Nhanh",
+          "categoryId": "49b204d0-48b7-414a-9787-ad25a051cfbd",
+          "categoryName": "Bóng bàn",
+          "coachId": "a0fa0412-ccf8-4c40-81b1-4423033b34f8",
+          "coachName": "Phạm Quốc Tuấn",
+          "maxCapacity": 12,
+          "currentEnrolled": 3,
+          "spotsLeft": 9,
+          "startDate": "2026-10-09T00:00:00Z",
+          "endDate": "2027-01-01T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.649111+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "ba5e2254-1f4d-4ac3-a01a-2ce90c0d7dc1",
+          "className": "Futsal Phong Trào Tối Thứ 3-5",
+          "categoryId": "8acaa8f6-9017-4557-9e63-544845fc3c64",
+          "categoryName": "Bóng đá",
+          "coachId": "3410b882-cb3d-49a3-a983-8aad9a3aa300",
+          "coachName": "Đỗ Minh Khang",
+          "maxCapacity": 16,
+          "currentEnrolled": 3,
+          "spotsLeft": 13,
+          "startDate": "2026-09-25T00:00:00Z",
+          "endDate": "2026-12-18T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.745234+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "45a21785-5eb5-42b8-b959-8e703cb820e8",
+          "className": "Chạy Bộ 10K Buổi Sáng",
+          "categoryId": "15ea3886-bc8d-464f-bfba-84a4c5f04690",
+          "categoryName": "Chạy bộ",
+          "coachId": "67a3bbcc-3201-461d-ab70-c54ab7b4e41c",
+          "coachName": "Vũ Thị Lan",
+          "maxCapacity": 25,
+          "currentEnrolled": 4,
+          "spotsLeft": 21,
+          "startDate": "2026-10-03T00:00:00Z",
+          "endDate": "2026-12-02T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.829808+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "d425f60e-7d91-4515-a259-d7a1b0caea7c",
+          "className": "HIIT Đốt Mỡ 45 Phút",
+          "categoryId": "176e06bb-dd35-4232-b439-24b6fc2d0e63",
+          "categoryName": "HIIT",
+          "coachId": "67a3bbcc-3201-461d-ab70-c54ab7b4e41c",
+          "coachName": "Vũ Thị Lan",
+          "maxCapacity": 18,
+          "currentEnrolled": 4,
+          "spotsLeft": 14,
+          "startDate": "2026-10-13T00:00:00Z",
+          "endDate": "2026-12-12T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.914516+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "e4c6b5d8-7d62-44fb-90ba-04bccc985316",
+          "className": "Bóng Chuyền Hơi Nam Nữ",
+          "categoryId": "b01f0a2d-d7af-48cb-8989-7578cd08d4f6",
+          "categoryName": "Bóng chuyền",
+          "coachId": "3410b882-cb3d-49a3-a983-8aad9a3aa300",
+          "coachName": "Đỗ Minh Khang",
+          "maxCapacity": 16,
+          "currentEnrolled": 2,
+          "spotsLeft": 14,
+          "startDate": "2026-10-28T00:00:00Z",
+          "endDate": "2026-12-22T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:29.081772+00:00",
+          "updatedAt": "2026-10-29T14:13:26.320489+00:00"
+        },
+        {
+          "price": 0,
+          "id": "426d67ee-5f3a-453d-925d-06496e174ce3",
+          "className": "Taekwondo Thiếu Niên",
+          "categoryId": "58598cff-e673-4f39-936a-570bbf6ffe92",
+          "categoryName": "Taekwondo",
+          "coachId": "2224a691-949c-4b65-89f0-9276be92b498",
+          "coachName": "Hoàng Văn Long",
+          "maxCapacity": 20,
+          "currentEnrolled": 1,
+          "spotsLeft": 19,
+          "startDate": "2026-10-30T00:00:00Z",
+          "endDate": "2027-01-21T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:29.177634+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "bdf8b867-49be-47c9-97b6-0375eb4d1536",
+          "className": "Muay Thai Kỹ Thuật Đối Kháng",
+          "categoryId": "2d3c6cba-1e6f-4c5e-a20a-8caaa360e807",
+          "categoryName": "Muay Thai",
+          "coachId": "3ac18beb-a224-477e-851e-ff122d59eb84",
+          "coachName": "Lương Đức Thắng",
+          "maxCapacity": 14,
+          "currentEnrolled": 2,
+          "spotsLeft": 12,
+          "startDate": "2026-11-02T00:00:00Z",
+          "endDate": "2027-01-01T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:29.282506+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "8fb4e521-c0e7-463d-96da-af756c72d2b1",
+          "className": "Pickleball Nhập Môn",
+          "categoryId": "f62fbbcb-3065-4713-b89e-9e088388696d",
+          "categoryName": "Pickleball",
+          "coachId": "a0fa0412-ccf8-4c40-81b1-4423033b34f8",
+          "coachName": "Phạm Quốc Tuấn",
+          "maxCapacity": 8,
+          "currentEnrolled": 3,
+          "spotsLeft": 5,
+          "startDate": "2026-10-26T00:00:00Z",
+          "endDate": "2026-12-07T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:28.990431+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "ed5fce4c-e834-4faf-9317-0b07cffa112f",
+          "className": "Leo Núi Trong Nhà Cơ Bản",
+          "categoryId": "b6f89d76-8a22-4b47-8396-50cb17bbef29",
+          "categoryName": "Leo núi",
+          "coachId": "54d5ee17-66fa-402e-95ca-a298eb9f7880",
+          "coachName": "Trần Bảo Châu",
+          "maxCapacity": 10,
+          "currentEnrolled": 3,
+          "spotsLeft": 7,
+          "startDate": "2026-11-06T00:00:00Z",
+          "endDate": "2026-12-22T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:29.487325+00:00",
+          "updatedAt": null
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices",
+      "role": "manager",
+      "status": 200,
+      "ms": 497,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members?pageIndex=1&pageSize=500",
+      "role": "manager",
+      "status": 200,
+      "ms": 421,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/6f8c6acd-c6ef-475e-89ba-735259abc4f2",
+      "role": "manager",
+      "status": 200,
+      "ms": 215,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/30636352-c38d-4a2b-b332-06aa330a24d2",
+      "role": "manager",
+      "status": 200,
+      "ms": 110,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/d71574a2-afea-493f-9933-188b831995ee",
+      "role": "manager",
+      "status": 200,
+      "ms": 87,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/c1b208f6-6360-41d1-a478-122a92b00bb3",
+      "role": "manager",
+      "status": 200,
+      "ms": 92,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/214930b1-3de2-427d-95c5-4e7afcd29f54",
+      "role": "manager",
+      "status": 200,
+      "ms": 85,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/a10774a3-dec5-4d04-9975-d4359f9f46d9",
+      "role": "manager",
+      "status": 200,
+      "ms": 80,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/11903ff0-75a0-40bb-8319-c54de2f51a0b",
+      "role": "manager",
+      "status": 200,
+      "ms": 86,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/ae2044b2-1d0d-4a9d-9035-173f5064f792",
+      "role": "manager",
+      "status": 200,
+      "ms": 79,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/afd62fba-6b37-45b4-91cd-932b9232145e",
+      "role": "manager",
+      "status": 200,
+      "ms": 82,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/62aa8932-2853-4fd6-9ad9-752cbea57783",
+      "role": "manager",
+      "status": 200,
+      "ms": 85,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/c80d9cf3-3a72-4f66-8905-6f628f5880f1",
+      "role": "manager",
+      "status": 200,
+      "ms": 83,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/602e4266-9a84-4599-b3c7-17b443cd286a",
+      "role": "manager",
+      "status": 200,
+      "ms": 77,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/ef607d2b-e5fb-4d5f-8cb4-a31ffacdd14b",
+      "role": "manager",
+      "status": 200,
+      "ms": 76,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/0238e5e4-6861-42ed-9c45-bf10177651e6",
+      "role": "manager",
+      "status": 200,
+      "ms": 77,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/1338b061-97ce-4320-8c8e-1ec99aab4ee2",
+      "role": "manager",
+      "status": 200,
+      "ms": 73,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/94f3065a-27fc-4a3e-bb81-3b249f0d8521",
+      "role": "manager",
+      "status": 200,
+      "ms": 79,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/83cea852-de58-434d-a061-9a52925a6f60",
+      "role": "manager",
+      "status": 200,
+      "ms": 86,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/afd964df-b84b-448c-8847-5df469b44a6c",
+      "role": "manager",
+      "status": 200,
+      "ms": 71,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/87da75bf-8e50-4b3a-ac34-6d26b6599cc3",
+      "role": "manager",
+      "status": 200,
+      "ms": 88,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/f6ec93e5-81b9-4339-a672-7d47ddfc3679",
+      "role": "manager",
+      "status": 200,
+      "ms": 106,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/2f7dc95c-dc2a-4a95-a6f9-d7a26f7ac758",
+      "role": "manager",
+      "status": 200,
+      "ms": 104,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/ae6d1e66-4518-485b-9902-ca10fb2ac96d",
+      "role": "manager",
+      "status": 200,
+      "ms": 122,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-sessions",
+      "role": "manager",
+      "status": 200,
+      "ms": 184,
+      "body": "[response omitted; snapshot contains relevant fields]",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ]
+}

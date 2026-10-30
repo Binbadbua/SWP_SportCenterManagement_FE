@@ -39,7 +39,7 @@ export function cancelTerms(booking, started) {
     ? {
         tone: 'info',
         title: 'Được hoàn đủ học phí',
-        text: `Lớp chưa bắt đầu nên ${formatMoney(fee)} được hoàn về nơi bạn đã trả (ví MoMo hoặc thẻ), thường trong vài ngày làm việc.`,
+        text: `Lớp chưa bắt đầu nên ${formatMoney(fee)} được hoàn qua lễ tân bằng chuyển khoản hoặc tiền mặt. Yêu cầu sẽ chờ xác nhận sau khi lễ tân đã trả tiền.`,
       }
     : { tone: 'info', title: null, text: 'Lớp chưa bắt đầu nên bạn có thể đặt lại sau nếu lớp còn chỗ.' };
 }

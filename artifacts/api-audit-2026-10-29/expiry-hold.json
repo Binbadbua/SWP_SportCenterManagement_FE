@@ -1,0 +1,27 @@
+{
+  "payment": {
+    "kind": "Class",
+    "provider": "SePay",
+    "paymentMethod": 2,
+    "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPDE22213DE69E4C75ACA505E19EFE0634",
+    "bookingId": "647bc50d-db5f-489a-bbbe-55059252285f",
+    "originalAmount": 10000,
+    "discountPercent": 0,
+    "creditAmount": 0,
+    "fromPackageName": null,
+    "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPDE22213DE69E4C75ACA505E19EFE0634",
+    "paymentReference": "SWPDE22213DE69E4C75ACA505E19EFE0634",
+    "expiresAt": "2026-10-29T17:23:47.3843283+00:00",
+    "bankBin": "970403",
+    "bankAccountNumber": "050133548731",
+    "paymentId": "de22213d-e69e-4c75-aca5-05e19efe0634",
+    "membershipId": null,
+    "invoiceId": "de22213d-e69e-4c75-aca5-05e19efe0634",
+    "amount": 10000,
+    "status": 1,
+    "paymentUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPDE22213DE69E4C75ACA505E19EFE0634"
+  },
+  "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+  "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+  "createdAt": "2026-10-29T17:08:47.521Z"
+}

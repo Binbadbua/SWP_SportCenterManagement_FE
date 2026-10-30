@@ -51,6 +51,13 @@ export const toTimeInput = (v) => (v ? String(v).slice(0, 5) : '');
 // "07:30" -> "07:30:00" (TimeSpan format expected by the API)
 export const fromTimeInput = (v) => (v && v.length === 5 ? `${v}:00` : v);
 
+// Business days follow the center in Vietnam, including checkout shortly after midnight.
+export const todayCenterDateString = (now = new Date()) => {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Ho_Chi_Minh', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now);
+  const value = (type) => parts.find((p) => p.type === type).value;
+  return value('year') + '-' + value('month') + '-' + value('day');
+};
+
 export const todayUtcDateString = () => new Date().toISOString().slice(0, 10);
 
 // The API stores "pending-…" / "legacy-…" as the phone of members who never entered one
@@ -125,6 +132,6 @@ export const initials = (name = '') =>
 export const daysUntil = (v) => {
   if (!v) return null;
   const start = Date.parse(String(v).slice(0, 10) + 'T00:00:00Z');
-  const today = Date.parse(todayUtcDateString() + 'T00:00:00Z');
+  const today = Date.parse(todayCenterDateString() + 'T00:00:00Z');
   return Math.round((start - today) / 86400000);
 };

@@ -29,9 +29,9 @@ export function useClassPricing() {
   return billed;
 }
 
-// How members pay online (B54). Before the API takes MoMo it answers 404 and orders made on the website wait 30
+// How members pay online (B54). Before the API takes SePay it answers 404 and orders made on the website wait 30
 // minutes for reception to confirm a bank transfer (no paying at the desk for a web order).
-export const DESK_CONFIRMED = { online: false, methods: [2], holdMinutes: 30, upgrade: false };
+export const DESK_CONFIRMED = { online: false, provider: 'BankTransfer', methods: [2], holdMinutes: 30, upgrade: false };
 let optionsKnown;
 let optionsAsking;
 
@@ -43,7 +43,8 @@ export function usePaymentOptions() {
     optionsAsking ??= api.payments.options().then(
       (o) => (optionsKnown = {
         online: true,
-        methods: o?.methods?.length ? o.methods : [4],
+        provider: o?.provider ?? 'SePay',
+        methods: o?.methods?.length ? o.methods : [2],
         holdMinutes: o?.holdMinutes ?? 15,
         upgrade: !!o?.upgrade,
       }),

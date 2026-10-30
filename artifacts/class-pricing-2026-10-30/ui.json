@@ -1,0 +1,682 @@
+{
+  "summary": {
+    "startedAt": "2026-10-30T04:25:08.668Z",
+    "baseUrl": "http://127.0.0.1:5173",
+    "mode": "manager-class-pricing",
+    "status": "completed",
+    "updatedAt": "2026-10-30T04:25:27.903Z",
+    "checks": 18,
+    "passed": 18,
+    "failed": 0,
+    "routes": 3,
+    "requests": 36,
+    "apiFailures": 0,
+    "runtimeExceptions": 0,
+    "screenshots": 4,
+    "browser": {
+      "executable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+      "pid": 21960,
+      "protocolVersion": "1.3",
+      "product": "Chrome/156.0.8078.73",
+      "revision": "@2f9a11097447f226133bc1a31c787291a5eeab98",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+      "jsVersion": "15.6.75.25"
+    }
+  },
+  "checks": [
+    {
+      "id": "ui-001",
+      "name": "CenterManager /login?next=%2Fstaff",
+      "passed": true,
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "settled": true,
+      "path": "/login?next=%2Fstaff",
+      "headings": [
+        "Chào mừng bạn trở lại",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 888,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "id": "ui-002",
+      "name": "CenterManager login form fields",
+      "passed": true
+    },
+    {
+      "id": "ui-003",
+      "name": "CenterManager real form login authenticates expected account/role",
+      "passed": true,
+      "role": "CenterManager",
+      "accountId": "44444444-4444-4444-4444-444444444444"
+    },
+    {
+      "id": "ui-004",
+      "name": "CenterManager /staff/classes",
+      "passed": true,
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "settled": true,
+      "path": "/staff/classes",
+      "headings": [
+        "Lớp học"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1491,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "id": "ui-005",
+      "name": "Manager opens the class editor",
+      "passed": true
+    },
+    {
+      "id": "ui-006",
+      "name": "Course fee field is shown even while all prices are zero",
+      "passed": true
+    },
+    {
+      "id": "ui-007",
+      "name": "Editor loads the existing zero fee",
+      "passed": true,
+      "value": 0
+    },
+    {
+      "id": "ui-008",
+      "name": "Manager saves the class fee through the UI",
+      "passed": true
+    },
+    {
+      "id": "2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "name": "Live API persists the UI fee",
+      "passed": true,
+      "price": 900000
+    },
+    {
+      "id": "ui-010",
+      "name": "Browser sent the class update successfully",
+      "passed": true
+    },
+    {
+      "id": "ui-011",
+      "name": "Manager table shows the new fee",
+      "passed": true
+    },
+    {
+      "id": "ui-012",
+      "name": "visitor /classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "passed": true,
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "settled": true,
+      "path": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "headings": [
+        "Yoga Chào Mặt Trời",
+        "Các buổi học",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1676,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "id": "ui-013",
+      "name": "Public class detail shows the saved fee",
+      "passed": true
+    },
+    {
+      "id": "ui-014",
+      "name": "visitor mobile 375px /classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "passed": true,
+      "path": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "headings": [
+        "Yoga Chào Mặt Trời",
+        "Các buổi học",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1676,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 375,
+      "title": "SportCenter"
+    },
+    {
+      "id": "ui-015",
+      "name": "No runtime exception during class pricing",
+      "passed": true
+    },
+    {
+      "id": "ui-016",
+      "name": "No browser console errors during class pricing",
+      "passed": true
+    },
+    {
+      "id": "ui-017",
+      "name": "No failed API requests during class pricing",
+      "passed": true
+    },
+    {
+      "id": "ui-018",
+      "name": "Only the authorized price edit was attempted",
+      "passed": true
+    }
+  ],
+  "routes": [
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "settled": true,
+      "path": "/login?next=%2Fstaff",
+      "headings": [
+        "Chào mừng bạn trở lại",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 888,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "settled": true,
+      "path": "/staff/classes",
+      "headings": [
+        "Lớp học"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1491,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "settled": true,
+      "path": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "headings": [
+        "Yoga Chào Mặt Trời",
+        "Các buổi học",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1676,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    }
+  ],
+  "requests": [
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.97",
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "startedAt": 1793334313814,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 913
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.99",
+      "method": "GET",
+      "endpoint": "/api/dashboard/revenue?from=2026-05-01T00%3A00%3A00Z&to=2026-10-30T04%3A25%3A14.817Z",
+      "startedAt": 1793334314828,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 656
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.100",
+      "method": "GET",
+      "endpoint": "/api/dashboard/members/summary",
+      "startedAt": 1793334314829,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1196
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.101",
+      "method": "GET",
+      "endpoint": "/api/dashboard/memberships/summary",
+      "startedAt": 1793334314830,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 953
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.102",
+      "method": "GET",
+      "endpoint": "/api/dashboard/classes/summary",
+      "startedAt": 1793334314831,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 953
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.103",
+      "method": "GET",
+      "endpoint": "/api/members?pageSize=500",
+      "startedAt": 1793334314832,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 738
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.104",
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793334314833,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 366
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.105",
+      "method": "GET",
+      "endpoint": "/api/class-sessions",
+      "startedAt": 1793334314833,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1077
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.106",
+      "method": "GET",
+      "endpoint": "/api/dashboard/revenue?from=2026-05-01T00%3A00%3A00Z&to=2026-10-30T04%3A25%3A14.822Z",
+      "startedAt": 1793334314834,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1145
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.107",
+      "method": "GET",
+      "endpoint": "/api/dashboard/members/summary",
+      "startedAt": 1793334314835,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1255
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.108",
+      "method": "GET",
+      "endpoint": "/api/dashboard/memberships/summary",
+      "startedAt": 1793334314836,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1383
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.109",
+      "method": "GET",
+      "endpoint": "/api/dashboard/classes/summary",
+      "startedAt": 1793334314837,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1417
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.110",
+      "method": "GET",
+      "endpoint": "/api/members?pageSize=500",
+      "startedAt": 1793334314838,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1434
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.111",
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793334314838,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1691
+    },
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "id": "26388.112",
+      "method": "GET",
+      "endpoint": "/api/class-sessions",
+      "startedAt": 1793334314838,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1641
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.206",
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793334318391,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 538
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.207",
+      "method": "GET",
+      "endpoint": "/api/class-sessions",
+      "startedAt": 1793334318391,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 748
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.208",
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793334318391,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 949
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.209",
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793334318392,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1167
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.210",
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793334318392,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 749
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.211",
+      "method": "GET",
+      "endpoint": "/api/class-sessions",
+      "startedAt": 1793334318393,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 747
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.212",
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793334318393,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 956
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.213",
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793334318394,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1063
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.216",
+      "method": "PUT",
+      "endpoint": "/api/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "startedAt": 1793334320794,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1718
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.217",
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793334322512,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 198
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "id": "26388.218",
+      "method": "GET",
+      "endpoint": "/api/class-sessions",
+      "startedAt": 1793334322512,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 171
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.94",
+      "method": "GET",
+      "endpoint": "/api/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "startedAt": 1793334324451,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 286
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.95",
+      "method": "GET",
+      "endpoint": "/api/class-sessions/class/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "startedAt": 1793334324451,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 417
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.96",
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793334324452,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 183
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.97",
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793334324452,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 826
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.98",
+      "method": "GET",
+      "endpoint": "/api/payments/options",
+      "startedAt": 1793334324453,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 415
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.99",
+      "method": "GET",
+      "endpoint": "/api/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "startedAt": 1793334324453,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 392
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.100",
+      "method": "GET",
+      "endpoint": "/api/class-sessions/class/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "startedAt": 1793334324454,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 487
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.101",
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793334324454,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 503
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.102",
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793334324454,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 823
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "id": "7768.107",
+      "method": "GET",
+      "endpoint": "/api/coaches/aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+      "startedAt": 1793334324867,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 384
+    }
+  ],
+  "apiFailures": [],
+  "runtimeExceptions": [],
+  "consoleErrors": [],
+  "blockedWrites": [],
+  "screenshots": [
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "path": "artifacts/class-pricing-2026-10-30/screenshots/ui-2026-10-30T04-25-08-666Z/manager-price-editor.png"
+    },
+    {
+      "role": "CenterManager",
+      "route": "/staff/classes",
+      "path": "artifacts/class-pricing-2026-10-30/screenshots/ui-2026-10-30T04-25-08-666Z/manager-price-saved.png"
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "path": "artifacts/class-pricing-2026-10-30/screenshots/ui-2026-10-30T04-25-08-666Z/public-class-price.png"
+    },
+    {
+      "role": "visitor",
+      "route": "/classes/2ee6a923-2688-41bb-92c5-3104e9b9b625",
+      "path": "artifacts/class-pricing-2026-10-30/screenshots/ui-2026-10-30T04-25-08-666Z/public-class-price-mobile.png"
+    }
+  ],
+  "dialogs": [],
+  "payment": null
+}

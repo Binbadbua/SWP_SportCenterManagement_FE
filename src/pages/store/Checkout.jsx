@@ -5,16 +5,17 @@ import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
 import { usePaymentOptions } from '../../hooks/usePricing.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
-import { addDaysToDateInput, formatDate, formatMoney, fromDateInput, realPhone, todayUtcDateString } from '../../lib/format.js';
-import { afterCheckout, waitingOrder } from '../../lib/payments.js';
+import { addDaysToDateInput, formatDate, formatMoney, fromDateInput, realPhone, todayCenterDateString } from '../../lib/format.js';
+import { afterCheckout } from '../../lib/payments.js';
+import { usePendingOrder } from '../../hooks/usePendingOrder.js';
 import Icon from '../../components/Icon.jsx';
 import PayMethods from '../../components/PayMethods.jsx';
 import { AgreeToPolicies } from '../../components/Policies.jsx';
-import { Button, EmptyState, Field, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
+import { Button, EmptyState, ErrorNotice, Field, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
 
 // A member confirms a package: POST /api/payments/checkout creates the membership (inactive) + a pending invoice.
-// With MoMo (CHANGELOG Part B, B54) the member pays online straight away (QR code or ATM card) and the card is active
-// as soon as MoMo tells the API; before that the order waits 30 minutes for reception to confirm a bank transfer.
+// With SePay (CHANGELOG Part B, B54) the member pays online straight away (VietQR bank transfer) and the card is active
+// as soon as SePay tells the API; before that the order waits 30 minutes for reception to confirm a bank transfer.
 export default function Checkout() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -27,6 +28,7 @@ export default function Checkout() {
   const mine = useApi(() => api.memberships.mine(), [user?.accountId], { skip: !member });
   const invoices = useApi(() => api.invoices.mine(), [user?.accountId], { skip: !member });
 
+  const pendingOrder = usePendingOrder(mine.data, invoices.data);
   const [startDate, setStartDate] = useState(null); // null = the suggested day
   const [picked, setPicked] = useState(null); // null = the first method the API takes
   const [agree, setAgree] = useState(false);
@@ -35,7 +37,7 @@ export default function Checkout() {
   const [failure, setFailure] = useState(null);
   const [unavailable, setUnavailable] = useState(false);
 
-  const today = todayUtcDateString();
+  const today = todayCenterDateString();
   // With a membership still running, the new one starts the day after it ends
   const current = (mine.data ?? [])
     .filter((m) => m.status === 1 && String(m.endDate).slice(0, 10) >= today)
@@ -43,7 +45,7 @@ export default function Checkout() {
   const start = startDate ?? (current ? addDaysToDateInput(String(current.endDate).slice(0, 10), 1) : today);
   const pkg = (packages.data ?? []).find((p) => p.id === id);
   const end = pkg ? addDaysToDateInput(start, pkg.durationDays - 1) : '';
-  const waiting = waitingOrder(mine.data, invoices.data, today);
+  const waiting = pendingOrder.waiting;
   const method = picked ?? opts?.methods[0];
   const hold = opts?.holdMinutes ?? 30;
 
@@ -66,6 +68,7 @@ export default function Checkout() {
 
   const pay = async (e) => {
     e.preventDefault();
+    if (mine.loading || invoices.loading || pendingOrder.checking || pendingOrder.error) return;
     const found = {};
     if (!start || start < today) found.startDate = 'Ngày bắt đầu phải từ hôm nay trở đi.';
     if (!agree) found.agree = 'Bạn cần đồng ý với điều khoản trước khi thanh toán.';
@@ -100,7 +103,7 @@ export default function Checkout() {
         <h1 className="checkout__title">Xác nhận đăng ký và thanh toán</h1>
         <p className="muted">
           {opts?.online
-            ? `Kiểm tra gói tập, chọn ngày bắt đầu rồi thanh toán trực tuyến qua MoMo. Đơn được giữ ${hold} phút; thẻ được kích hoạt và hóa đơn được xuất ngay khi MoMo báo đã nhận tiền.`
+            ? `Kiểm tra gói tập, chọn ngày bắt đầu rồi thanh toán trực tuyến qua SePay. Đơn được giữ ${hold} phút; thẻ được kích hoạt và hóa đơn được xuất ngay khi SePay báo đã nhận tiền.`
             : `Kiểm tra gói tập, chọn ngày bắt đầu rồi chuyển khoản. Đơn được giữ ${hold} phút để lễ tân đối soát; thẻ được kích hoạt và hóa đơn được xuất ngay khi lễ tân xác nhận.`}
         </p>
       </header>
@@ -143,6 +146,8 @@ export default function Checkout() {
             </Notice>
           ) : (
             <form id="checkout-form" className="checkout__form" onSubmit={pay} noValidate>
+              <ErrorNotice error={pendingOrder.error} onRetry={pendingOrder.reload} />
+              {pendingOrder.checking && <p className="muted" role="status">Đang kiểm tra đơn chờ thanh toán…</p>}
               <section className="checkout__step">
                 <h2 className="checkout__step-title"><span className="checkout__num">1</span> Thông tin học viên</h2>
                 <dl className="checkout__who">
@@ -191,7 +196,7 @@ export default function Checkout() {
               <section className="checkout__step">
                 <h2 className="checkout__step-title"><span className="checkout__num">3</span> Phương thức thanh toán</h2>
                 {opts ? (
-                  <PayMethods value={method} onChange={setPicked} methods={opts.methods} />
+                  <PayMethods provider={opts?.provider} online={!!opts?.online} value={method} onChange={setPicked} methods={opts.methods} />
                 ) : (
                   <Loading label="Đang tải cách thanh toán" />
                 )}
@@ -229,7 +234,7 @@ export default function Checkout() {
                 </Notice>
               )}
               {failure && <p className="field__error" role="alert">{failure}</p>}
-              <Button type="submit" form="checkout-form" size="lg" block disabled={paying || !opts}>
+              <Button type="submit" form="checkout-form" size="lg" block disabled={paying || mine.loading || invoices.loading || pendingOrder.checking || !!pendingOrder.error || !opts}>
                 {paying ? 'Đang tạo giao dịch…' : `Xác nhận và thanh toán ${formatMoney(pkg.price)}`}
               </Button>
               <p className="checkout__safe muted">

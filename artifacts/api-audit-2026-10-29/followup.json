@@ -1,0 +1,3915 @@
+{
+  "summary": {
+    "name": "followup",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "recordedAt": "2026-10-29T16:55:37.317Z",
+    "timezone": "Asia/Bangkok",
+    "checks": 67,
+    "passed": 58,
+    "failed": 9,
+    "requests": 72,
+    "documentedOperations": 143,
+    "operationsCalled": 47,
+    "operationsWithSuccess": 21
+  },
+  "results": [
+    {
+      "id": "followup-001",
+      "name": "Member books free class through checkout",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 200,
+      "response": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "bookingId": "10d07c32-b58e-4121-9b31-0104529e9fea",
+        "originalAmount": 0,
+        "discountPercent": 20,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+        "membershipId": null,
+        "invoiceId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+        "amount": 0,
+        "status": 2,
+        "paymentUrl": null
+      },
+      "error": null
+    },
+    {
+      "id": "followup-002",
+      "name": "Free checkout creates confirmed booking with zero fee",
+      "passed": true,
+      "response": {
+        "checkout": {
+          "kind": "Class",
+          "provider": "Internal",
+          "paymentMethod": 2,
+          "payUrl": null,
+          "bookingId": "10d07c32-b58e-4121-9b31-0104529e9fea",
+          "originalAmount": 0,
+          "discountPercent": 20,
+          "creditAmount": 0,
+          "fromPackageName": null,
+          "qrCodeUrl": null,
+          "paymentReference": null,
+          "expiresAt": null,
+          "bankBin": null,
+          "bankAccountNumber": null,
+          "paymentId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+          "membershipId": null,
+          "invoiceId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+          "amount": 0,
+          "status": 2,
+          "paymentUrl": null
+        },
+        "booking": {
+          "originalPrice": 0,
+          "discountPercent": 20,
+          "price": 0,
+          "invoiceId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "10d07c32-b58e-4121-9b31-0104529e9fea",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+          "className": "QA261029163854 freeClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.227971+00:00",
+          "status": 1
+        }
+      }
+    },
+    {
+      "id": "followup-003",
+      "name": "Duplicate confirmed class checkout rejected",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 409,
+      "response": {
+        "title": "Học viên này đã đăng ký lớp học này rồi.",
+        "status": 409,
+        "detail": "Học viên này đã đăng ký lớp học này rồi.",
+        "message": "Học viên này đã đăng ký lớp học này rồi.",
+        "traceId": "0HNPLR9LS0IQT:00000016"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-004",
+      "name": "Member books free class through checkout",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "otherMember",
+      "status": 200,
+      "response": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "bookingId": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+        "originalAmount": 0,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "668853a5-cdcb-407c-be58-e471cc704c66",
+        "membershipId": null,
+        "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+        "amount": 0,
+        "status": 2,
+        "paymentUrl": null
+      },
+      "error": null
+    },
+    {
+      "id": "followup-005",
+      "name": "Free checkout creates confirmed booking with zero fee",
+      "passed": true,
+      "response": {
+        "checkout": {
+          "kind": "Class",
+          "provider": "Internal",
+          "paymentMethod": 2,
+          "payUrl": null,
+          "bookingId": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+          "originalAmount": 0,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "fromPackageName": null,
+          "qrCodeUrl": null,
+          "paymentReference": null,
+          "expiresAt": null,
+          "bankBin": null,
+          "bankAccountNumber": null,
+          "paymentId": "668853a5-cdcb-407c-be58-e471cc704c66",
+          "membershipId": null,
+          "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+          "amount": 0,
+          "status": 2,
+          "paymentUrl": null
+        },
+        "booking": {
+          "originalPrice": 0,
+          "discountPercent": 0,
+          "price": 0,
+          "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+          "className": "QA261029163854 fullClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.620799+00:00",
+          "status": 1
+        }
+      }
+    },
+    {
+      "id": "followup-006",
+      "name": "No overbooking through free checkout",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 409,
+      "response": {
+        "title": "Lớp học đã đạt số lượng học viên tối đa.",
+        "status": 409,
+        "detail": "Lớp học đã đạt số lượng học viên tối đa.",
+        "message": "Lớp học đã đạt số lượng học viên tối đa.",
+        "traceId": "0HNPLR9LS0IQT:00000019"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-007",
+      "name": "Member cancels own free booking",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/class-bookings/ffdbdeb4-7692-4481-8e7f-0443e80169a0/member/771dd5b7-29c1-46c8-8373-351fd5b49606",
+      "role": "otherMember",
+      "status": 200,
+      "response": {
+        "bookingId": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+        "status": 3,
+        "refunded": false,
+        "refundAmount": 0,
+        "refundPending": false,
+        "requestedRefundAmount": 0
+      },
+      "error": null
+    },
+    {
+      "id": "followup-008",
+      "name": "Cancelled checkout frees capacity",
+      "passed": true,
+      "response": {
+        "price": 0,
+        "id": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+        "className": "QA261029163854 fullClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 1,
+        "currentEnrolled": 0,
+        "spotsLeft": 1,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:29.138913+00:00",
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "followup-009",
+      "name": "Cancelled booking remains in history",
+      "passed": true,
+      "response": [
+        {
+          "originalPrice": 0,
+          "discountPercent": 0,
+          "price": 0,
+          "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:55:31.922146+00:00",
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+          "className": "QA261029163854 fullClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.620799+00:00",
+          "status": 3
+        },
+        {
+          "originalPrice": 10000,
+          "discountPercent": 0,
+          "price": 10000,
+          "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+          "paymentMethod": 1,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:51:12.376824+00:00",
+          "refundAmount": 10000,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:51:11.970867+00:00",
+          "status": 3
+        }
+      ]
+    },
+    {
+      "id": "followup-010",
+      "name": "First SePay order remains pending or has expired naturally",
+      "passed": true,
+      "response": {
+        "kind": "Membership",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": null,
+        "className": null,
+        "bookingId": null,
+        "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWPE3109CA004F64D799DA04021A92660A4",
+        "expiresAt": "2026-10-29T16:54:30.18091+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "status": 5,
+        "amount": 10000,
+        "packageName": "QA261029163854 30 days",
+        "membershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+        "invoiceId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "paidAt": null
+      }
+    },
+    {
+      "id": "followup-011",
+      "name": "Duplicate order includes resumable paymentId or expiry releases hold",
+      "passed": true,
+      "status": 200,
+      "response": {
+        "kind": "Membership",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE0245407E2BA4ACFBE26D381D12F72CB",
+        "bookingId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE0245407E2BA4ACFBE26D381D12F72CB",
+        "paymentReference": "SWPE0245407E2BA4ACFBE26D381D12F72CB",
+        "expiresAt": "2026-10-29T17:10:32.1950083+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "e0245407-e2ba-4acf-be26-d381d12f72cb",
+        "membershipId": "7986815f-0dec-4e17-a2fb-6a57ab7c9d0b",
+        "invoiceId": "e0245407-e2ba-4acf-be26-d381d12f72cb",
+        "amount": 10000,
+        "status": 1,
+        "paymentUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE0245407E2BA4ACFBE26D381D12F72CB"
+      }
+    },
+    {
+      "id": "followup-012",
+      "name": "Cancel second fixture package",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/e0245407-e2ba-4acf-be26-d381d12f72cb/cancel",
+      "role": "member",
+      "status": 200,
+      "response": {
+        "message": "Đã hủy đơn và trả chỗ nếu có."
+      },
+      "error": null
+    },
+    {
+      "id": "followup-013",
+      "name": "Member books free class through checkout",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 200,
+      "response": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "bookingId": "d888cf55-99a9-480b-b1f0-6b2215d4294b",
+        "originalAmount": 0,
+        "discountPercent": 20,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+        "membershipId": null,
+        "invoiceId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+        "amount": 0,
+        "status": 2,
+        "paymentUrl": null
+      },
+      "error": null
+    },
+    {
+      "id": "followup-014",
+      "name": "Free checkout creates confirmed booking with zero fee",
+      "passed": true,
+      "response": {
+        "checkout": {
+          "kind": "Class",
+          "provider": "Internal",
+          "paymentMethod": 2,
+          "payUrl": null,
+          "bookingId": "d888cf55-99a9-480b-b1f0-6b2215d4294b",
+          "originalAmount": 0,
+          "discountPercent": 20,
+          "creditAmount": 0,
+          "fromPackageName": null,
+          "qrCodeUrl": null,
+          "paymentReference": null,
+          "expiresAt": null,
+          "bankBin": null,
+          "bankAccountNumber": null,
+          "paymentId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+          "membershipId": null,
+          "invoiceId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+          "amount": 0,
+          "status": 2,
+          "paymentUrl": null
+        },
+        "booking": {
+          "originalPrice": 0,
+          "discountPercent": 20,
+          "price": 0,
+          "invoiceId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "d888cf55-99a9-480b-b1f0-6b2215d4294b",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+          "className": "QA261029163854 attendanceClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:32.345881+00:00",
+          "status": 1
+        }
+      }
+    },
+    {
+      "id": "followup-015",
+      "name": "Move QA session into past",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/class-sessions/4d1d899b-5897-40f4-b1a5-7f049861e2ba",
+      "role": "manager",
+      "status": 204,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-016",
+      "name": "Member cannot book started class",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "otherMember",
+      "status": 400,
+      "response": {
+        "title": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "status": 400,
+        "detail": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "message": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "traceId": "0HNPLR9LS0IQT:00000023"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-017",
+      "name": "Reception cannot book started class",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/class-bookings",
+      "role": "reception",
+      "status": 400,
+      "response": {
+        "title": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "status": 400,
+        "detail": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "message": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "traceId": "0HNPLR9LS0IQT:00000024"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-018",
+      "name": "Manager cannot delete running class",
+      "passed": false,
+      "method": "DELETE",
+      "endpoint": "/api/classes/b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+      "role": "manager",
+      "status": 200,
+      "response": "Class deleted successfully.",
+      "error": null
+    },
+    {
+      "id": "followup-019",
+      "name": "Reception attendance denied",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "reception",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-020",
+      "name": "Unassigned coach attendance denied",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "otherCoach",
+      "status": 403,
+      "response": {
+        "title": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "status": 403,
+        "detail": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "message": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "traceId": "0HNPLR9LS0IQT:00000027"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-021",
+      "name": "Create attendance",
+      "passed": false,
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "coach",
+      "status": 403,
+      "response": {
+        "title": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "status": 403,
+        "detail": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "message": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "traceId": "0HNPLR9LS0IQT:00000028"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-022",
+      "name": "Create plan",
+      "passed": false,
+      "method": "POST",
+      "endpoint": "/api/training-plans",
+      "role": "coach",
+      "status": 404,
+      "response": {
+        "title": "Class not found",
+        "status": 404,
+        "detail": "Class not found",
+        "message": "Class not found",
+        "traceId": "0HNPLR9LS0IQT:00000029"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-023",
+      "name": "Whole class plan API works",
+      "passed": false,
+      "method": "POST",
+      "endpoint": "/api/training-plans/class/b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+      "role": "coach",
+      "status": 404,
+      "response": {
+        "title": "Không tìm thấy lớp học.",
+        "status": 404,
+        "detail": "Không tìm thấy lớp học.",
+        "message": "Không tìm thấy lớp học.",
+        "traceId": "0HNPLR9LS0IQT:0000002A"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-024",
+      "name": "Other coach cannot create whole class plan",
+      "passed": false,
+      "method": "POST",
+      "endpoint": "/api/training-plans/class/b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+      "role": "otherCoach",
+      "status": 404,
+      "response": {
+        "title": "Không tìm thấy lớp học.",
+        "status": 404,
+        "detail": "Không tìm thấy lớp học.",
+        "message": "Không tìm thấy lớp học.",
+        "traceId": "0HNPLR9LS0IQT:0000002B"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-025",
+      "name": "Plan rejects unrelated student",
+      "passed": false,
+      "method": "POST",
+      "endpoint": "/api/training-plans",
+      "role": "coach",
+      "status": 404,
+      "response": {
+        "title": "Class not found",
+        "status": 404,
+        "detail": "Class not found",
+        "message": "Class not found",
+        "traceId": "0HNPLR9LS0IQT:0000002C"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-026",
+      "name": "Coach AI after valid roster membership",
+      "passed": false,
+      "method": "POST",
+      "endpoint": "/api/ai/exercise-suggestions",
+      "role": "coach",
+      "status": 503,
+      "response": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPLR9LS0IQT:0000002D"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-027",
+      "name": "Coach sends notice to own student",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/notifications",
+      "role": "coach",
+      "status": 200,
+      "response": {
+        "senderAccountId": "15385eb7-5544-437f-82c7-c2b205202c4b",
+        "senderName": "QA261029163854 coach",
+        "senderRole": "Coach",
+        "sentCount": 1,
+        "id": "fc880fda-bce8-461c-88b0-da6bc6314b8c",
+        "accountId": "29705d8d-2916-4102-a463-c960e02c5fed",
+        "title": "QA261029163854 sender check",
+        "message": "QA261029163854 QA fixture only - no real payment or refund",
+        "isRead": false,
+        "createdAt": "2026-10-29T16:55:33.9908875+00:00"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-028",
+      "name": "Notification carries real sender name and role",
+      "passed": true,
+      "response": {
+        "senderAccountId": "15385eb7-5544-437f-82c7-c2b205202c4b",
+        "senderName": "QA261029163854 coach",
+        "senderRole": "Coach",
+        "sentCount": null,
+        "id": "fc880fda-bce8-461c-88b0-da6bc6314b8c",
+        "accountId": "29705d8d-2916-4102-a463-c960e02c5fed",
+        "title": "QA261029163854 sender check",
+        "message": "QA261029163854 QA fixture only - no real payment or refund",
+        "isRead": false,
+        "createdAt": "2026-10-29T16:55:33.990887+00:00"
+      }
+    },
+    {
+      "id": "followup-029",
+      "name": "Other member cannot mark this notification",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/notifications/fc880fda-bce8-461c-88b0-da6bc6314b8c/read",
+      "role": "otherMember",
+      "status": 404,
+      "response": "Không tìm thấy thông báo.",
+      "error": null
+    },
+    {
+      "id": "followup-030",
+      "name": "Owner marks notification",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/notifications/fc880fda-bce8-461c-88b0-da6bc6314b8c/read",
+      "role": "member",
+      "status": 200,
+      "response": "Đã đánh dấu là đã đọc.",
+      "error": null
+    },
+    {
+      "id": "followup-031",
+      "name": "Owner marks all read",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/notifications/read-all",
+      "role": "member",
+      "status": 200,
+      "response": "Đã đánh dấu 1 thông báo là đã đọc.",
+      "error": null
+    },
+    {
+      "id": "followup-032",
+      "name": "Owner deletes test notice",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/notifications/fc880fda-bce8-461c-88b0-da6bc6314b8c",
+      "role": "member",
+      "status": 200,
+      "response": "Xóa thông báo thành công.",
+      "error": null
+    },
+    {
+      "id": "followup-033",
+      "name": "Create latePaidClass",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/classes",
+      "role": "manager",
+      "status": 200,
+      "response": {
+        "price": 10000,
+        "id": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:55:34.439722+00:00",
+        "updatedAt": null
+      },
+      "error": null
+    },
+    {
+      "id": "followup-034",
+      "name": "Create latePaidSession",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/class-sessions",
+      "role": "manager",
+      "status": 201,
+      "response": {
+        "id": "5a30da5f-76b4-426b-8393-31bb46301137",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-11-01T00:00:00Z",
+        "startTime": "09:00:00",
+        "endTime": "09:45:00"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-035",
+      "name": "Create latePaidBooking",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/class-bookings",
+      "role": "reception",
+      "status": 200,
+      "response": {
+        "originalPrice": 10000,
+        "discountPercent": 20,
+        "price": 8000,
+        "invoiceId": "63796664-17ab-49d3-9983-1af67ac7264b",
+        "paymentMethod": 1,
+        "paymentExpiresAt": null,
+        "cancelledAt": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "eligibleMembershipId": null,
+        "membershipEndDate": null,
+        "id": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "classStartDate": "2026-10-26T00:00:00Z",
+        "bookingDate": "2026-10-29T16:55:34.591987+00:00",
+        "status": 1
+      },
+      "error": null
+    },
+    {
+      "id": "followup-036",
+      "name": "Set fixture class ongoing",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/classes/ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+      "role": "manager",
+      "status": 200,
+      "response": "Class updated successfully.",
+      "error": null
+    },
+    {
+      "id": "followup-037",
+      "name": "Class status ongoing prevents checkout",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "otherMember",
+      "status": 400,
+      "response": {
+        "title": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "status": 400,
+        "detail": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "message": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "traceId": "0HNPLR9LS0IQS:00000012"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-038",
+      "name": "Member can cancel a started paid class",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/class-bookings/be00f2f0-267d-426a-82c7-428ef44dab4c/member/cff4d277-b14c-4aa0-8074-ffb10c28574f",
+      "role": "member",
+      "status": 200,
+      "response": {
+        "bookingId": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+        "status": 3,
+        "refunded": false,
+        "refundAmount": 0,
+        "refundPending": false,
+        "requestedRefundAmount": 0
+      },
+      "error": null
+    },
+    {
+      "id": "followup-039",
+      "name": "Started class cancellation gives no refund",
+      "passed": true,
+      "response": {
+        "bookingId": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+        "status": 3,
+        "refunded": false,
+        "refundAmount": 0,
+        "refundPending": false,
+        "requestedRefundAmount": 0
+      }
+    },
+    {
+      "id": "followup-040",
+      "name": "Started cancelled class invoice stays Paid",
+      "passed": true,
+      "response": {
+        "id": "63796664-17ab-49d3-9983-1af67ac7264b",
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "receptionistName": "QA261029163854 reception",
+        "memberMembershipId": null,
+        "classBookingId": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "kind": "Class",
+        "originalAmount": 10000,
+        "discountPercent": 20,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 member",
+        "packageName": "",
+        "amount": 8000,
+        "paymentMethod": 1,
+        "paymentDate": "2026-10-29T16:55:34.591987+00:00",
+        "status": 2
+      }
+    },
+    {
+      "id": "followup-041",
+      "name": "Cancelled started class cannot be booked again",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 400,
+      "response": {
+        "title": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "status": 400,
+        "detail": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "message": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "traceId": "0HNPLR9LS0IQS:00000015"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-042",
+      "name": "Reception cannot delete Paid invoice",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/invoices/16db9261-6558-4860-b896-7ae63c2611bc",
+      "role": "reception",
+      "status": 400,
+      "response": {
+        "title": "Không thể xóa hóa đơn đã được thanh toán.",
+        "status": 400,
+        "detail": "Không thể xóa hóa đơn đã được thanh toán.",
+        "message": "Không thể xóa hóa đơn đã được thanh toán.",
+        "traceId": "0HNPLR9LS0IQS:00000016"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-043",
+      "name": "Manager cannot change invoice directly",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/invoices/16db9261-6558-4860-b896-7ae63c2611bc",
+      "role": "manager",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-044",
+      "name": "Direct invoice update does not settle SePay order",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/invoices/e3109ca0-04f6-4d79-9da0-4021a92660a4",
+      "role": "reception",
+      "status": 409,
+      "response": {
+        "title": "Không được sửa tay hóa đơn online. Dùng luồng thanh toán hoặc hủy đơn.",
+        "status": 409,
+        "detail": "Không được sửa tay hóa đơn online. Dùng luồng thanh toán hoặc hủy đơn.",
+        "message": "Không được sửa tay hóa đơn online. Dùng luồng thanh toán hoặc hủy đơn.",
+        "traceId": "0HNPLR9LS0IQS:00000018"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-045",
+      "name": "Confirmed fixture refund has reference and Refunded status",
+      "passed": true,
+      "response": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 1,
+        "payUrl": null,
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "bookingId": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+        "packageId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": 10000,
+        "refundPending": false,
+        "refundReference": "QA261029163854 temporary integration audit - no real funds",
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+        "status": 6,
+        "amount": 10000,
+        "packageName": "",
+        "membershipId": null,
+        "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+        "paidAt": null
+      }
+    },
+    {
+      "id": "followup-046",
+      "name": "Refunded cancellation retains booking history",
+      "passed": true,
+      "response": {
+        "originalPrice": 10000,
+        "discountPercent": 0,
+        "price": 10000,
+        "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+        "paymentMethod": 1,
+        "paymentExpiresAt": null,
+        "cancelledAt": "2026-10-29T16:51:12.376824+00:00",
+        "refundAmount": 10000,
+        "refundPending": false,
+        "eligibleMembershipId": null,
+        "membershipEndDate": null,
+        "id": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "memberName": "QA261029163854 otherMember",
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "classStartDate": "2026-10-26T00:00:00Z",
+        "bookingDate": "2026-10-29T16:51:11.970867+00:00",
+        "status": 3
+      }
+    },
+    {
+      "id": "followup-047",
+      "name": "Manager cannot confirm a refund",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/2dfade7d-77b0-41a5-bbbc-54bfbb1239db/refund-confirm",
+      "role": "manager",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-048",
+      "name": "Oversize upload returns controlled validation on retry",
+      "passed": false,
+      "status": 502,
+      "response": "<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>cloudflare</center>\r\n</body>\r\n</html>\r\n"
+    },
+    {
+      "id": "followup-049",
+      "name": "Reception cannot create staff account",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/accounts",
+      "role": "reception",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-050",
+      "name": "Members profile endpoint validates missing data",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/members",
+      "role": "reception",
+      "status": 400,
+      "response": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "Dob": [
+            "Ngày sinh bắt buộc, từ năm 1900 đến ngày hiện tại."
+          ],
+          "Email": [
+            "The Email field is required.",
+            "The Email field is not a valid e-mail address."
+          ],
+          "Phone": [
+            "The Phone field is required."
+          ],
+          "FullName": [
+            "The FullName field is required."
+          ]
+        },
+        "traceId": "00-09b1c1df56bd3ce6ffdda41d1b34b00b-a92a5e70495f696b-00"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-051",
+      "name": "Member cannot create reception profile",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/receptionists",
+      "role": "member",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-052",
+      "name": "Member cannot create manager profile",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/center-managers",
+      "role": "member",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-053",
+      "name": "Member cannot create coach profile",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/coaches",
+      "role": "member",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-054",
+      "name": "Member cannot create category",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/categories",
+      "role": "member",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-055",
+      "name": "Delete missing training result is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/training-results/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "coach",
+      "status": 404,
+      "response": "Training result not found",
+      "error": null
+    },
+    {
+      "id": "followup-056",
+      "name": "Delete missing training plan is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/training-plans/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "coach",
+      "status": 404,
+      "response": "Training plan not found",
+      "error": null
+    },
+    {
+      "id": "followup-057",
+      "name": "Delete missing session is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/class-sessions/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": {
+        "message": "Class session not found"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-058",
+      "name": "Delete missing class is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/classes/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": "Class not found.",
+      "error": null
+    },
+    {
+      "id": "followup-059",
+      "name": "Delete missing package is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/membership-packages/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": "Membership package not found.",
+      "error": null
+    },
+    {
+      "id": "followup-060",
+      "name": "Delete missing membership is controlled",
+      "passed": false,
+      "method": "DELETE",
+      "endpoint": "/api/memberships/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "followup-061",
+      "name": "Delete missing member is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/members/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": "Member not found",
+      "error": null
+    },
+    {
+      "id": "followup-062",
+      "name": "Delete missing coach is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/coaches/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": "Không tìm thấy huấn luyện viên.",
+      "error": null
+    },
+    {
+      "id": "followup-063",
+      "name": "Delete missing receptionist is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/receptionists/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": "Không tìm thấy lễ tân.",
+      "error": null
+    },
+    {
+      "id": "followup-064",
+      "name": "Delete missing manager is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/center-managers/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": {
+        "message": "Center manager not found"
+      },
+      "error": null
+    },
+    {
+      "id": "followup-065",
+      "name": "Delete missing account is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/accounts/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": "Không tìm thấy tài khoản.",
+      "error": null
+    },
+    {
+      "id": "followup-066",
+      "name": "Delete missing room is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/rooms/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": "Không tìm thấy phòng tập.",
+      "error": null
+    },
+    {
+      "id": "followup-067",
+      "name": "Delete missing category is controlled",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/categories/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "response": "Không tìm thấy bộ môn.",
+      "error": null
+    }
+  ],
+  "calls": [
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 700,
+      "body": {
+        "userId": "15385eb7-5544-437f-82c7-c2b205202c4b"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_coach"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 693,
+      "body": {
+        "userId": "c19ccecd-5bd0-4695-bbad-1a917e572fdd"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_othercoach"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 506,
+      "body": {
+        "userId": "e6948714-aa17-4005-aff2-606f51cb50eb"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_reception"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 890,
+      "body": {
+        "userId": "f4e3b462-34cf-4502-87b5-6d99e78e78d0"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_manager"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 605,
+      "body": {
+        "userId": "29705d8d-2916-4102-a463-c960e02c5fed"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_member"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 694,
+      "body": {
+        "userId": "6de4653e-fa4f-412a-8330-359cce5e98b7"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_othermember"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 200,
+      "ms": 113,
+      "body": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "bookingId": "10d07c32-b58e-4121-9b31-0104529e9fea",
+        "originalAmount": 0,
+        "discountPercent": 20,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+        "membershipId": null,
+        "invoiceId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+        "amount": 0,
+        "status": 2,
+        "paymentUrl": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+        "paymentMethod": 2,
+        "returnUrl": "http://localhost:5173/payment/result"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me/class-bookings",
+      "role": "member",
+      "status": 200,
+      "ms": 104,
+      "body": [
+        {
+          "originalPrice": 0,
+          "discountPercent": 20,
+          "price": 0,
+          "invoiceId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "10d07c32-b58e-4121-9b31-0104529e9fea",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+          "className": "QA261029163854 freeClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.227971+00:00",
+          "status": 1
+        },
+        {
+          "originalPrice": 10000,
+          "discountPercent": 20,
+          "price": 8000,
+          "invoiceId": "aa7d0c5c-ce9e-4b90-be3b-37f01c9de69f",
+          "paymentMethod": 2,
+          "paymentExpiresAt": "2026-10-29T17:06:09.08287+00:00",
+          "cancelledAt": "2026-10-29T16:51:09.788761+00:00",
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "36d4619e-1727-4735-9a0f-397b9b11fcd7",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:51:09.08287+00:00",
+          "status": 3
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 409,
+      "ms": 77,
+      "body": {
+        "title": "Học viên này đã đăng ký lớp học này rồi.",
+        "status": 409,
+        "detail": "Học viên này đã đăng ký lớp học này rồi.",
+        "message": "Học viên này đã đăng ký lớp học này rồi.",
+        "traceId": "0HNPLR9LS0IQT:00000016"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+        "paymentMethod": 2
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "otherMember",
+      "status": 200,
+      "ms": 207,
+      "body": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "bookingId": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+        "originalAmount": 0,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "668853a5-cdcb-407c-be58-e471cc704c66",
+        "membershipId": null,
+        "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+        "amount": 0,
+        "status": 2,
+        "paymentUrl": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+        "paymentMethod": 2,
+        "returnUrl": "http://localhost:5173/payment/result"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me/class-bookings",
+      "role": "otherMember",
+      "status": 200,
+      "ms": 63,
+      "body": [
+        {
+          "originalPrice": 0,
+          "discountPercent": 0,
+          "price": 0,
+          "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+          "className": "QA261029163854 fullClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.620799+00:00",
+          "status": 1
+        },
+        {
+          "originalPrice": 10000,
+          "discountPercent": 0,
+          "price": 10000,
+          "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+          "paymentMethod": 1,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:51:12.376824+00:00",
+          "refundAmount": 10000,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:51:11.970867+00:00",
+          "status": 3
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 409,
+      "ms": 76,
+      "body": {
+        "title": "Lớp học đã đạt số lượng học viên tối đa.",
+        "status": 409,
+        "detail": "Lớp học đã đạt số lượng học viên tối đa.",
+        "message": "Lớp học đã đạt số lượng học viên tối đa.",
+        "traceId": "0HNPLR9LS0IQT:00000019"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+        "paymentMethod": 2
+      }
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/class-bookings/ffdbdeb4-7692-4481-8e7f-0443e80169a0/member/771dd5b7-29c1-46c8-8373-351fd5b49606",
+      "role": "otherMember",
+      "status": 200,
+      "ms": 119,
+      "body": {
+        "bookingId": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+        "status": 3,
+        "refunded": false,
+        "refundAmount": 0,
+        "refundPending": false,
+        "requestedRefundAmount": 0
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes/b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 66,
+      "body": {
+        "price": 0,
+        "id": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+        "className": "QA261029163854 fullClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 1,
+        "currentEnrolled": 0,
+        "spotsLeft": 1,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:29.138913+00:00",
+        "updatedAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me/class-bookings",
+      "role": "otherMember",
+      "status": 200,
+      "ms": 57,
+      "body": [
+        {
+          "originalPrice": 0,
+          "discountPercent": 0,
+          "price": 0,
+          "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:55:31.922146+00:00",
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+          "className": "QA261029163854 fullClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.620799+00:00",
+          "status": 3
+        },
+        {
+          "originalPrice": 10000,
+          "discountPercent": 0,
+          "price": 10000,
+          "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+          "paymentMethod": 1,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:51:12.376824+00:00",
+          "refundAmount": 10000,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:51:11.970867+00:00",
+          "status": 3
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/payments/e3109ca0-04f6-4d79-9da0-4021a92660a4",
+      "role": "member",
+      "status": 200,
+      "ms": 62,
+      "body": {
+        "kind": "Membership",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": null,
+        "className": null,
+        "bookingId": null,
+        "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWPE3109CA004F64D799DA04021A92660A4",
+        "expiresAt": "2026-10-29T16:54:30.18091+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "status": 5,
+        "amount": 10000,
+        "packageName": "QA261029163854 30 days",
+        "membershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+        "invoiceId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "paidAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/checkout",
+      "role": "member",
+      "status": 200,
+      "ms": 71,
+      "body": {
+        "kind": "Membership",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE0245407E2BA4ACFBE26D381D12F72CB",
+        "bookingId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE0245407E2BA4ACFBE26D381D12F72CB",
+        "paymentReference": "SWPE0245407E2BA4ACFBE26D381D12F72CB",
+        "expiresAt": "2026-10-29T17:10:32.1950083+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "e0245407-e2ba-4acf-be26-d381d12f72cb",
+        "membershipId": "7986815f-0dec-4e17-a2fb-6a57ab7c9d0b",
+        "invoiceId": "e0245407-e2ba-4acf-be26-d381d12f72cb",
+        "amount": 10000,
+        "status": 1,
+        "paymentUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE0245407E2BA4ACFBE26D381D12F72CB"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "membershipPackageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "startDate": "2026-10-29T00:00:00Z",
+        "paymentMethod": 2,
+        "returnUrl": "http://localhost:5173/payment/result"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/e0245407-e2ba-4acf-be26-d381d12f72cb/cancel",
+      "role": "member",
+      "status": 200,
+      "ms": 76,
+      "body": {
+        "message": "Đã hủy đơn và trả chỗ nếu có."
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {}
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 200,
+      "ms": 96,
+      "body": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "bookingId": "d888cf55-99a9-480b-b1f0-6b2215d4294b",
+        "originalAmount": 0,
+        "discountPercent": 20,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+        "membershipId": null,
+        "invoiceId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+        "amount": 0,
+        "status": 2,
+        "paymentUrl": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "paymentMethod": 2,
+        "returnUrl": "http://localhost:5173/payment/result"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me/class-bookings",
+      "role": "member",
+      "status": 200,
+      "ms": 53,
+      "body": [
+        {
+          "originalPrice": 0,
+          "discountPercent": 20,
+          "price": 0,
+          "invoiceId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "d888cf55-99a9-480b-b1f0-6b2215d4294b",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+          "className": "QA261029163854 attendanceClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:32.345881+00:00",
+          "status": 1
+        },
+        {
+          "originalPrice": 0,
+          "discountPercent": 20,
+          "price": 0,
+          "invoiceId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "10d07c32-b58e-4121-9b31-0104529e9fea",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+          "className": "QA261029163854 freeClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.227971+00:00",
+          "status": 1
+        },
+        {
+          "originalPrice": 10000,
+          "discountPercent": 20,
+          "price": 8000,
+          "invoiceId": "aa7d0c5c-ce9e-4b90-be3b-37f01c9de69f",
+          "paymentMethod": 2,
+          "paymentExpiresAt": "2026-10-29T17:06:09.08287+00:00",
+          "cancelledAt": "2026-10-29T16:51:09.788761+00:00",
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "36d4619e-1727-4735-9a0f-397b9b11fcd7",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:51:09.08287+00:00",
+          "status": 3
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/class-sessions/4d1d899b-5897-40f4-b1a5-7f049861e2ba",
+      "role": "manager",
+      "status": 204,
+      "ms": 148,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-10-28T00:00:00Z",
+        "startTime": "16:00:00",
+        "endTime": "16:45:00"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "otherMember",
+      "status": 400,
+      "ms": 88,
+      "body": {
+        "title": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "status": 400,
+        "detail": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "message": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "traceId": "0HNPLR9LS0IQT:00000023"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "paymentMethod": 2
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/class-bookings",
+      "role": "reception",
+      "status": 400,
+      "ms": 85,
+      "body": {
+        "title": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "status": 400,
+        "detail": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "message": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "traceId": "0HNPLR9LS0IQT:00000024"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "paymentMethod": 1
+      }
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/classes/b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+      "role": "manager",
+      "status": 200,
+      "ms": 312,
+      "body": "Class deleted successfully.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "reception",
+      "status": 403,
+      "ms": 47,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "sessionId": "4d1d899b-5897-40f4-b1a5-7f049861e2ba",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "status": 1,
+        "recordedBy": "f4e3b462-34cf-4502-87b5-6d99e78e78d0"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "otherCoach",
+      "status": 403,
+      "ms": 161,
+      "body": {
+        "title": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "status": 403,
+        "detail": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "message": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "traceId": "0HNPLR9LS0IQT:00000027"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "sessionId": "4d1d899b-5897-40f4-b1a5-7f049861e2ba",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "status": 1,
+        "recordedBy": "f4e3b462-34cf-4502-87b5-6d99e78e78d0"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "coach",
+      "status": 403,
+      "ms": 83,
+      "body": {
+        "title": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "status": 403,
+        "detail": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "message": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "traceId": "0HNPLR9LS0IQT:00000028"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "sessionId": "4d1d899b-5897-40f4-b1a5-7f049861e2ba",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "status": 1,
+        "recordedBy": "f4e3b462-34cf-4502-87b5-6d99e78e78d0"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-plans",
+      "role": "coach",
+      "status": 404,
+      "ms": 137,
+      "body": {
+        "title": "Class not found",
+        "status": 404,
+        "detail": "Class not found",
+        "message": "Class not found",
+        "traceId": "0HNPLR9LS0IQT:00000029"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "title": "QA261029163854 plan",
+        "contentDescription": "QA261029163854 QA fixture only - no real payment or refund",
+        "createdDate": "2026-10-29T00:00:00Z"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-plans/class/b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+      "role": "coach",
+      "status": 404,
+      "ms": 166,
+      "body": {
+        "title": "Không tìm thấy lớp học.",
+        "status": 404,
+        "detail": "Không tìm thấy lớp học.",
+        "message": "Không tìm thấy lớp học.",
+        "traceId": "0HNPLR9LS0IQT:0000002A"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "title": "QA261029163854 bulk plan",
+        "contentDescription": "QA261029163854 QA fixture only - no real payment or refund",
+        "createdDate": "2026-10-29T00:00:00Z"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-plans/class/b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+      "role": "otherCoach",
+      "status": 404,
+      "ms": 64,
+      "body": {
+        "title": "Không tìm thấy lớp học.",
+        "status": 404,
+        "detail": "Không tìm thấy lớp học.",
+        "message": "Không tìm thấy lớp học.",
+        "traceId": "0HNPLR9LS0IQT:0000002B"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "title": "QA261029163854 forbidden plan"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-plans",
+      "role": "coach",
+      "status": 404,
+      "ms": 82,
+      "body": {
+        "title": "Class not found",
+        "status": 404,
+        "detail": "Class not found",
+        "message": "Class not found",
+        "traceId": "0HNPLR9LS0IQT:0000002C"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "title": "QA261029163854 plan",
+        "contentDescription": "QA261029163854 QA fixture only - no real payment or refund",
+        "createdDate": "2026-10-29T00:00:00Z"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/exercise-suggestions",
+      "role": "coach",
+      "status": 503,
+      "ms": 60,
+      "body": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPLR9LS0IQT:0000002D"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "goal": "Bai tap nhe tang suc ben",
+        "durationMinutes": 20,
+        "equipment": "bodyweight",
+        "level": "beginner"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/notifications",
+      "role": "coach",
+      "status": 200,
+      "ms": 110,
+      "body": {
+        "senderAccountId": "15385eb7-5544-437f-82c7-c2b205202c4b",
+        "senderName": "QA261029163854 coach",
+        "senderRole": "Coach",
+        "sentCount": 1,
+        "id": "fc880fda-bce8-461c-88b0-da6bc6314b8c",
+        "accountId": "29705d8d-2916-4102-a463-c960e02c5fed",
+        "title": "QA261029163854 sender check",
+        "message": "QA261029163854 QA fixture only - no real payment or refund",
+        "isRead": false,
+        "createdAt": "2026-10-29T16:55:33.9908875+00:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "accountIds": [
+          "29705d8d-2916-4102-a463-c960e02c5fed"
+        ],
+        "title": "QA261029163854 sender check",
+        "message": "QA261029163854 QA fixture only - no real payment or refund"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/notifications/me?pageSize=100",
+      "role": "member",
+      "status": 200,
+      "ms": 86,
+      "body": {
+        "data": [
+          {
+            "senderAccountId": "15385eb7-5544-437f-82c7-c2b205202c4b",
+            "senderName": "QA261029163854 coach",
+            "senderRole": "Coach",
+            "sentCount": null,
+            "id": "fc880fda-bce8-461c-88b0-da6bc6314b8c",
+            "accountId": "29705d8d-2916-4102-a463-c960e02c5fed",
+            "title": "QA261029163854 sender check",
+            "message": "QA261029163854 QA fixture only - no real payment or refund",
+            "isRead": false,
+            "createdAt": "2026-10-29T16:55:33.990887+00:00"
+          },
+          {
+            "senderAccountId": null,
+            "senderName": "Hệ thống",
+            "senderRole": null,
+            "sentCount": null,
+            "id": "249b4f72-fccf-4972-a47e-f77b9d587f8c",
+            "accountId": "29705d8d-2916-4102-a463-c960e02c5fed",
+            "title": "Lịch học đã thay đổi",
+            "message": "Buổi học 31/10/2026 16:00 được chuyển sang 28/10/2026 16:00 đến 16:45. Vui lòng kiểm tra lại lớp và phòng trên lịch học.",
+            "isRead": false,
+            "createdAt": "2026-10-29T16:55:32.582122+00:00"
+          }
+        ],
+        "totalItems": 2,
+        "pageSize": 100,
+        "pageIndex": 1
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/notifications/fc880fda-bce8-461c-88b0-da6bc6314b8c/read",
+      "role": "otherMember",
+      "status": 404,
+      "ms": 85,
+      "body": "Không tìm thấy thông báo.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {}
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/notifications/fc880fda-bce8-461c-88b0-da6bc6314b8c/read",
+      "role": "member",
+      "status": 200,
+      "ms": 62,
+      "body": "Đã đánh dấu là đã đọc.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {}
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/notifications/read-all",
+      "role": "member",
+      "status": 200,
+      "ms": 66,
+      "body": "Đã đánh dấu 1 thông báo là đã đọc.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {}
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/notifications/fc880fda-bce8-461c-88b0-da6bc6314b8c",
+      "role": "member",
+      "status": 200,
+      "ms": 80,
+      "body": "Xóa thông báo thành công.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/classes",
+      "role": "manager",
+      "status": 200,
+      "ms": 84,
+      "body": {
+        "price": 10000,
+        "id": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:55:34.439722+00:00",
+        "updatedAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "className": "QA261029163854 Late paid",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 10000,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/class-sessions",
+      "role": "manager",
+      "status": 201,
+      "ms": 67,
+      "body": {
+        "id": "5a30da5f-76b4-426b-8393-31bb46301137",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-11-01T00:00:00Z",
+        "startTime": "09:00:00",
+        "endTime": "09:45:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-11-01T00:00:00Z",
+        "startTime": "09:00:00",
+        "endTime": "09:45:00"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/class-bookings",
+      "role": "reception",
+      "status": 200,
+      "ms": 87,
+      "body": {
+        "originalPrice": 10000,
+        "discountPercent": 20,
+        "price": 8000,
+        "invoiceId": "63796664-17ab-49d3-9983-1af67ac7264b",
+        "paymentMethod": 1,
+        "paymentExpiresAt": null,
+        "cancelledAt": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "eligibleMembershipId": null,
+        "membershipEndDate": null,
+        "id": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "classStartDate": "2026-10-26T00:00:00Z",
+        "bookingDate": "2026-10-29T16:55:34.591987+00:00",
+        "status": 1
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "paymentMethod": 1
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/classes/ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+      "role": "manager",
+      "status": 200,
+      "ms": 82,
+      "body": "Class updated successfully.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "className": "QA261029163854 Late paid",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 10000,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 2
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "otherMember",
+      "status": 400,
+      "ms": 57,
+      "body": {
+        "title": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "status": 400,
+        "detail": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "message": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "traceId": "0HNPLR9LS0IQS:00000012"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "paymentMethod": 2
+      }
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/class-bookings/be00f2f0-267d-426a-82c7-428ef44dab4c/member/cff4d277-b14c-4aa0-8074-ffb10c28574f",
+      "role": "member",
+      "status": 200,
+      "ms": 101,
+      "body": {
+        "bookingId": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+        "status": 3,
+        "refunded": false,
+        "refundAmount": 0,
+        "refundPending": false,
+        "requestedRefundAmount": 0
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices/63796664-17ab-49d3-9983-1af67ac7264b",
+      "role": "reception",
+      "status": 200,
+      "ms": 63,
+      "body": {
+        "id": "63796664-17ab-49d3-9983-1af67ac7264b",
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "receptionistName": "QA261029163854 reception",
+        "memberMembershipId": null,
+        "classBookingId": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "kind": "Class",
+        "originalAmount": 10000,
+        "discountPercent": 20,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 member",
+        "packageName": "",
+        "amount": 8000,
+        "paymentMethod": 1,
+        "paymentDate": "2026-10-29T16:55:34.591987+00:00",
+        "status": 2
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 400,
+      "ms": 58,
+      "body": {
+        "title": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "status": 400,
+        "detail": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "message": "Lớp đã bắt đầu, không nhận đặt thêm.",
+        "traceId": "0HNPLR9LS0IQS:00000015"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "paymentMethod": 2
+      }
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/invoices/16db9261-6558-4860-b896-7ae63c2611bc",
+      "role": "reception",
+      "status": 400,
+      "ms": 76,
+      "body": {
+        "title": "Không thể xóa hóa đơn đã được thanh toán.",
+        "status": 400,
+        "detail": "Không thể xóa hóa đơn đã được thanh toán.",
+        "message": "Không thể xóa hóa đơn đã được thanh toán.",
+        "traceId": "0HNPLR9LS0IQS:00000016"
+      },
+      "error": null,
+      "contentType": "application/problem+json"
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/invoices/16db9261-6558-4860-b896-7ae63c2611bc",
+      "role": "manager",
+      "status": 403,
+      "ms": 71,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "paymentMethod": 1,
+        "status": 1
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/invoices/e3109ca0-04f6-4d79-9da0-4021a92660a4",
+      "role": "reception",
+      "status": 409,
+      "ms": 122,
+      "body": {
+        "title": "Không được sửa tay hóa đơn online. Dùng luồng thanh toán hoặc hủy đơn.",
+        "status": 409,
+        "detail": "Không được sửa tay hóa đơn online. Dùng luồng thanh toán hoặc hủy đơn.",
+        "message": "Không được sửa tay hóa đơn online. Dùng luồng thanh toán hoặc hủy đơn.",
+        "traceId": "0HNPLR9LS0IQS:00000018"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "paymentMethod": 2,
+        "status": 2
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/payments/2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+      "role": "reception",
+      "status": 200,
+      "ms": 81,
+      "body": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 1,
+        "payUrl": null,
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "bookingId": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+        "packageId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": 10000,
+        "refundPending": false,
+        "refundReference": "QA261029163854 temporary integration audit - no real funds",
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+        "status": 6,
+        "amount": 10000,
+        "packageName": "",
+        "membershipId": null,
+        "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+        "paidAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/class-bookings/member/771dd5b7-29c1-46c8-8373-351fd5b49606",
+      "role": "reception",
+      "status": 200,
+      "ms": 51,
+      "body": [
+        {
+          "originalPrice": 0,
+          "discountPercent": 0,
+          "price": 0,
+          "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:55:31.922146+00:00",
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+          "className": "QA261029163854 fullClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.620799+00:00",
+          "status": 3
+        },
+        {
+          "originalPrice": 10000,
+          "discountPercent": 0,
+          "price": 10000,
+          "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+          "paymentMethod": 1,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:51:12.376824+00:00",
+          "refundAmount": 10000,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:51:11.970867+00:00",
+          "status": 3
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/2dfade7d-77b0-41a5-bbbc-54bfbb1239db/refund-confirm",
+      "role": "manager",
+      "status": 403,
+      "ms": 55,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "reference": "QA261029163854 QA fixture only - no real payment or refund"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/media/images",
+      "role": "manager",
+      "status": 502,
+      "ms": 378,
+      "body": "<html>\r\n<head><title>502 Bad Gateway</title></head>\r\n<body>\r\n<center><h1>502 Bad Gateway</h1></center>\r\n<hr><center>cloudflare</center>\r\n</body>\r\n</html>\r\n",
+      "error": null,
+      "contentType": "text/html",
+      "request": "[multipart]"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/accounts",
+      "role": "reception",
+      "status": 403,
+      "ms": 49,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "username": "QA261029163854-deny",
+        "email": "deny@example.invalid",
+        "role": 2,
+        "status": 1
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/members",
+      "role": "reception",
+      "status": 400,
+      "ms": 74,
+      "body": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "Dob": [
+            "Ngày sinh bắt buộc, từ năm 1900 đến ngày hiện tại."
+          ],
+          "Email": [
+            "The Email field is required.",
+            "The Email field is not a valid e-mail address."
+          ],
+          "Phone": [
+            "The Phone field is required."
+          ],
+          "FullName": [
+            "The FullName field is required."
+          ]
+        },
+        "traceId": "00-09b1c1df56bd3ce6ffdda41d1b34b00b-a92a5e70495f696b-00"
+      },
+      "error": null,
+      "contentType": "application/problem+json; charset=utf-8",
+      "request": {}
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/receptionists",
+      "role": "member",
+      "status": 403,
+      "ms": 46,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {}
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/center-managers",
+      "role": "member",
+      "status": 403,
+      "ms": 73,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {}
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/coaches",
+      "role": "member",
+      "status": 403,
+      "ms": 44,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {}
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/categories",
+      "role": "member",
+      "status": 403,
+      "ms": 61,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {}
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/training-results/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "coach",
+      "status": 404,
+      "ms": 86,
+      "body": "Training result not found",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/training-plans/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "coach",
+      "status": 404,
+      "ms": 108,
+      "body": "Training plan not found",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/class-sessions/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 86,
+      "body": {
+        "message": "Class session not found"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/classes/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 68,
+      "body": "Class not found.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/membership-packages/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 69,
+      "body": "Membership package not found.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/memberships/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 403,
+      "ms": 64,
+      "body": null,
+      "error": null,
+      "contentType": null
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/members/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 90,
+      "body": "Member not found",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/coaches/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 62,
+      "body": "Không tìm thấy huấn luyện viên.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/receptionists/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 63,
+      "body": "Không tìm thấy lễ tân.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/center-managers/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 95,
+      "body": {
+        "message": "Center manager not found"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/accounts/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 110,
+      "body": "Không tìm thấy tài khoản.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/rooms/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 83,
+      "body": "Không tìm thấy phòng tập.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/categories/abe1cf21-2183-48b1-a412-903b977b2904",
+      "role": "manager",
+      "status": 404,
+      "ms": 102,
+      "body": "Không tìm thấy bộ môn.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ],
+  "coverage": [
+    {
+      "method": "GET",
+      "path": "/",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/accounts",
+      "calls": 1,
+      "statuses": [
+        403
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/accounts/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/chat",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/exercise-suggestions",
+      "calls": 1,
+      "statuses": [
+        503
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/session/{sessionId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/attendances",
+      "calls": 3,
+      "statuses": [
+        403
+      ],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/attendances/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit-logs",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/register",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "calls": 6,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/forgot-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reset-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/change-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/center-managers",
+      "calls": 1,
+      "statuses": [
+        403
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/center-managers/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/classes",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/classes/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/classes/{id}",
+      "calls": 2,
+      "statuses": [
+        200,
+        404
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{classId}/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-bookings/member/{memberId}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-bookings",
+      "calls": 2,
+      "statuses": [
+        400,
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-bookings/{bookingId}/member/{memberId}",
+      "calls": 2,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-sessions",
+      "calls": 1,
+      "statuses": [
+        201
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/class-sessions/{id}",
+      "calls": 1,
+      "statuses": [
+        204
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-sessions/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/class/{classId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/coaches",
+      "calls": 1,
+      "statuses": [
+        403
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/coaches/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/coaches/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/classes",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/revenue",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/members/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/memberships/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/classes/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/invoices/{id}",
+      "calls": 2,
+      "statuses": [
+        403,
+        409
+      ],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/invoices/{id}",
+      "calls": 1,
+      "statuses": [
+        400
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}/export",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/media/images",
+      "calls": 1,
+      "statuses": [
+        502
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/members",
+      "calls": 1,
+      "statuses": [
+        400
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/members/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/class-bookings",
+      "calls": 4,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/attendances",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/memberships/{id}",
+      "calls": 1,
+      "statuses": [
+        403
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{memberId}/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}/status",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/renew",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/cancel",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/membership-packages",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/membership-packages/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/notifications/me",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/{id}/read",
+      "calls": 2,
+      "statuses": [
+        404,
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/read-all",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/notifications/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/options",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/class-checkout",
+      "calls": 8,
+      "statuses": [
+        200,
+        409,
+        400
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/upgrade-checkout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/cancel",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/refund-confirm",
+      "calls": 1,
+      "statuses": [
+        403
+      ],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/checkout",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/{paymentId}",
+      "calls": 2,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{paymentId}/confirm",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/mock-gateway",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/receptionists",
+      "calls": 1,
+      "statuses": [
+        403
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/receptionists/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/rooms",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/rooms/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/sepay/webhook",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/categories",
+      "calls": 1,
+      "statuses": [
+        403
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/categories/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/categories/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/support-requests",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/support-requests",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/support-requests/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans/class/{classId}",
+      "calls": 2,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-plans/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-plans/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-plans/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans",
+      "calls": 2,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-results/{id}",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members/{memberId}/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/WeatherForecast",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    }
+  ]
+}

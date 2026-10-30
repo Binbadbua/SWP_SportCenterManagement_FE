@@ -1,0 +1,1628 @@
+{
+  "summary": {
+    "name": "class-expiry",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "recordedAt": "2026-10-29T17:07:43.313Z",
+    "timezone": "Asia/Bangkok",
+    "checks": 8,
+    "passed": 2,
+    "failed": 6,
+    "requests": 11,
+    "documentedOperations": 143,
+    "operationsCalled": 7,
+    "operationsWithSuccess": 7
+  },
+  "results": [
+    {
+      "id": "class-expiry-001",
+      "name": "Create isolated class hold for expiry test",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "otherMember",
+      "status": 200,
+      "response": {
+        "kind": "Class",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "bookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "paymentReference": "SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "expiresAt": "2026-10-29T17:21:37.5160417+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "membershipId": null,
+        "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "amount": 10000,
+        "status": 1,
+        "paymentUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWP6D0754D8A289472EA3914DD5D38A42B4"
+      },
+      "error": null
+    },
+    {
+      "id": "class-expiry-002",
+      "name": "Pending class payment holds one seat",
+      "passed": true,
+      "response": {
+        "price": 10000,
+        "id": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 1,
+        "spotsLeft": 4,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:27.88877+00:00",
+        "updatedAt": "2026-10-29T16:51:05.458516+00:00"
+      }
+    },
+    {
+      "id": "class-expiry-003",
+      "name": "SePay pending order cannot be settled by desk confirmation",
+      "passed": false,
+      "status": 200,
+      "response": {
+        "kind": "Class",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "bookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "packageId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "expiresAt": "2026-10-29T17:21:37.516041+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "status": 2,
+        "amount": 10000,
+        "packageName": "",
+        "membershipId": null,
+        "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "paidAt": "2026-10-29T17:06:37.7705663+00:00"
+      }
+    },
+    {
+      "id": "class-expiry-004",
+      "name": "Denied manual confirm leaves SePay order pending",
+      "passed": false,
+      "response": {
+        "kind": "Class",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "bookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "packageId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "expiresAt": "2026-10-29T17:21:37.516041+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "status": 2,
+        "amount": 10000,
+        "packageName": "",
+        "membershipId": null,
+        "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "paidAt": "2026-10-29T17:06:37.770566+00:00"
+      }
+    },
+    {
+      "id": "class-expiry-005",
+      "name": "Class payment becomes Expired after hold",
+      "passed": false,
+      "response": {
+        "kind": "Class",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "bookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "packageId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "expiresAt": "2026-10-29T17:21:37.516041+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "status": 2,
+        "amount": 10000,
+        "packageName": "",
+        "membershipId": null,
+        "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "paidAt": "2026-10-29T17:06:37.770566+00:00"
+      }
+    },
+    {
+      "id": "class-expiry-006",
+      "name": "Expired class hold releases capacity",
+      "passed": false,
+      "response": {
+        "price": 10000,
+        "id": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 1,
+        "spotsLeft": 4,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:27.88877+00:00",
+        "updatedAt": "2026-10-29T16:51:05.458516+00:00"
+      }
+    },
+    {
+      "id": "class-expiry-007",
+      "name": "Expired class booking is cancelled",
+      "passed": false,
+      "response": {
+        "originalPrice": 10000,
+        "discountPercent": 0,
+        "price": 10000,
+        "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "paymentMethod": 2,
+        "paymentExpiresAt": null,
+        "cancelledAt": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "eligibleMembershipId": null,
+        "membershipEndDate": null,
+        "id": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "memberName": "QA261029163854 otherMember",
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "classStartDate": "2026-10-26T00:00:00Z",
+        "bookingDate": "2026-10-29T17:06:37.516041+00:00",
+        "status": 1
+      }
+    },
+    {
+      "id": "class-expiry-008",
+      "name": "Expired class invoice is cancelled",
+      "passed": false,
+      "response": {
+        "id": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "receptionistName": "QA261029163854 reception",
+        "memberMembershipId": null,
+        "classBookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "kind": "Class",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 otherMember",
+        "packageName": "",
+        "amount": 10000,
+        "paymentMethod": 2,
+        "paymentDate": "2026-10-29T17:06:37.770566+00:00",
+        "status": 2
+      }
+    }
+  ],
+  "calls": [
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 1057,
+      "body": {
+        "userId": "6de4653e-fa4f-412a-8330-359cce5e98b7"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_othermember"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 1192,
+      "body": {
+        "userId": "e6948714-aa17-4005-aff2-606f51cb50eb"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_reception"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes/f32118a1-42a1-40ea-8c11-431c643850d8",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 65,
+      "body": {
+        "price": 10000,
+        "id": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:27.88877+00:00",
+        "updatedAt": "2026-10-29T16:51:05.458516+00:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "otherMember",
+      "status": 200,
+      "ms": 149,
+      "body": {
+        "kind": "Class",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "bookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "paymentReference": "SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "expiresAt": "2026-10-29T17:21:37.5160417+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "membershipId": null,
+        "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "amount": 10000,
+        "status": 1,
+        "paymentUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWP6D0754D8A289472EA3914DD5D38A42B4"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "paymentMethod": 2,
+        "returnUrl": "http://localhost:5173/payment/result"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes/f32118a1-42a1-40ea-8c11-431c643850d8",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 65,
+      "body": {
+        "price": 10000,
+        "id": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 1,
+        "spotsLeft": 4,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:27.88877+00:00",
+        "updatedAt": "2026-10-29T16:51:05.458516+00:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/6d0754d8-a289-472e-a391-4dd5d38a42b4/confirm",
+      "role": "reception",
+      "status": 200,
+      "ms": 138,
+      "body": {
+        "kind": "Class",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "bookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "packageId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "expiresAt": "2026-10-29T17:21:37.516041+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "status": 2,
+        "amount": 10000,
+        "packageName": "",
+        "membershipId": null,
+        "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "paidAt": "2026-10-29T17:06:37.7705663+00:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {}
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/payments/6d0754d8-a289-472e-a391-4dd5d38a42b4",
+      "role": "otherMember",
+      "status": 200,
+      "ms": 81,
+      "body": {
+        "kind": "Class",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "bookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "packageId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "expiresAt": "2026-10-29T17:21:37.516041+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "status": 2,
+        "amount": 10000,
+        "packageName": "",
+        "membershipId": null,
+        "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "paidAt": "2026-10-29T17:06:37.770566+00:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/payments/6d0754d8-a289-472e-a391-4dd5d38a42b4",
+      "role": "otherMember",
+      "status": 200,
+      "ms": 73,
+      "body": {
+        "kind": "Class",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "bookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "packageId": null,
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWP6D0754D8A289472EA3914DD5D38A42B4",
+        "expiresAt": "2026-10-29T17:21:37.516041+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "status": 2,
+        "amount": 10000,
+        "packageName": "",
+        "membershipId": null,
+        "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "paidAt": "2026-10-29T17:06:37.770566+00:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes/f32118a1-42a1-40ea-8c11-431c643850d8",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 162,
+      "body": {
+        "price": 10000,
+        "id": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 1,
+        "spotsLeft": 4,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:27.88877+00:00",
+        "updatedAt": "2026-10-29T16:51:05.458516+00:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me/class-bookings",
+      "role": "otherMember",
+      "status": 200,
+      "ms": 73,
+      "body": [
+        {
+          "originalPrice": 10000,
+          "discountPercent": 0,
+          "price": 10000,
+          "invoiceId": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T17:06:37.516041+00:00",
+          "status": 1
+        },
+        {
+          "originalPrice": 0,
+          "discountPercent": 0,
+          "price": 0,
+          "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:55:31.922146+00:00",
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+          "className": "QA261029163854 fullClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.620799+00:00",
+          "status": 3
+        },
+        {
+          "originalPrice": 10000,
+          "discountPercent": 0,
+          "price": 10000,
+          "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+          "paymentMethod": 1,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:51:12.376824+00:00",
+          "refundAmount": 10000,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+          "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+          "memberName": "QA261029163854 otherMember",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:51:11.970867+00:00",
+          "status": 3
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices/6d0754d8-a289-472e-a391-4dd5d38a42b4",
+      "role": "reception",
+      "status": 200,
+      "ms": 85,
+      "body": {
+        "id": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "receptionistName": "QA261029163854 reception",
+        "memberMembershipId": null,
+        "classBookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "kind": "Class",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 otherMember",
+        "packageName": "",
+        "amount": 10000,
+        "paymentMethod": 2,
+        "paymentDate": "2026-10-29T17:06:37.770566+00:00",
+        "status": 2
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ],
+  "coverage": [
+    {
+      "method": "GET",
+      "path": "/",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/accounts",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/chat",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/exercise-suggestions",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/session/{sessionId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/attendances",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/attendances/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit-logs",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/register",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "calls": 2,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/forgot-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reset-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/change-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/center-managers",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/classes",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{id}",
+      "calls": 3,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/classes/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/classes/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{classId}/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-bookings/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-bookings",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-bookings/{bookingId}/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-sessions",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/class-sessions/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-sessions/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/class/{classId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/coaches",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/coaches/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/coaches/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/classes",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/revenue",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/members/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/memberships/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/classes/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/invoices/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/invoices/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}/export",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/media/images",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/class-bookings",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/attendances",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{memberId}/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}/status",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/renew",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/cancel",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/membership-packages",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/notifications/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/{id}/read",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/read-all",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/notifications/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/options",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/class-checkout",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/upgrade-checkout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/cancel",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/refund-confirm",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/checkout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/{paymentId}",
+      "calls": 2,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{paymentId}/confirm",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/mock-gateway",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/receptionists",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/rooms",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/sepay/webhook",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/categories",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/categories/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/categories/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/support-requests",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/support-requests",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/support-requests/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans/class/{classId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-plans/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-plans/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-plans/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members/{memberId}/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/WeatherForecast",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    }
+  ]
+}

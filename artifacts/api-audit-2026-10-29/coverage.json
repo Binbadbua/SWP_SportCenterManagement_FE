@@ -1,0 +1,2466 @@
+{
+  "summary": {
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "generatedAt": "2026-10-30T03:49:22.034Z",
+    "timezone": "Asia/Bangkok",
+    "requests": 991,
+    "operations": 143,
+    "operationsCalled": 143,
+    "operationsWithSuccess": 133,
+    "missing": [],
+    "sourceReports": [
+      {
+        "name": "bootstrap",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-29T16:39:32.117Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 28,
+        "passed": 28,
+        "failed": 0,
+        "requests": 34,
+        "documentedOperations": 143,
+        "operationsCalled": 16,
+        "operationsWithSuccess": 16
+      },
+      {
+        "name": "business",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-29T16:51:16.424Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 119,
+        "passed": 107,
+        "failed": 12,
+        "requests": 121,
+        "documentedOperations": 143,
+        "operationsCalled": 55,
+        "operationsWithSuccess": 39
+      },
+      {
+        "name": "followup",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-29T16:55:37.317Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 67,
+        "passed": 58,
+        "failed": 9,
+        "requests": 72,
+        "documentedOperations": 143,
+        "operationsCalled": 47,
+        "operationsWithSuccess": 21
+      },
+      {
+        "name": "training-recovery",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-29T16:58:41.409Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 36,
+        "passed": 30,
+        "failed": 6,
+        "requests": 43,
+        "documentedOperations": 143,
+        "operationsCalled": 26,
+        "operationsWithSuccess": 24
+      },
+      {
+        "name": "read-api",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-29T17:03:53.621Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 151,
+        "passed": 149,
+        "failed": 2,
+        "requests": 459,
+        "documentedOperations": 143,
+        "operationsCalled": 69,
+        "operationsWithSuccess": 68
+      },
+      {
+        "name": "initial-confirm-probe",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-29T17:07:43.313Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 8,
+        "passed": 2,
+        "failed": 6,
+        "requests": 11,
+        "documentedOperations": 143,
+        "operationsCalled": 7,
+        "operationsWithSuccess": 7
+      },
+      {
+        "name": "confirm-bypass",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-29T17:08:40.515Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 3,
+        "passed": 3,
+        "failed": 0,
+        "requests": 6,
+        "documentedOperations": 143,
+        "operationsCalled": 4,
+        "operationsWithSuccess": 4
+      },
+      {
+        "name": "class-expiry",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-29T17:25:04.821Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 7,
+        "passed": 7,
+        "failed": 0,
+        "requests": 40,
+        "documentedOperations": 143,
+        "operationsCalled": 6,
+        "operationsWithSuccess": 6
+      },
+      {
+        "name": "policy-final",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-29T17:11:22.664Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 3,
+        "passed": 2,
+        "failed": 1,
+        "requests": 7,
+        "documentedOperations": 143,
+        "operationsCalled": 6,
+        "operationsWithSuccess": 4
+      },
+      {
+        "name": "ui-refund-setup",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-30T03:45:04.412Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 3,
+        "passed": 3,
+        "failed": 0,
+        "requests": 4,
+        "documentedOperations": 143,
+        "operationsCalled": 4,
+        "operationsWithSuccess": 4
+      },
+      {
+        "name": "cleanup",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-30T03:46:42.886Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 36,
+        "passed": 35,
+        "failed": 1,
+        "requests": 184,
+        "documentedOperations": 143,
+        "operationsCalled": 43,
+        "operationsWithSuccess": 36
+      },
+      {
+        "name": "cleanup-tail",
+        "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+        "recordedAt": "2026-10-30T03:48:09.312Z",
+        "timezone": "Asia/Bangkok",
+        "checks": 5,
+        "passed": 3,
+        "failed": 2,
+        "requests": 10,
+        "documentedOperations": 143,
+        "operationsCalled": 10,
+        "operationsWithSuccess": 7
+      }
+    ]
+  },
+  "coverage": [
+    {
+      "method": "GET",
+      "path": "/",
+      "requests": 5,
+      "statuses": [
+        302
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "reception",
+        "member"
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts",
+      "requests": 9,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/accounts",
+      "requests": 5,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "manager",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/accounts/{id}",
+      "requests": 7,
+      "statuses": [
+        204,
+        404
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts/{id}",
+      "requests": 17,
+      "statuses": [
+        200,
+        401,
+        403,
+        404
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "reception",
+        "member",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/accounts/{id}",
+      "requests": 5,
+      "statuses": [
+        204,
+        403
+      ],
+      "roles": [
+        "manager",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/chat",
+      "requests": 2,
+      "statuses": [
+        400,
+        503
+      ],
+      "roles": [
+        "member"
+      ],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/exercise-suggestions",
+      "requests": 6,
+      "statuses": [
+        400,
+        403,
+        503
+      ],
+      "roles": [
+        "coach",
+        "member"
+      ],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/attendances",
+      "requests": 5,
+      "statuses": [
+        200,
+        400,
+        403
+      ],
+      "roles": [
+        "reception",
+        "otherCoach",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/attendances/{id}",
+      "requests": 3,
+      "statuses": [
+        204,
+        403
+      ],
+      "roles": [
+        "coach",
+        "otherCoach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/member/{memberId}",
+      "requests": 6,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/session/{sessionId}",
+      "requests": 6,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "member",
+        "reception",
+        "manager",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs",
+      "requests": 11,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "manager",
+        "anonymous",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit-logs",
+      "requests": 1,
+      "statuses": [
+        201
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/{id}",
+      "requests": 10,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "member",
+        "coach",
+        "reception",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/account/{accountId}",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/change-password",
+      "requests": 5,
+      "statuses": [
+        200,
+        400
+      ],
+      "roles": [
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/forgot-password",
+      "requests": 1,
+      "statuses": [
+        500
+      ],
+      "roles": [
+        "anonymous"
+      ],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "requests": 56,
+      "statuses": [
+        200,
+        401
+      ],
+      "roles": [
+        "anonymous"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "requests": 1,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "requests": 8,
+      "statuses": [
+        200,
+        401
+      ],
+      "roles": [
+        "anonymous",
+        "invalid-token",
+        "changedRole",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/register",
+      "requests": 3,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reset-password",
+      "requests": 1,
+      "statuses": [
+        500
+      ],
+      "roles": [
+        "anonymous"
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories",
+      "requests": 5,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "member",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/categories",
+      "requests": 3,
+      "statuses": [
+        200,
+        400,
+        403
+      ],
+      "roles": [
+        "manager",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/categories/{id}",
+      "requests": 3,
+      "statuses": [
+        400,
+        404
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup",
+        "manager_cleanup"
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories/{id}",
+      "requests": 8,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "anonymous",
+        "reception",
+        "member",
+        "coach",
+        "manager",
+        "demo_manager_cleanup",
+        "manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/categories/{id}",
+      "requests": 1,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "member",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/center-managers",
+      "requests": 2,
+      "statuses": [
+        201,
+        403
+      ],
+      "roles": [
+        "manager",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/center-managers/{id}",
+      "requests": 2,
+      "statuses": [
+        204,
+        404
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/{id}",
+      "requests": 7,
+      "statuses": [
+        200,
+        401,
+        403,
+        404
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "member",
+        "reception",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/center-managers/{id}",
+      "requests": 1,
+      "statuses": [
+        204
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/account/{accountId}",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "reception",
+        "coach",
+        "manager",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/check-ins",
+      "requests": 7,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "coach",
+        "manager",
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/check-ins",
+      "requests": 3,
+      "statuses": [
+        201,
+        400
+      ],
+      "roles": [
+        "reception",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-bookings",
+      "requests": 6,
+      "statuses": [
+        200,
+        400,
+        403
+      ],
+      "roles": [
+        "member",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-bookings/{bookingId}/member/{memberId}",
+      "requests": 7,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "reception",
+        "otherMember",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-bookings/member/{memberId}",
+      "requests": 9,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "reception",
+        "anonymous",
+        "manager",
+        "member",
+        "coach",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions",
+      "requests": 6,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "manager",
+        "anonymous",
+        "member",
+        "coach",
+        "reception",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-sessions",
+      "requests": 10,
+      "statuses": [
+        201,
+        400
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-sessions/{id}",
+      "requests": 6,
+      "statuses": [
+        204,
+        400,
+        404
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/{id}",
+      "requests": 9,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "member",
+        "reception",
+        "coach",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/class-sessions/{id}",
+      "requests": 3,
+      "statuses": [
+        204
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/class/{classId}",
+      "requests": 5,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes",
+      "requests": 8,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member",
+        "demo_manager_cleanup",
+        "manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/classes",
+      "requests": 8,
+      "statuses": [
+        200,
+        400
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{classId}/members",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "member",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/classes/{id}",
+      "requests": 7,
+      "statuses": [
+        200,
+        400,
+        404
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{id}",
+      "requests": 18,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "member",
+        "coach",
+        "demo_manager_cleanup",
+        "manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/classes/{id}",
+      "requests": 5,
+      "statuses": [
+        200,
+        400,
+        403
+      ],
+      "roles": [
+        "manager",
+        "reception",
+        "manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches",
+      "requests": 5,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/coaches",
+      "requests": 3,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "manager",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/coaches/{id}",
+      "requests": 4,
+      "statuses": [
+        200,
+        400,
+        404
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup",
+        "manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/{id}",
+      "requests": 9,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member",
+        "demo_manager_cleanup",
+        "manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/coaches/{id}",
+      "requests": 2,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "coach",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me",
+      "requests": 7,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member",
+        "otherCoach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/classes",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "member",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members",
+      "requests": 7,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "coach",
+        "anonymous",
+        "manager",
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members/{memberId}/training-results",
+      "requests": 13,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "otherCoach",
+        "manager",
+        "anonymous",
+        "reception",
+        "member",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-plans",
+      "requests": 13,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "coach",
+        "anonymous",
+        "manager",
+        "member",
+        "reception",
+        "otherCoach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-results",
+      "requests": 13,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "coach",
+        "anonymous",
+        "manager",
+        "member",
+        "reception",
+        "otherCoach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/classes/summary",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "coach",
+        "reception",
+        "member",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/members/summary",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "reception",
+        "manager",
+        "member",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/memberships/summary",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "member",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/revenue",
+      "requests": 8,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "member",
+        "coach",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices",
+      "requests": 7,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "coach",
+        "manager",
+        "member",
+        "reception",
+        "manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/invoices",
+      "requests": 4,
+      "statuses": [
+        200,
+        400,
+        403
+      ],
+      "roles": [
+        "reception",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/invoices/{id}",
+      "requests": 12,
+      "statuses": [
+        200,
+        400,
+        403
+      ],
+      "roles": [
+        "manager",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}",
+      "requests": 32,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "reception",
+        "manager",
+        "anonymous",
+        "coach",
+        "member",
+        "otherMember",
+        "manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/invoices/{id}",
+      "requests": 3,
+      "statuses": [
+        200,
+        403,
+        409
+      ],
+      "roles": [
+        "manager",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}/export",
+      "requests": 9,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "manager",
+        "reception",
+        "coach",
+        "anonymous",
+        "member",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/members/me",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/media/images",
+      "requests": 4,
+      "statuses": [
+        200,
+        400,
+        502
+      ],
+      "roles": [
+        "manager",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members",
+      "requests": 9,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/members",
+      "requests": 1,
+      "statuses": [
+        400
+      ],
+      "roles": [
+        "reception"
+      ],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/members/{id}",
+      "requests": 3,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}",
+      "requests": 9,
+      "statuses": [
+        200,
+        401,
+        403,
+        404
+      ],
+      "roles": [
+        "anonymous",
+        "member",
+        "manager",
+        "reception",
+        "coach",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/{id}",
+      "requests": 2,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}/summary",
+      "requests": 6,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "reception",
+        "member",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{memberId}/memberships",
+      "requests": 8,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "coach",
+        "manager",
+        "reception",
+        "member",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me",
+      "requests": 12,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "member",
+        "otherMember",
+        "manager",
+        "anonymous",
+        "reception",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/me",
+      "requests": 2,
+      "statuses": [
+        200,
+        400
+      ],
+      "roles": [
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/attendances",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/check-ins",
+      "requests": 8,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "member",
+        "manager",
+        "reception",
+        "anonymous",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/class-bookings",
+      "requests": 12,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "member",
+        "otherMember",
+        "anonymous",
+        "coach",
+        "reception",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/invoices",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "coach",
+        "manager",
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/memberships",
+      "requests": 10,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "member",
+        "anonymous",
+        "reception",
+        "manager",
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-plans",
+      "requests": 10,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-results",
+      "requests": 10,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages",
+      "requests": 9,
+      "statuses": [
+        200,
+        400
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/membership-packages",
+      "requests": 3,
+      "statuses": [
+        200,
+        400
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/membership-packages/{id}",
+      "requests": 3,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages/{id}",
+      "requests": 10,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "member",
+        "coach",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/membership-packages/{id}",
+      "requests": 2,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "manager",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships",
+      "requests": 9,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "member",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships",
+      "requests": 3,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "reception",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/memberships/{id}",
+      "requests": 12,
+      "statuses": [
+        204,
+        403,
+        404
+      ],
+      "roles": [
+        "manager",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}",
+      "requests": 28,
+      "statuses": [
+        200,
+        401,
+        403,
+        404
+      ],
+      "roles": [
+        "reception",
+        "anonymous",
+        "coach",
+        "manager",
+        "member",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/memberships/{id}",
+      "requests": 2,
+      "statuses": [
+        204,
+        403
+      ],
+      "roles": [
+        "reception",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/cancel",
+      "requests": 4,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "manager",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/renew",
+      "requests": 2,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "manager",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}/status",
+      "requests": 6,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "member",
+        "coach",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications",
+      "requests": 5,
+      "statuses": [
+        200,
+        400,
+        403
+      ],
+      "roles": [
+        "coach",
+        "manager",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/notifications/{id}",
+      "requests": 4,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "member",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/{id}/read",
+      "requests": 2,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "otherMember",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/notifications/me",
+      "requests": 16,
+      "statuses": [
+        200,
+        400,
+        401
+      ],
+      "roles": [
+        "member",
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "otherCoach",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/read-all",
+      "requests": 1,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/cancel",
+      "requests": 5,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "otherMember",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/refund-confirm",
+      "requests": 5,
+      "statuses": [
+        200,
+        400,
+        403
+      ],
+      "roles": [
+        "otherMember",
+        "reception",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/{paymentId}",
+      "requests": 74,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "member",
+        "otherMember",
+        "anonymous",
+        "reception",
+        "coach",
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{paymentId}/confirm",
+      "requests": 3,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "member",
+        "anonymous",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/checkout",
+      "requests": 4,
+      "statuses": [
+        200,
+        409
+      ],
+      "roles": [
+        "member",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/class-checkout",
+      "requests": 13,
+      "statuses": [
+        200,
+        400,
+        409
+      ],
+      "roles": [
+        "member",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/mock-gateway",
+      "requests": 1,
+      "statuses": [
+        400
+      ],
+      "roles": [
+        "reception"
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/options",
+      "requests": 6,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "member",
+        "coach",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/upgrade-checkout",
+      "requests": 6,
+      "statuses": [
+        200,
+        400,
+        404,
+        409
+      ],
+      "roles": [
+        "member",
+        "otherMember"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "reception",
+        "manager",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/receptionists",
+      "requests": 2,
+      "statuses": [
+        201,
+        403
+      ],
+      "roles": [
+        "manager",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/receptionists/{id}",
+      "requests": 2,
+      "statuses": [
+        404,
+        409
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup"
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/{id}",
+      "requests": 6,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "reception",
+        "member",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/receptionists/{id}",
+      "requests": 1,
+      "statuses": [
+        204
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/account/{accountId}",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/me",
+      "requests": 5,
+      "statuses": [
+        200,
+        401,
+        403
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms",
+      "requests": 6,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "coach",
+        "reception",
+        "member",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/rooms",
+      "requests": 3,
+      "statuses": [
+        200,
+        400
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/rooms/{id}",
+      "requests": 3,
+      "statuses": [
+        200,
+        400,
+        404
+      ],
+      "roles": [
+        "manager",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms/{id}",
+      "requests": 7,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member",
+        "demo_manager_cleanup"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/rooms/{id}",
+      "requests": 2,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "manager"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/sepay/webhook",
+      "requests": 2,
+      "statuses": [
+        401
+      ],
+      "roles": [
+        "anonymous"
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/support-requests",
+      "requests": 9,
+      "statuses": [
+        200,
+        400,
+        401,
+        403
+      ],
+      "roles": [
+        "otherMember",
+        "anonymous",
+        "coach",
+        "manager",
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/support-requests",
+      "requests": 1,
+      "statuses": [
+        201
+      ],
+      "roles": [
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/support-requests/{id}",
+      "requests": 2,
+      "statuses": [
+        204,
+        403
+      ],
+      "roles": [
+        "reception",
+        "member"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans",
+      "requests": 4,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-plans/{id}",
+      "requests": 4,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-plans/{id}",
+      "requests": 18,
+      "statuses": [
+        200,
+        401,
+        403,
+        404
+      ],
+      "roles": [
+        "coach",
+        "member",
+        "otherCoach",
+        "anonymous",
+        "manager",
+        "reception"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-plans/{id}",
+      "requests": 2,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "coach",
+        "otherCoach"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans/class/{classId}",
+      "requests": 4,
+      "statuses": [
+        200,
+        403,
+        404
+      ],
+      "roles": [
+        "coach",
+        "otherCoach"
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-results",
+      "requests": 3,
+      "statuses": [
+        200,
+        400
+      ],
+      "roles": [
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-results/{id}",
+      "requests": 2,
+      "statuses": [
+        200,
+        404
+      ],
+      "roles": [
+        "coach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-results/{id}",
+      "requests": 13,
+      "statuses": [
+        200,
+        401,
+        403,
+        404
+      ],
+      "roles": [
+        "anonymous",
+        "reception",
+        "member",
+        "coach",
+        "manager",
+        "otherCoach"
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-results/{id}",
+      "requests": 2,
+      "statuses": [
+        200,
+        403
+      ],
+      "roles": [
+        "coach",
+        "otherCoach"
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/WeatherForecast",
+      "requests": 5,
+      "statuses": [
+        200
+      ],
+      "roles": [
+        "anonymous",
+        "manager",
+        "reception",
+        "coach",
+        "member"
+      ],
+      "success": true
+    }
+  ]
+}

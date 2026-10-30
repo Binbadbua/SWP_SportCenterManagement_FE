@@ -1,0 +1,2837 @@
+{
+  "summary": {
+    "name": "training-recovery",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "recordedAt": "2026-10-29T16:58:41.409Z",
+    "timezone": "Asia/Bangkok",
+    "checks": 36,
+    "passed": 30,
+    "failed": 6,
+    "requests": 43,
+    "documentedOperations": 143,
+    "operationsCalled": 26,
+    "operationsWithSuccess": 24
+  },
+  "results": [
+    {
+      "id": "training-recovery-001",
+      "name": "Create trainingClass",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/classes",
+      "role": "manager",
+      "status": 200,
+      "response": {
+        "price": 0,
+        "id": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:58:35.570611+00:00",
+        "updatedAt": null
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-002",
+      "name": "Create trainingSession",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/class-sessions",
+      "role": "manager",
+      "status": 201,
+      "response": {
+        "id": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-11-02T00:00:00Z",
+        "startTime": "18:00:00",
+        "endTime": "18:45:00"
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-003",
+      "name": "Member books QA training class",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 200,
+      "response": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "bookingId": "8f8ed5b0-b87f-4278-b9f2-a57ce89a8067",
+        "originalAmount": 0,
+        "discountPercent": 20,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "41b63b9a-f1cd-44d1-a8a6-1742977c2a78",
+        "membershipId": null,
+        "invoiceId": "41b63b9a-f1cd-44d1-a8a6-1742977c2a78",
+        "amount": 0,
+        "status": 2,
+        "paymentUrl": null
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-004",
+      "name": "Move QA training session to yesterday",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/class-sessions/aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+      "role": "manager",
+      "status": 204,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "training-recovery-005",
+      "name": "Set QA class ongoing",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/classes/16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+      "role": "manager",
+      "status": 200,
+      "response": "Class updated successfully.",
+      "error": null
+    },
+    {
+      "id": "training-recovery-006",
+      "name": "Create attendance",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "coach",
+      "status": 200,
+      "response": {
+        "id": "154ed582-cf97-4181-a385-8d5a73c56dfb",
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "sessionDate": "2026-10-28T00:00:00Z",
+        "sessionStartTime": "18:00:00",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "recordedBy": "15385eb7-5544-437f-82c7-c2b205202c4b",
+        "checkInTime": "2026-10-29T16:58:36.2800646+00:00",
+        "status": 1
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-007",
+      "name": "RecordedBy is derived from signed-in coach",
+      "passed": true,
+      "response": {
+        "id": "154ed582-cf97-4181-a385-8d5a73c56dfb",
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "sessionDate": "2026-10-28T00:00:00Z",
+        "sessionStartTime": "18:00:00",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "recordedBy": "15385eb7-5544-437f-82c7-c2b205202c4b",
+        "checkInTime": "2026-10-29T16:58:36.2800646+00:00",
+        "status": 1
+      }
+    },
+    {
+      "id": "training-recovery-008",
+      "name": "Duplicate attendance rejected",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "coach",
+      "status": 400,
+      "response": {
+        "title": "Học viên này đã được điểm danh trong buổi học này rồi.",
+        "status": 400,
+        "detail": "Học viên này đã được điểm danh trong buổi học này rồi.",
+        "message": "Học viên này đã được điểm danh trong buổi học này rồi.",
+        "traceId": "0HNPLR9LS0IS4:00000017"
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-009",
+      "name": "Coach updates own attendance",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/attendances/154ed582-cf97-4181-a385-8d5a73c56dfb",
+      "role": "coach",
+      "status": 204,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "training-recovery-010",
+      "name": "Coach restores Present",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/attendances/154ed582-cf97-4181-a385-8d5a73c56dfb",
+      "role": "coach",
+      "status": 204,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "training-recovery-011",
+      "name": "Unassigned coach cannot edit attendance",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/attendances/154ed582-cf97-4181-a385-8d5a73c56dfb",
+      "role": "otherCoach",
+      "status": 403,
+      "response": {
+        "title": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "status": 403,
+        "detail": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "message": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "traceId": "0HNPLR9LS0IS4:0000001A"
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-012",
+      "name": "Create plan",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/training-plans",
+      "role": "coach",
+      "status": 200,
+      "response": {
+        "trainingPlanId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.23504+00:00",
+        "updatedAt": null
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-013",
+      "name": "Coach reads plan detail",
+      "passed": true,
+      "method": "GET",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "coach",
+      "status": 200,
+      "response": {
+        "trainingPlanId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.23504+00:00",
+        "updatedAt": null
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-014",
+      "name": "Member reads own plan",
+      "passed": false,
+      "method": "GET",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "member",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "training-recovery-015",
+      "name": "Unassigned coach cannot read plan detail",
+      "passed": false,
+      "method": "GET",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "otherCoach",
+      "status": 200,
+      "response": {
+        "trainingPlanId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.23504+00:00",
+        "updatedAt": null
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-016",
+      "name": "Coach edits own plan",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "coach",
+      "status": 200,
+      "response": "Training plan updated successfully.",
+      "error": null
+    },
+    {
+      "id": "training-recovery-017",
+      "name": "Other coach cannot edit plan",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "otherCoach",
+      "status": 403,
+      "response": {
+        "title": "You can only update your own training plan",
+        "status": 403,
+        "detail": "You can only update your own training plan",
+        "message": "You can only update your own training plan",
+        "traceId": "0HNPLR9LS0IS4:00000020"
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-018",
+      "name": "Create trainingResult",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/training-results",
+      "role": "coach",
+      "status": 200,
+      "response": {
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "trainingResultId": "2c708aae-31cc-46ca-9d5c-94fcd885855e",
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "planTitle": "QA261029163854 plan recovery updated",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "performanceScore": 7.5,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.980471+00:00",
+        "updatedAt": null
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-019",
+      "name": "Result keeps explicit sessionId",
+      "passed": true,
+      "response": {
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "trainingResultId": "2c708aae-31cc-46ca-9d5c-94fcd885855e",
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "planTitle": "QA261029163854 plan recovery updated",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "performanceScore": 7.5,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.980471+00:00",
+        "updatedAt": null
+      }
+    },
+    {
+      "id": "training-recovery-020",
+      "name": "Coach edits own result",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/training-results/2c708aae-31cc-46ca-9d5c-94fcd885855e",
+      "role": "coach",
+      "status": 200,
+      "response": "Training result updated successfully.",
+      "error": null
+    },
+    {
+      "id": "training-recovery-021",
+      "name": "Other coach cannot edit result",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/training-results/2c708aae-31cc-46ca-9d5c-94fcd885855e",
+      "role": "otherCoach",
+      "status": 403,
+      "response": {
+        "title": "You can only update your own training result",
+        "status": 403,
+        "detail": "You can only update your own training result",
+        "message": "You can only update your own training result",
+        "traceId": "0HNPLR9LS0IS4:00000023"
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-022",
+      "name": "Score must be within 0-10",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/training-results",
+      "role": "coach",
+      "status": 400,
+      "response": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "PerformanceScore": [
+            "The field PerformanceScore must be between 0 and 10."
+          ]
+        },
+        "traceId": "00-7eab516fa0d545eabea9cadeb42b0209-13f754401045e3ec-00"
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-023",
+      "name": "Session must belong to plan class",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/training-results",
+      "role": "coach",
+      "status": 400,
+      "response": {
+        "title": "Buổi học không tồn tại hoặc không thuộc lớp của kế hoạch.",
+        "status": 400,
+        "detail": "Buổi học không tồn tại hoặc không thuộc lớp của kế hoạch.",
+        "message": "Buổi học không tồn tại hoặc không thuộc lớp của kế hoạch.",
+        "traceId": "0HNPLR9LS0IS4:00000025"
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-024",
+      "name": "Coach cannot plan for unrelated member",
+      "passed": false,
+      "method": "POST",
+      "endpoint": "/api/training-plans",
+      "role": "coach",
+      "status": 200,
+      "response": {
+        "trainingPlanId": "e58e69df-9542-4a16-b452-79c4b21b48a9",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 otherMember",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:38.768483+00:00",
+        "updatedAt": null
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-025",
+      "name": "Bulk plan creates for whole class",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/training-plans/class/16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+      "role": "coach",
+      "status": 200,
+      "response": {
+        "createdCount": 1,
+        "data": [
+          {
+            "trainingPlanId": "abe0aa76-9da2-48bf-b70f-d731766dcdcf",
+            "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+            "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+            "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+            "memberName": "QA261029163854 member",
+            "coachName": "QA261029163854 coach",
+            "className": "QA261029163854 Training recovery",
+            "title": "QA261029163854 bulk recovery",
+            "contentDescription": "QA fixture",
+            "createdDate": "2026-10-29T00:00:00Z",
+            "createdAt": "2026-10-29T16:58:39.000153+00:00",
+            "updatedAt": null
+          }
+        ]
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-026",
+      "name": "Unassigned coach cannot bulk plan class",
+      "passed": true,
+      "method": "POST",
+      "endpoint": "/api/training-plans/class/16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+      "role": "otherCoach",
+      "status": 403,
+      "response": {
+        "title": "Bạn chỉ được tạo kế hoạch cho lớp mình dạy.",
+        "status": 403,
+        "detail": "Bạn chỉ được tạo kế hoạch cho lớp mình dạy.",
+        "message": "Bạn chỉ được tạo kế hoạch cho lớp mình dạy.",
+        "traceId": "0HNPLR9LS0IS4:00000028"
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-027",
+      "name": "AI suggestions for actually enrolled member",
+      "passed": false,
+      "method": "POST",
+      "endpoint": "/api/ai/exercise-suggestions",
+      "role": "coach",
+      "status": 503,
+      "response": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPLR9LS0IS4:00000029"
+      },
+      "error": null
+    },
+    {
+      "id": "training-recovery-028",
+      "name": "Unassigned coach does not receive another coach result",
+      "passed": true,
+      "status": 200,
+      "response": {
+        "data": [],
+        "totalItems": 0,
+        "pageSize": 10,
+        "pageIndex": 1
+      }
+    },
+    {
+      "id": "training-recovery-029",
+      "name": "SePay order expires at 15-minute deadline",
+      "passed": true,
+      "response": {
+        "kind": "Membership",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": null,
+        "className": null,
+        "bookingId": null,
+        "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWPE3109CA004F64D799DA04021A92660A4",
+        "expiresAt": "2026-10-29T16:54:30.18091+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "status": 5,
+        "amount": 10000,
+        "packageName": "QA261029163854 30 days",
+        "membershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+        "invoiceId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "paidAt": null
+      }
+    },
+    {
+      "id": "training-recovery-030",
+      "name": "Expired order does not activate membership",
+      "passed": false,
+      "response": {
+        "data": [
+          {
+            "membershipId": "7986815f-0dec-4e17-a2fb-6a57ab7c9d0b",
+            "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+            "memberName": "QA261029163854 member",
+            "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+            "packageName": "QA261029163854 30 days",
+            "startDate": "2026-10-29T00:00:00Z",
+            "endDate": "2026-11-27T00:00:00Z",
+            "status": 4,
+            "createdAt": "2026-10-29T16:55:32.19561+00:00",
+            "updatedAt": "2026-10-29T16:55:32.273802+00:00"
+          },
+          {
+            "membershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+            "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+            "memberName": "QA261029163854 member",
+            "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+            "packageName": "QA261029163854 30 days",
+            "startDate": "2026-10-19T00:00:00Z",
+            "endDate": "2026-11-17T00:00:00Z",
+            "status": 1,
+            "createdAt": "2026-10-29T16:51:07.895407+00:00",
+            "updatedAt": null
+          },
+          {
+            "membershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+            "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+            "memberName": "QA261029163854 member",
+            "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+            "packageName": "QA261029163854 30 days",
+            "startDate": "2026-10-29T00:00:00Z",
+            "endDate": "2026-11-27T00:00:00Z",
+            "status": 2,
+            "createdAt": "2026-10-29T16:39:31.275329+00:00",
+            "updatedAt": null
+          }
+        ],
+        "totalItems": 3,
+        "pageSize": 500,
+        "pageIndex": 1
+      }
+    },
+    {
+      "id": "training-recovery-031",
+      "name": "Expired order invoice is Cancelled",
+      "passed": false,
+      "response": {
+        "id": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "receptionistId": null,
+        "receptionistName": "",
+        "memberMembershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+        "classBookingId": null,
+        "classId": null,
+        "className": null,
+        "kind": "Membership",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 member",
+        "packageName": "QA261029163854 30 days",
+        "amount": 10000,
+        "paymentMethod": 2,
+        "paymentDate": null,
+        "status": 1
+      }
+    },
+    {
+      "id": "training-recovery-032",
+      "name": "Foreign membership cannot be upgraded",
+      "passed": true,
+      "status": 404,
+      "response": {
+        "title": "Không tìm thấy thẻ của bạn.",
+        "status": 404,
+        "detail": "Không tìm thấy thẻ của bạn.",
+        "message": "Không tìm thấy thẻ của bạn.",
+        "traceId": "0HNPLR9LS0IS4:0000002F"
+      }
+    },
+    {
+      "id": "training-recovery-033",
+      "name": "Reception can update manual invoice",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/invoices/16db9261-6558-4860-b896-7ae63c2611bc",
+      "role": "reception",
+      "status": 200,
+      "response": "Cập nhật hóa đơn thành công.",
+      "error": null
+    },
+    {
+      "id": "training-recovery-034",
+      "name": "B50 manager changes isolated account role",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/accounts/c19ccecd-5bd0-4695-bbad-1a917e572fdd",
+      "role": "manager",
+      "status": 204,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "training-recovery-035",
+      "name": "New sign-in carries changed role",
+      "passed": true,
+      "response": {
+        "userId": "c19ccecd-5bd0-4695-bbad-1a917e572fdd",
+        "username": "qa_261029163854_othercoach",
+        "email": "qa_261029163854_othercoach@example.invalid",
+        "role": "Receptionist",
+        "status": "Active",
+        "isVerify": false
+      }
+    },
+    {
+      "id": "training-recovery-036",
+      "name": "Restore fixture coach role",
+      "passed": true,
+      "method": "PUT",
+      "endpoint": "/api/accounts/c19ccecd-5bd0-4695-bbad-1a917e572fdd",
+      "role": "manager",
+      "status": 204,
+      "response": null,
+      "error": null
+    }
+  ],
+  "calls": [
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 636,
+      "body": {
+        "userId": "15385eb7-5544-437f-82c7-c2b205202c4b"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_coach"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 996,
+      "body": {
+        "userId": "c19ccecd-5bd0-4695-bbad-1a917e572fdd"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_othercoach"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 508,
+      "body": {
+        "userId": "e6948714-aa17-4005-aff2-606f51cb50eb"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_reception"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 1002,
+      "body": {
+        "userId": "f4e3b462-34cf-4502-87b5-6d99e78e78d0"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_manager"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 689,
+      "body": {
+        "userId": "29705d8d-2916-4102-a463-c960e02c5fed"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_member"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 606,
+      "body": {
+        "userId": "6de4653e-fa4f-412a-8330-359cce5e98b7"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_othermember"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/classes",
+      "role": "manager",
+      "status": 200,
+      "ms": 110,
+      "body": {
+        "price": 0,
+        "id": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:58:35.570611+00:00",
+        "updatedAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "className": "QA261029163854 Training recovery",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 0,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/class-sessions",
+      "role": "manager",
+      "status": 201,
+      "ms": 82,
+      "body": {
+        "id": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-11-02T00:00:00Z",
+        "startTime": "18:00:00",
+        "endTime": "18:45:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-11-02T00:00:00Z",
+        "startTime": "18:00:00",
+        "endTime": "18:45:00"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/class-checkout",
+      "role": "member",
+      "status": 200,
+      "ms": 182,
+      "body": {
+        "kind": "Class",
+        "provider": "Internal",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "bookingId": "8f8ed5b0-b87f-4278-b9f2-a57ce89a8067",
+        "originalAmount": 0,
+        "discountPercent": 20,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "qrCodeUrl": null,
+        "paymentReference": null,
+        "expiresAt": null,
+        "bankBin": null,
+        "bankAccountNumber": null,
+        "paymentId": "41b63b9a-f1cd-44d1-a8a6-1742977c2a78",
+        "membershipId": null,
+        "invoiceId": "41b63b9a-f1cd-44d1-a8a6-1742977c2a78",
+        "amount": 0,
+        "status": 2,
+        "paymentUrl": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "paymentMethod": 2
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me/class-bookings",
+      "role": "member",
+      "status": 200,
+      "ms": 73,
+      "body": [
+        {
+          "originalPrice": 0,
+          "discountPercent": 20,
+          "price": 0,
+          "invoiceId": "41b63b9a-f1cd-44d1-a8a6-1742977c2a78",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "8f8ed5b0-b87f-4278-b9f2-a57ce89a8067",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+          "className": "QA261029163854 Training recovery",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:58:35.785876+00:00",
+          "status": 1
+        },
+        {
+          "originalPrice": 10000,
+          "discountPercent": 20,
+          "price": 8000,
+          "invoiceId": "63796664-17ab-49d3-9983-1af67ac7264b",
+          "paymentMethod": 1,
+          "paymentExpiresAt": null,
+          "cancelledAt": "2026-10-29T16:55:34.858315+00:00",
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+          "className": "QA261029163854 Late paid",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:34.591987+00:00",
+          "status": 3
+        },
+        {
+          "originalPrice": 0,
+          "discountPercent": 20,
+          "price": 0,
+          "invoiceId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "d888cf55-99a9-480b-b1f0-6b2215d4294b",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+          "className": "QA261029163854 attendanceClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:32.345881+00:00",
+          "status": 1
+        },
+        {
+          "originalPrice": 0,
+          "discountPercent": 20,
+          "price": 0,
+          "invoiceId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+          "paymentMethod": 2,
+          "paymentExpiresAt": null,
+          "cancelledAt": null,
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "10d07c32-b58e-4121-9b31-0104529e9fea",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+          "className": "QA261029163854 freeClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:55:31.227971+00:00",
+          "status": 1
+        },
+        {
+          "originalPrice": 10000,
+          "discountPercent": 20,
+          "price": 8000,
+          "invoiceId": "aa7d0c5c-ce9e-4b90-be3b-37f01c9de69f",
+          "paymentMethod": 2,
+          "paymentExpiresAt": "2026-10-29T17:06:09.08287+00:00",
+          "cancelledAt": "2026-10-29T16:51:09.788761+00:00",
+          "refundAmount": null,
+          "refundPending": false,
+          "eligibleMembershipId": null,
+          "membershipEndDate": null,
+          "id": "36d4619e-1727-4735-9a0f-397b9b11fcd7",
+          "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+          "memberName": "QA261029163854 member",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "classStartDate": "2026-10-26T00:00:00Z",
+          "bookingDate": "2026-10-29T16:51:09.08287+00:00",
+          "status": 3
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/class-sessions/aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+      "role": "manager",
+      "status": 204,
+      "ms": 89,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-10-28T00:00:00Z",
+        "startTime": "18:00:00",
+        "endTime": "18:45:00"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/classes/16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+      "role": "manager",
+      "status": 200,
+      "ms": 138,
+      "body": "Class updated successfully.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "className": "QA261029163854 Training recovery",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 0,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 2
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "coach",
+      "status": 200,
+      "ms": 591,
+      "body": {
+        "id": "154ed582-cf97-4181-a385-8d5a73c56dfb",
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "sessionDate": "2026-10-28T00:00:00Z",
+        "sessionStartTime": "18:00:00",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "recordedBy": "15385eb7-5544-437f-82c7-c2b205202c4b",
+        "checkInTime": "2026-10-29T16:58:36.2800646+00:00",
+        "status": 1
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "status": 1,
+        "recordedBy": "f4e3b462-34cf-4502-87b5-6d99e78e78d0"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/attendances",
+      "role": "coach",
+      "status": 400,
+      "ms": 63,
+      "body": {
+        "title": "Học viên này đã được điểm danh trong buổi học này rồi.",
+        "status": 400,
+        "detail": "Học viên này đã được điểm danh trong buổi học này rồi.",
+        "message": "Học viên này đã được điểm danh trong buổi học này rồi.",
+        "traceId": "0HNPLR9LS0IS4:00000017"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "status": 1,
+        "recordedBy": "f4e3b462-34cf-4502-87b5-6d99e78e78d0"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/attendances/154ed582-cf97-4181-a385-8d5a73c56dfb",
+      "role": "coach",
+      "status": 204,
+      "ms": 160,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "status": 2,
+        "recordedBy": "f4e3b462-34cf-4502-87b5-6d99e78e78d0"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/attendances/154ed582-cf97-4181-a385-8d5a73c56dfb",
+      "role": "coach",
+      "status": 204,
+      "ms": 103,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "status": 1,
+        "recordedBy": "15385eb7-5544-437f-82c7-c2b205202c4b"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/attendances/154ed582-cf97-4181-a385-8d5a73c56dfb",
+      "role": "otherCoach",
+      "status": 403,
+      "ms": 67,
+      "body": {
+        "title": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "status": 403,
+        "detail": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "message": "Bạn chỉ được điểm danh lớp do mình phụ trách.",
+        "traceId": "0HNPLR9LS0IS4:0000001A"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "status": 2,
+        "recordedBy": "c19ccecd-5bd0-4695-bbad-1a917e572fdd"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-plans",
+      "role": "coach",
+      "status": 200,
+      "ms": 216,
+      "body": {
+        "trainingPlanId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.23504+00:00",
+        "updatedAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "coach",
+      "status": 200,
+      "ms": 80,
+      "body": {
+        "trainingPlanId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.23504+00:00",
+        "updatedAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "member",
+      "status": 403,
+      "ms": 59,
+      "body": null,
+      "error": null,
+      "contentType": null
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "otherCoach",
+      "status": 200,
+      "ms": 63,
+      "body": {
+        "trainingPlanId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.23504+00:00",
+        "updatedAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "coach",
+      "status": 200,
+      "ms": 93,
+      "body": "Training plan updated successfully.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "title": "QA261029163854 plan recovery updated",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/training-plans/b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "role": "otherCoach",
+      "status": 403,
+      "ms": 86,
+      "body": {
+        "title": "You can only update your own training plan",
+        "status": 403,
+        "detail": "You can only update your own training plan",
+        "message": "You can only update your own training plan",
+        "traceId": "0HNPLR9LS0IS4:00000020"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "coachId": "ac1705b8-19c4-44ca-aa0d-9f070157eaa4",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-results",
+      "role": "coach",
+      "status": 200,
+      "ms": 517,
+      "body": {
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "trainingResultId": "2c708aae-31cc-46ca-9d5c-94fcd885855e",
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "planTitle": "QA261029163854 plan recovery updated",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "performanceScore": 7.5,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.980471+00:00",
+        "updatedAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "performanceScore": 7.5,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/training-results/2c708aae-31cc-46ca-9d5c-94fcd885855e",
+      "role": "coach",
+      "status": 200,
+      "ms": 184,
+      "body": "Training result updated successfully.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "performanceScore": 8,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/training-results/2c708aae-31cc-46ca-9d5c-94fcd885855e",
+      "role": "otherCoach",
+      "status": 403,
+      "ms": 67,
+      "body": {
+        "title": "You can only update your own training result",
+        "status": 403,
+        "detail": "You can only update your own training result",
+        "message": "You can only update your own training result",
+        "traceId": "0HNPLR9LS0IS4:00000023"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "performanceScore": 5,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-results",
+      "role": "coach",
+      "status": 400,
+      "ms": 59,
+      "body": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "PerformanceScore": [
+            "The field PerformanceScore must be between 0 and 10."
+          ]
+        },
+        "traceId": "00-7eab516fa0d545eabea9cadeb42b0209-13f754401045e3ec-00"
+      },
+      "error": null,
+      "contentType": "application/problem+json; charset=utf-8",
+      "request": {
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "performanceScore": 11,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-results",
+      "role": "coach",
+      "status": 400,
+      "ms": 58,
+      "body": {
+        "title": "Buổi học không tồn tại hoặc không thuộc lớp của kế hoạch.",
+        "status": 400,
+        "detail": "Buổi học không tồn tại hoặc không thuộc lớp của kế hoạch.",
+        "message": "Buổi học không tồn tại hoặc không thuộc lớp của kế hoạch.",
+        "traceId": "0HNPLR9LS0IS4:00000025"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "sessionId": "cdb1fc84-fb1f-461b-91a7-86e3383539c5",
+        "performanceScore": 7.5,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-plans",
+      "role": "coach",
+      "status": 200,
+      "ms": 180,
+      "body": {
+        "trainingPlanId": "e58e69df-9542-4a16-b452-79c4b21b48a9",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 otherMember",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:38.768483+00:00",
+        "updatedAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-plans/class/16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+      "role": "coach",
+      "status": 200,
+      "ms": 303,
+      "body": {
+        "createdCount": 1,
+        "data": [
+          {
+            "trainingPlanId": "abe0aa76-9da2-48bf-b70f-d731766dcdcf",
+            "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+            "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+            "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+            "memberName": "QA261029163854 member",
+            "coachName": "QA261029163854 coach",
+            "className": "QA261029163854 Training recovery",
+            "title": "QA261029163854 bulk recovery",
+            "contentDescription": "QA fixture",
+            "createdDate": "2026-10-29T00:00:00Z",
+            "createdAt": "2026-10-29T16:58:39.000153+00:00",
+            "updatedAt": null
+          }
+        ]
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "title": "QA261029163854 bulk recovery",
+        "contentDescription": "QA fixture",
+        "createdDate": "2026-10-29T00:00:00Z"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/training-plans/class/16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+      "role": "otherCoach",
+      "status": 403,
+      "ms": 65,
+      "body": {
+        "title": "Bạn chỉ được tạo kế hoạch cho lớp mình dạy.",
+        "status": 403,
+        "detail": "Bạn chỉ được tạo kế hoạch cho lớp mình dạy.",
+        "message": "Bạn chỉ được tạo kế hoạch cho lớp mình dạy.",
+        "traceId": "0HNPLR9LS0IS4:00000028"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "title": "QA261029163854 forbidden"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/exercise-suggestions",
+      "role": "coach",
+      "status": 503,
+      "ms": 65,
+      "body": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPLR9LS0IS4:00000029"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "goal": "Bai tap nhe tang suc ben",
+        "durationMinutes": 20,
+        "equipment": "bodyweight",
+        "level": "beginner"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches/me/members/cff4d277-b14c-4aa0-8074-ffb10c28574f/training-results",
+      "role": "otherCoach",
+      "status": 200,
+      "ms": 72,
+      "body": {
+        "data": [],
+        "totalItems": 0,
+        "pageSize": 10,
+        "pageIndex": 1
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices/16db9261-6558-4860-b896-7ae63c2611bc/export",
+      "role": "reception",
+      "status": 200,
+      "ms": 288,
+      "body": {
+        "id": "16db9261-6558-4860-b896-7ae63c2611bc",
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "receptionistName": "QA261029163854 reception",
+        "memberMembershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+        "classBookingId": null,
+        "classId": null,
+        "className": null,
+        "kind": "Membership",
+        "originalAmount": 0,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 member",
+        "packageName": "QA261029163854 30 days",
+        "amount": 10000,
+        "paymentMethod": 1,
+        "paymentDate": "2026-10-29T16:51:08.089176+00:00",
+        "status": 2
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/payments/e3109ca0-04f6-4d79-9da0-4021a92660a4",
+      "role": "member",
+      "status": 200,
+      "ms": 399,
+      "body": {
+        "kind": "Membership",
+        "provider": "SePay",
+        "paymentMethod": 2,
+        "payUrl": null,
+        "classId": null,
+        "className": null,
+        "bookingId": null,
+        "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "fromPackageName": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "refundReference": null,
+        "qrCodeUrl": null,
+        "paymentReference": "SWPE3109CA004F64D799DA04021A92660A4",
+        "expiresAt": "2026-10-29T16:54:30.18091+00:00",
+        "bankBin": "970403",
+        "bankAccountNumber": "050133548731",
+        "paymentId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "status": 5,
+        "amount": 10000,
+        "packageName": "QA261029163854 30 days",
+        "membershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+        "invoiceId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "paidAt": null
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me/memberships?pageSize=500",
+      "role": "member",
+      "status": 200,
+      "ms": 98,
+      "body": {
+        "data": [
+          {
+            "membershipId": "7986815f-0dec-4e17-a2fb-6a57ab7c9d0b",
+            "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+            "memberName": "QA261029163854 member",
+            "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+            "packageName": "QA261029163854 30 days",
+            "startDate": "2026-10-29T00:00:00Z",
+            "endDate": "2026-11-27T00:00:00Z",
+            "status": 4,
+            "createdAt": "2026-10-29T16:55:32.19561+00:00",
+            "updatedAt": "2026-10-29T16:55:32.273802+00:00"
+          },
+          {
+            "membershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+            "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+            "memberName": "QA261029163854 member",
+            "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+            "packageName": "QA261029163854 30 days",
+            "startDate": "2026-10-19T00:00:00Z",
+            "endDate": "2026-11-17T00:00:00Z",
+            "status": 1,
+            "createdAt": "2026-10-29T16:51:07.895407+00:00",
+            "updatedAt": null
+          },
+          {
+            "membershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+            "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+            "memberName": "QA261029163854 member",
+            "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+            "packageName": "QA261029163854 30 days",
+            "startDate": "2026-10-29T00:00:00Z",
+            "endDate": "2026-11-27T00:00:00Z",
+            "status": 2,
+            "createdAt": "2026-10-29T16:39:31.275329+00:00",
+            "updatedAt": null
+          }
+        ],
+        "totalItems": 3,
+        "pageSize": 500,
+        "pageIndex": 1
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices/e3109ca0-04f6-4d79-9da0-4021a92660a4",
+      "role": "reception",
+      "status": 200,
+      "ms": 99,
+      "body": {
+        "id": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+        "receptionistId": null,
+        "receptionistName": "",
+        "memberMembershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+        "classBookingId": null,
+        "classId": null,
+        "className": null,
+        "kind": "Membership",
+        "originalAmount": 10000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 member",
+        "packageName": "QA261029163854 30 days",
+        "amount": 10000,
+        "paymentMethod": 2,
+        "paymentDate": null,
+        "status": 1
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/payments/upgrade-checkout",
+      "role": "otherMember",
+      "status": 404,
+      "ms": 107,
+      "body": {
+        "title": "Không tìm thấy thẻ của bạn.",
+        "status": 404,
+        "detail": "Không tìm thấy thẻ của bạn.",
+        "message": "Không tìm thấy thẻ của bạn.",
+        "traceId": "0HNPLR9LS0IS4:0000002F"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "membershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+        "membershipPackageId": "0408c0d8-0aa1-4d3f-ab35-3352d41dcfde",
+        "paymentMethod": 2,
+        "returnUrl": "http://localhost:5173/payment/result"
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/invoices/16db9261-6558-4860-b896-7ae63c2611bc",
+      "role": "reception",
+      "status": 200,
+      "ms": 73,
+      "body": "Cập nhật hóa đơn thành công.",
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "paymentMethod": 1,
+        "status": 2
+      }
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/accounts/c19ccecd-5bd0-4695-bbad-1a917e572fdd",
+      "role": "manager",
+      "status": 204,
+      "ms": 75,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "username": "qa_261029163854_othercoach",
+        "email": "qa_261029163854_othercoach@example.invalid",
+        "fullName": "QA261029163854 otherCoach",
+        "phone": "0916385402",
+        "role": 3,
+        "status": 1
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 681,
+      "body": {
+        "userId": "c19ccecd-5bd0-4695-bbad-1a917e572fdd"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "qa_261029163854_othercoach"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/auth/me",
+      "role": "changedRole",
+      "status": 200,
+      "ms": 56,
+      "body": {
+        "userId": "c19ccecd-5bd0-4695-bbad-1a917e572fdd",
+        "username": "qa_261029163854_othercoach",
+        "email": "qa_261029163854_othercoach@example.invalid",
+        "role": "Receptionist",
+        "status": "Active",
+        "isVerify": false
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/accounts/c19ccecd-5bd0-4695-bbad-1a917e572fdd",
+      "role": "manager",
+      "status": 204,
+      "ms": 146,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "username": "qa_261029163854_othercoach",
+        "email": "qa_261029163854_othercoach@example.invalid",
+        "fullName": "QA261029163854 otherCoach",
+        "phone": "0916385402",
+        "role": 2,
+        "status": 1
+      }
+    }
+  ],
+  "coverage": [
+    {
+      "method": "GET",
+      "path": "/",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/accounts",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/accounts/{id}",
+      "calls": 2,
+      "statuses": [
+        204
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/chat",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/exercise-suggestions",
+      "calls": 1,
+      "statuses": [
+        503
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/session/{sessionId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/attendances",
+      "calls": 2,
+      "statuses": [
+        200,
+        400
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/attendances/{id}",
+      "calls": 3,
+      "statuses": [
+        204,
+        403
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit-logs",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/register",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "calls": 7,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/forgot-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reset-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/change-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/center-managers",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/classes",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/classes/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/classes/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{classId}/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-bookings/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-bookings",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-bookings/{bookingId}/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-sessions",
+      "calls": 1,
+      "statuses": [
+        201
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/class-sessions/{id}",
+      "calls": 1,
+      "statuses": [
+        204
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-sessions/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/class/{classId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/coaches",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/coaches/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/coaches/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/classes",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/revenue",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/members/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/memberships/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/classes/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/invoices/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/invoices/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}/export",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/media/images",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/class-bookings",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/attendances",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/memberships",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{memberId}/memberships",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}/status",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/renew",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/cancel",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/membership-packages",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/notifications/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/{id}/read",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/read-all",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/notifications/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/options",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/class-checkout",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/upgrade-checkout",
+      "calls": 1,
+      "statuses": [
+        404
+      ],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/cancel",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/refund-confirm",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/checkout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/{paymentId}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{paymentId}/confirm",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/mock-gateway",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/receptionists",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/rooms",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/sepay/webhook",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/categories",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/categories/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/categories/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/support-requests",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/support-requests",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/support-requests/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans/class/{classId}",
+      "calls": 2,
+      "statuses": [
+        200,
+        403
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-plans/{id}",
+      "calls": 3,
+      "statuses": [
+        200,
+        403
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-plans/{id}",
+      "calls": 2,
+      "statuses": [
+        200,
+        403
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-plans/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans",
+      "calls": 2,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-results/{id}",
+      "calls": 2,
+      "statuses": [
+        200,
+        403
+      ],
+      "success": true
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members/{memberId}/training-results",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-results",
+      "calls": 3,
+      "statuses": [
+        200,
+        400
+      ],
+      "success": true
+    },
+    {
+      "method": "GET",
+      "path": "/WeatherForecast",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    }
+  ]
+}

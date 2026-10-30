@@ -1,7 +1,7 @@
 // Before class fees (CHANGELOG Part B, B53) a class costs nothing on top of a membership card, but booking one needs a
 // card that is active ("Còn hiệu lực") on the day of the class's next session; the API checks it too since PR #35 (B45).
 // Every package on sale covers every sport, so the website checks the dates only. Upgrading a card (B55) is below.
-import { formatDate, isSessionOver, todayUtcDateString } from './format.js';
+import { formatDate, isSessionOver, todayCenterDateString } from './format.js';
 
 const day = (v) => String(v ?? '').slice(0, 10);
 const byStart = (a, b) => `${day(a.date)}${a.startTime}`.localeCompare(`${day(b.date)}${b.startTime}`);
@@ -28,7 +28,7 @@ function reasonFor(cards, d) {
   if (!latest) return 'Chưa có thẻ thành viên.';
   if (latest.status === 4) return `${latest.packageName} đã bị hủy.`;
   if (latest.status === 2) return `${latest.packageName} chưa được kích hoạt.`;
-  return day(latest.endDate) >= todayUtcDateString()
+  return day(latest.endDate) >= todayCenterDateString()
     ? `${latest.packageName} hết hạn ngày ${formatDate(latest.endDate)}, trước buổi học kế tiếp (${formatDate(d)}).`
     : `${latest.packageName} đã hết hạn ngày ${formatDate(latest.endDate)}.`;
 }
@@ -47,7 +47,7 @@ export function upgradeTargets(card, packages) {
 // What an upgrade costs: the new package's price less what is left of the old card (its days after today, valued at
 // what was paid for it, rounded down to 1,000 đ). The new card starts today and the old one ends today. The API works
 // out the real amount; this only shows it beforehand.
-export function upgradeQuote(card, paid, newPrice, today = todayUtcDateString()) {
+export function upgradeQuote(card, paid, newPrice, today = todayCenterDateString()) {
   const days = (a, b) => Math.round((Date.parse(`${b}T00:00:00Z`) - Date.parse(`${a}T00:00:00Z`)) / 86400000);
   const total = days(day(card.startDate), day(card.endDate)) + 1;
   const unused = Math.min(total, Math.max(0, days(today, day(card.endDate))));

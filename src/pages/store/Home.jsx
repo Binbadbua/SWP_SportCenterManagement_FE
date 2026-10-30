@@ -64,7 +64,7 @@ export default function Home() {
             ))}
           </h1>
           <p className="hero__lead">
-            Tập tạ. Chọn lớp, đặt chỗ và chúng tôi sẽ giữ chỗ cho bạn.
+            Yoga lúc bình minh, Tập tạ sau giờ làm. Chọn lớp, đặt chỗ và chúng tôi sẽ giữ chỗ cho bạn.
           </p>
           <div className="hero__actions">
             <Button variant="offset" size="lg" to="/classes" iconAfter="arrowRight">Đặt lớp ngay</Button>

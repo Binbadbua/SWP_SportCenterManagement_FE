@@ -5,7 +5,7 @@ import { useApi } from '../../hooks/useApi.js';
 import { usePaymentOptions } from '../../hooks/usePricing.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import { IMAGES } from '../../lib/images.js';
-import { formatDate, formatMoney, todayUtcDateString } from '../../lib/format.js';
+import { formatDate, formatMoney, todayCenterDateString } from '../../lib/format.js';
 import { hasPackageDiscounts, summaryOf } from '../../lib/pricing.js';
 import { PackageCard } from '../../components/cards.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
@@ -19,7 +19,7 @@ const howItWorks = ({ online, fees }) => [
   [
     'Chọn gói và thanh toán',
     online
-      ? 'Gói dùng cho mọi môn. Thanh toán trực tuyến qua MoMo (quét mã QR hoặc thẻ ATM); thẻ được kích hoạt ngay khi MoMo báo đã nhận tiền.'
+      ? 'Gói dùng cho mọi môn. Thanh toán trực tuyến qua SePay (quét mã VietQR bằng ứng dụng ngân hàng); thẻ được kích hoạt ngay khi SePay báo đã nhận tiền.'
       : 'Gói dùng cho mọi môn. Đặt mua trên web rồi chuyển khoản; lễ tân đối soát xong thì thẻ được kích hoạt và hóa đơn được xuất.',
   ],
   ['Vào cửa bằng thẻ', 'Đến trung tâm, lễ tân kiểm tra thẻ và ghi lượt vào. Trong thời hạn thẻ bạn tự tập không giới hạn ở khu gym, cardio và hồ bơi.'],
@@ -39,7 +39,7 @@ export default function Memberships() {
   const active = (packages.data ?? [])
     .filter((p) => p.status === 1)
     .sort((a, b) => a.durationDays - b.durationDays);
-  const today = todayUtcDateString();
+  const today = todayCenterDateString();
   const current = (mine.data ?? []).find((m) => m.status === 1 && String(m.endDate).slice(0, 10) >= today);
   const discounts = hasPackageDiscounts(packages.data);
   const steps = howItWorks({ online: !!opts?.online, fees: discounts });

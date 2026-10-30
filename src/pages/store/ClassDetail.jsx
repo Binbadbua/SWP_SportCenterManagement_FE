@@ -145,7 +145,7 @@ export default function ClassDetail() {
   const topDiscount = priced ? maxDiscount(packages.data) : 0;
   const withFee = priced && c.price > 0;
   const paidBooking = priced && myBooking?.status === 1 && Number(myBooking.price ?? 0) > 0;
-  // With MoMo (B54–B55) members cancel a paid class themselves and the API refunds it before the class starts;
+  // With SePay (B54–B55) members cancel a paid class themselves and request a full refund before the class starts; reception confirms the actual refund.
   // before that reception cancel and refund paid classes at the desk
   const selfRefund = !!opts?.online;
   const hold = opts?.holdMinutes ?? 30;
@@ -173,7 +173,12 @@ export default function ClassDetail() {
     setBusy(true);
     setActionError(null);
     try {
-      const result = await api.bookings.create({ memberId, classId: c.id });
+      const payment = priced
+        ? await api.payments.classCheckout({ classId: c.id, paymentMethod: 2, returnUrl: window.location.origin + '/payment/result' })
+        : null;
+      const result = priced
+        ? (await api.bookings.mine()).find((b) => b.id === payment.bookingId) ?? { id: payment.bookingId, memberId, classId: c.id, className: c.className, status: 1, price: 0 }
+        : await api.bookings.create({ memberId, classId: c.id });
       setBooked(result);
       setNewBooking(result);
       roster.reload();
@@ -189,10 +194,12 @@ export default function ClassDetail() {
     setBusy(true);
     setActionError(null);
     try {
-      await api.bookings.cancel(myBooking.id, myBooking.memberId ?? memberId);
+      const cancellation = await api.bookings.cancel(myBooking.id, myBooking.memberId ?? memberId);
       toast.success(
-        myBooking.status === 1 && Number(myBooking.price ?? 0) > 0 && !started
-          ? `Đã hủy đặt lớp ${c.className}. Học phí được hoàn về nơi bạn đã trả.`
+        cancellation?.refundPending
+          ? "Đã hủy đặt lớp. Lễ tân sẽ xử lý và xác nhận hoàn tiền."
+          : myBooking.status === 1 && Number(myBooking.price ?? 0) > 0 && !started
+          ? `Đã hủy đặt lớp ${c.className}. Yêu cầu hoàn học phí đã được ghi nhận.`
           : `Đã hủy đặt lớp ${c.className}.`,
       );
       setAsking(false);
@@ -227,7 +234,7 @@ export default function ClassDetail() {
         </div>
         <p className="muted small">
           {selfRefund
-            ? `Chỗ của bạn được giữ ${hold} phút. Thanh toán${myBooking.price ? ` ${formatMoney(myBooking.price)}` : ""} qua MoMo; quá hạn thì lượt đặt tự hủy.`
+            ? `Chỗ của bạn được giữ ${hold} phút. Thanh toán${myBooking.price ? ` ${formatMoney(myBooking.price)}` : ""} qua SePay; quá hạn thì lượt đặt tự hủy.`
             : `Chỗ của bạn được giữ ${hold} phút để lễ tân đối soát chuyển khoản${myBooking.price ? ` ${formatMoney(myBooking.price)}` : ""}; quá hạn thì lượt đặt tự hủy.`}
         </p>
         {myBooking.invoiceId && (
@@ -247,7 +254,7 @@ export default function ClassDetail() {
           <Icon name="check" size={20} strokeWidth={2} /> Bạn đã đặt lớp
           này
         </div>
-        {/* Before MoMo a paid class is cancelled and refunded by reception, before its first session (B53) */}
+        {/* Before SePay a paid class is cancelled and refunded by reception, before its first session (B53) */}
         {paidBooking && !selfRefund ? (
           <p className="muted small">
             Đã thanh toán {formatMoney(myBooking.price)}. Muốn hủy và nhận lại tiền, hãy báo lễ tân trước buổi học
@@ -327,7 +334,7 @@ export default function ClassDetail() {
         {open && withFee && (
           <p className="muted small">
             {selfRefund
-              ? `Bấm đặt lớp để sang trang thanh toán MoMo; chỗ được giữ ${hold} phút trong lúc bạn thanh toán.`
+              ? `Bấm đặt lớp để sang trang thanh toán SePay; chỗ được giữ ${hold} phút trong lúc bạn thanh toán.`
               : `Bấm đặt lớp để sang trang thanh toán; chỗ được giữ ${hold} phút để lễ tân đối soát chuyển khoản.`}
           </p>
         )}
@@ -574,7 +581,7 @@ export default function ClassDetail() {
                   <li>Lớp đã thanh toán: báo lễ tân trước buổi học đầu tiên để hủy và nhận lại học phí.</li>
                 ) : (
                   <li>
-                    Trước buổi học đầu tiên: tự hủy trên web{withFee ? " và được hoàn đủ học phí về nơi bạn đã trả" : ""}.
+                    Trước buổi học đầu tiên: tự hủy trên web{withFee ? " và yêu cầu hoàn đủ học phí qua lễ tân" : ""}.
                   </li>
                 )}
                 <li>

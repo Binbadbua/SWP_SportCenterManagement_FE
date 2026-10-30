@@ -227,8 +227,8 @@ export const api = {
   //   get(paymentId) → { paymentId, status, amount, packageName, membershipId, invoiceId, paidAt }
   //   confirm(paymentId) — reception / manager only: invoice paid, card active
   payments: {
-    // What the API takes online (CHANGELOG Part B, B54): { provider: "MoMo", methods: [4, 5], holdMinutes, upgrade }.
-    // An API without MoMo answers 404: the website keeps orders that reception confirms.
+    // What the API takes online (CHANGELOG Part B, B54): { provider: "SePay", methods: [2], holdMinutes, upgrade }.
+    // An older API without payment options answers 404: the website keeps orders that reception confirms.
     options: () => http.get("/api/payments/options"),
     checkout: (body) => http.post("/api/payments/checkout", body),
     // Move the member's current card to a longer package at once (B54): { membershipId, membershipPackageId,
@@ -238,10 +238,11 @@ export const api = {
     // originalAmount, discountPercent, amount, status (1 waiting for reception, 2 booked), paymentUrl, expiresAt }.
     // The API works out the amount from the class's fee and the member's card.
     classCheckout: (body) => http.post("/api/payments/class-checkout", body),
-    // With MoMo the order also carries payUrl, qrCodeUrl, deeplink and expiresAt while it waits (B54)
+    // SePay returns payUrl/qrCodeUrl as image URLs, plus bankAccountNumber, bankBin, paymentReference and expiresAt
     get: (id) => http.get(`/api/payments/${id}`),
+    refundConfirm: (id, reference) => http.post('/api/payments/' + id + '/refund-confirm', { reference }),
     confirm: (id) => http.post(`/api/payments/${id}/confirm`),
-    // The member drops their own order while it waits for MoMo (B54): nothing was taken, a class place is freed
+    // The member drops their own order while it waits for a SePay bank transfer (B54): nothing was taken, a class place is freed
     cancel: (id) => http.post(`/api/payments/${id}/cancel`),
   },
 

@@ -5,13 +5,14 @@ import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
 import { usePaymentOptions } from '../../hooks/usePricing.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
-import { addDaysToDateInput, daysUntil, formatDate, formatMoney, todayUtcDateString } from '../../lib/format.js';
+import { addDaysToDateInput, daysUntil, formatDate, formatMoney, todayCenterDateString } from '../../lib/format.js';
 import { cardsOn, upgradeQuote, upgradeTargets } from '../../lib/membership.js';
-import { afterCheckout, waitingOrder } from '../../lib/payments.js';
+import { afterCheckout } from '../../lib/payments.js';
+import { usePendingOrder } from '../../hooks/usePendingOrder.js';
 import Icon from '../../components/Icon.jsx';
 import PayMethods from '../../components/PayMethods.jsx';
 import { AgreeToPolicies } from '../../components/Policies.jsx';
-import { Button, EmptyState, Loading, Notice } from '../../components/ui.jsx';
+import { Button, EmptyState, ErrorNotice, Loading, Notice } from '../../components/ui.jsx';
 
 // /memberships/upgrade?to=<packageId>: the member moves the card in use today to a longer package (CHANGELOG Part B,
 // B54). POST /api/payments/upgrade-checkout takes what is left of the old card off the new price; once paid the new
@@ -26,6 +27,7 @@ export default function UpgradeCheckout() {
   const cards = useApi(() => api.memberships.mine(), [user?.accountId], { skip: !member });
   const invoices = useApi(() => api.invoices.mine(), [user?.accountId], { skip: !member });
 
+  const pendingOrder = usePendingOrder(cards.data, invoices.data);
   const [chosen, setChosen] = useState(params.get('to'));
   const [picked, setPicked] = useState(null);
   const [agree, setAgree] = useState(false);
@@ -54,7 +56,7 @@ export default function UpgradeCheckout() {
     );
   }
 
-  const today = todayUtcDateString();
+  const today = todayCenterDateString();
   const [card] = cardsOn(cards.data, today);
   const targets = upgradeTargets(card, packages.data);
   if (!card || !targets.length) {
@@ -77,12 +79,13 @@ export default function UpgradeCheckout() {
   const paid = (invoices.data ?? []).find((i) => i.memberMembershipId === card.id && i.status === 2)?.amount ?? own?.price ?? 0;
   const target = targets.find((p) => p.id === chosen) ?? targets[0];
   const quote = upgradeQuote(card, paid, target.price, today);
-  const waiting = waitingOrder(cards.data, invoices.data, today);
+  const waiting = pendingOrder.waiting;
   const method = picked ?? opts?.methods[0];
   const canUpgrade = !!opts?.upgrade;
 
   const pay = async (e) => {
     e.preventDefault();
+    if (cards.loading || invoices.loading || pendingOrder.checking || pendingOrder.error) return;
     if (!agree) {
       setAgreeError('Bạn cần đồng ý với điều khoản trước khi thanh toán.');
       return;
@@ -140,6 +143,8 @@ export default function UpgradeCheckout() {
             </Notice>
           ) : (
             <form id="upgrade-form" className="checkout__form" onSubmit={pay} noValidate>
+              <ErrorNotice error={pendingOrder.error} onRetry={pendingOrder.reload} />
+              {pendingOrder.checking && <p className="muted" role="status">Đang kiểm tra đơn chờ thanh toán…</p>}
               <section className="checkout__step">
                 <h2 className="checkout__step-title"><span className="checkout__num">1</span> Thẻ đang dùng</h2>
                 <dl className="checkout__who">
@@ -178,7 +183,7 @@ export default function UpgradeCheckout() {
               <section className="checkout__step">
                 <h2 className="checkout__step-title"><span className="checkout__num">3</span> Phương thức thanh toán</h2>
                 {opts ? (
-                  <PayMethods value={method} onChange={setPicked} methods={opts.methods} />
+                  <PayMethods provider={opts?.provider} online={!!opts?.online} value={method} onChange={setPicked} methods={opts.methods} />
                 ) : (
                   <Loading label="Đang tải cách thanh toán" />
                 )}
@@ -211,7 +216,7 @@ export default function UpgradeCheckout() {
                 </Notice>
               )}
               {failure && <p className="field__error" role="alert">{failure}</p>}
-              <Button type="submit" form="upgrade-form" size="lg" block disabled={paying || !opts || !canUpgrade}>
+              <Button type="submit" form="upgrade-form" size="lg" block disabled={paying || cards.loading || invoices.loading || pendingOrder.checking || !!pendingOrder.error || !opts || !canUpgrade}>
                 {paying ? 'Đang tạo giao dịch…' : `Nâng cấp và thanh toán ${formatMoney(quote.due)}`}
               </Button>
               <p className="checkout__safe muted">

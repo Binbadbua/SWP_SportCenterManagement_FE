@@ -1758,7 +1758,7 @@ main:has(> .login) + .site-footer { margin-top: 0; }
 .pay-result__title { font-size: clamp(30px, 3.4vw, 42px); font-weight: 600; line-height: 1.15; }
 .pay-result .checkout__lines { max-width: 520px; margin-top: 12px; }
 .pay-result__actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
-/* MoMo: the order's QR code beside the countdown and the other ways to pay */
+/* SePay: bank VietQR image, countdown and transfer details */
 .pay-qr {
   display: flex;
   flex-wrap: wrap;
@@ -1837,3 +1837,9 @@ main:has(> .login) + .site-footer { margin-top: 0; }
 .package-card__deal { margin: -4px 0 10px; font-weight: 650; }
 .package-card__benefits { margin: 12px 0 0; padding-left: 18px; font-size: 14px; opacity: 0.9; }
 .package-card__benefits li + li { margin-top: 4px; }
+
+/* SePay transfer details must stay readable on narrow screens. */
+.payment-reference { overflow-wrap: anywhere; word-break: break-word; }
+.pay-qr__side { min-width: 0; }
+.pay-qr__side .checkout__lines > div { flex-wrap: wrap; gap: 6px; }
+.pay-qr__side .checkout__lines dd { min-width: 0; max-width: 100%; }

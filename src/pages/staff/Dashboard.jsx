@@ -5,7 +5,7 @@ import * as mock from "../../api/mockData.js";
 import { useApi } from "../../hooks/useApi.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { ClassStatus } from "../../lib/enums.js";
-import { formatDate, formatMoney, formatTimeRange, todayUtcDateString, } from "../../lib/format.js";
+import { formatDate, formatMoney, formatTimeRange, todayCenterDateString, } from "../../lib/format.js";
 import Icon from "../../components/Icon.jsx";
 import { Button, ErrorNotice, FillBar, Loading, SampleDataNotice, StatusTag, } from "../../components/ui.jsx";
 
@@ -62,7 +62,7 @@ export default function Dashboard() {
     },
   );
 
-  const today = todayUtcDateString();
+  const today = todayCenterDateString();
   const myClassIds = new Set((myClasses.data ?? []).map((c) => c.classId));
   const todays = (sessions.data ?? [])
     .filter((s) => s.date.slice(0, 10) === today)

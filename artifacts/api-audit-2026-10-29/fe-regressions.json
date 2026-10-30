@@ -1,0 +1,38 @@
+{
+  "summary": {
+    "recordedAt": "2026-10-29T17:37:52.383Z",
+    "checks": 7,
+    "passed": 7,
+    "failed": 0
+  },
+  "results": [
+    {
+      "name": "Vietnam day crosses midnight while UTC still has yesterday",
+      "passed": true
+    },
+    {
+      "name": "SePay image payUrl stays on local authoritative payment result",
+      "passed": true
+    },
+    {
+      "name": "Zero-cost checkout has no payment navigation",
+      "passed": true
+    },
+    {
+      "name": "Hold countdown ends without displaying a negative timer",
+      "passed": true
+    },
+    {
+      "name": "Refund copy describes manual reception confirmation",
+      "passed": true
+    },
+    {
+      "name": "Native sender overrides old signature without duplicating it",
+      "passed": true
+    },
+    {
+      "name": "Old notification sender signatures still render",
+      "passed": true
+    }
+  ]
+}

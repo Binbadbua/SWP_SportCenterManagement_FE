@@ -1,0 +1,1066 @@
+{
+  "run": "261029163854",
+  "prefix": "QA261029163854",
+  "createdAt": "2026-10-29T16:38:54.317Z",
+  "users": {
+    "coach": {
+      "username": "qa_261029163854_coach",
+      "accountId": "15385eb7-5544-437f-82c7-c2b205202c4b",
+      "email": "qa_261029163854_coach@example.invalid",
+      "fullName": "QA261029163854 coach",
+      "phone": "0916385401",
+      "role": 2,
+      "profileId": "53698bc7-76dc-4e09-85bb-775040b90870"
+    },
+    "otherCoach": {
+      "username": "qa_261029163854_othercoach",
+      "accountId": "c19ccecd-5bd0-4695-bbad-1a917e572fdd",
+      "email": "qa_261029163854_othercoach@example.invalid",
+      "fullName": "QA261029163854 otherCoach",
+      "phone": "0916385402",
+      "role": 2,
+      "profileId": "ac1705b8-19c4-44ca-aa0d-9f070157eaa4"
+    },
+    "reception": {
+      "username": "qa_261029163854_reception",
+      "accountId": "e6948714-aa17-4005-aff2-606f51cb50eb",
+      "email": "qa_261029163854_reception@example.invalid",
+      "fullName": "QA261029163854 reception",
+      "phone": "0916385403",
+      "role": 3,
+      "profileId": "a982065e-f96b-4443-8797-cf4f25c4fefa"
+    },
+    "manager": {
+      "username": "qa_261029163854_manager",
+      "accountId": "f4e3b462-34cf-4502-87b5-6d99e78e78d0",
+      "email": "qa_261029163854_manager@example.invalid",
+      "fullName": "QA261029163854 manager",
+      "phone": "0916385404",
+      "role": 4,
+      "profileId": "fef68f58-23b4-4270-86cd-b33dee16b946"
+    },
+    "member": {
+      "username": "qa_261029163854_member",
+      "accountId": "29705d8d-2916-4102-a463-c960e02c5fed",
+      "profileId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+      "email": "qa_261029163854_member@example.invalid",
+      "fullName": "QA261029163854 member",
+      "phone": "0916385405",
+      "role": 1
+    },
+    "otherMember": {
+      "username": "qa_261029163854_othermember",
+      "accountId": "6de4653e-fa4f-412a-8330-359cce5e98b7",
+      "profileId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+      "email": "qa_261029163854_othermember@example.invalid",
+      "fullName": "QA261029163854 otherMember",
+      "phone": "0916385406",
+      "role": 1
+    }
+  },
+  "entities": {
+    "category": {
+      "id": "88a8990c-0afe-4f96-9384-48ce49884531",
+      "body": {
+        "id": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "description": "Temporary API audit fixture",
+        "createdAt": "2026-10-29T16:39:25.972703+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "categoryName": "QA261029163854 Sport",
+        "description": "Temporary API audit fixture"
+      }
+    },
+    "room": {
+      "id": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+      "body": {
+        "id": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "capacity": 30,
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:26.2749659+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "roomName": "QA261029163854 Room",
+        "capacity": 30,
+        "status": 1
+      }
+    },
+    "unavailableRoom": {
+      "id": "1c602da3-485d-465c-9f43-179753a5dfd3",
+      "body": {
+        "id": "1c602da3-485d-465c-9f43-179753a5dfd3",
+        "roomName": "QA261029163854 Closed",
+        "capacity": 10,
+        "status": 2,
+        "createdAt": "2026-10-29T16:39:26.3761582+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "roomName": "QA261029163854 Closed",
+        "capacity": 10,
+        "status": 2
+      }
+    },
+    "package": {
+      "id": "f85651af-170b-4333-8672-1f9b86c24b0f",
+      "body": {
+        "discountPercent": 20,
+        "benefits": "QA only",
+        "categoryIds": [],
+        "membershipPackageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "packageName": "QA261029163854 30 days",
+        "description": "Temporary API audit fixture",
+        "durationDays": 30,
+        "price": 10000,
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:27.1749707+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "packageName": "QA261029163854 30 days",
+        "description": "Temporary API audit fixture",
+        "benefits": "QA only",
+        "durationDays": 30,
+        "price": 10000,
+        "discountPercent": 20,
+        "status": 1,
+        "categoryIds": []
+      }
+    },
+    "longPackage": {
+      "id": "0408c0d8-0aa1-4d3f-ab35-3352d41dcfde",
+      "body": {
+        "discountPercent": 30,
+        "benefits": "QA only",
+        "categoryIds": [],
+        "membershipPackageId": "0408c0d8-0aa1-4d3f-ab35-3352d41dcfde",
+        "packageName": "QA261029163854 90 days",
+        "description": "Temporary API audit fixture",
+        "durationDays": 90,
+        "price": 100000,
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:27.5753878+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "packageName": "QA261029163854 90 days",
+        "description": "Temporary API audit fixture",
+        "benefits": "QA only",
+        "durationDays": 90,
+        "price": 100000,
+        "discountPercent": 30,
+        "status": 1,
+        "categoryIds": []
+      }
+    },
+    "paidClass": {
+      "id": "f32118a1-42a1-40ea-8c11-431c643850d8",
+      "body": {
+        "price": 10000,
+        "id": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:27.88877+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "className": "QA261029163854 paidClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 10000,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1
+      }
+    },
+    "paidClassSession": {
+      "id": "48bdb442-2dd0-4146-95bc-2f7caab1ab50",
+      "body": {
+        "id": "48bdb442-2dd0-4146-95bc-2f7caab1ab50",
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-10-31T00:00:00Z",
+        "startTime": "10:00:00",
+        "endTime": "10:45:00"
+      },
+      "request": {
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-10-31T00:00:00Z",
+        "startTime": "10:00:00",
+        "endTime": "10:45:00"
+      }
+    },
+    "freeClass": {
+      "id": "c802f363-0d7d-4660-a102-c350908edf88",
+      "body": {
+        "price": 0,
+        "id": "c802f363-0d7d-4660-a102-c350908edf88",
+        "className": "QA261029163854 freeClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:28.881259+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "className": "QA261029163854 freeClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 0,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1
+      }
+    },
+    "freeClassSession": {
+      "id": "cdb1fc84-fb1f-461b-91a7-86e3383539c5",
+      "body": {
+        "id": "cdb1fc84-fb1f-461b-91a7-86e3383539c5",
+        "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+        "className": "QA261029163854 freeClass",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-10-31T00:00:00Z",
+        "startTime": "12:00:00",
+        "endTime": "12:45:00"
+      },
+      "request": {
+        "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-10-31T00:00:00Z",
+        "startTime": "12:00:00",
+        "endTime": "12:45:00"
+      }
+    },
+    "fullClass": {
+      "id": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+      "body": {
+        "price": 0,
+        "id": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+        "className": "QA261029163854 fullClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 1,
+        "currentEnrolled": 0,
+        "spotsLeft": 1,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:29.138913+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "className": "QA261029163854 fullClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 1,
+        "price": 0,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1
+      }
+    },
+    "fullClassSession": {
+      "id": "e51a82e3-6393-4da8-926b-d85b39d22528",
+      "body": {
+        "id": "e51a82e3-6393-4da8-926b-d85b39d22528",
+        "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+        "className": "QA261029163854 fullClass",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-10-31T00:00:00Z",
+        "startTime": "14:00:00",
+        "endTime": "14:45:00"
+      },
+      "request": {
+        "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-10-31T00:00:00Z",
+        "startTime": "14:00:00",
+        "endTime": "14:45:00"
+      }
+    },
+    "attendanceClass": {
+      "id": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+      "body": {
+        "price": 0,
+        "id": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "className": "QA261029163854 attendanceClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:39:29.438975+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "className": "QA261029163854 attendanceClass",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 0,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1
+      }
+    },
+    "attendanceClassSession": {
+      "id": "4d1d899b-5897-40f4-b1a5-7f049861e2ba",
+      "body": {
+        "id": "4d1d899b-5897-40f4-b1a5-7f049861e2ba",
+        "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "className": "QA261029163854 attendanceClass",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-10-31T00:00:00Z",
+        "startTime": "16:00:00",
+        "endTime": "16:45:00"
+      },
+      "request": {
+        "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-10-28T00:00:00Z",
+        "startTime": "16:00:00",
+        "endTime": "16:45:00"
+      }
+    },
+    "support": {
+      "id": "f9b5e09e-92b9-4dcd-b0bf-bb3ba116578d",
+      "body": {
+        "id": "f9b5e09e-92b9-4dcd-b0bf-bb3ba116578d",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "content": "QA261029163854 temporary integration audit - no real funds",
+        "status": 1,
+        "handledByAccountId": null,
+        "resolution": null,
+        "createdAt": "2026-10-29T16:51:13.524655+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "content": "QA261029163854 temporary integration audit - no real funds"
+      }
+    },
+    "auditLog": {
+      "id": "2d8f9892-f07b-4b25-bdcd-3bf309f85e83",
+      "body": {
+        "id": "2d8f9892-f07b-4b25-bdcd-3bf309f85e83",
+        "accountId": "f4e3b462-34cf-4502-87b5-6d99e78e78d0",
+        "username": "qa_261029163854_manager",
+        "actionType": "QA_AUDIT",
+        "description": "[client] QA261029163854 temporary integration audit - no real funds",
+        "timestamp": "2026-10-29T16:51:13.7845414+00:00"
+      },
+      "request": {
+        "accountId": "15385eb7-5544-437f-82c7-c2b205202c4b",
+        "actionType": "QA_AUDIT",
+        "description": "QA261029163854 temporary integration audit - no real funds"
+      }
+    },
+    "activeCard": {
+      "id": "df78280c-3b36-4577-ad57-85500bd46527",
+      "body": {
+        "membershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "",
+        "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "packageName": "QA261029163854 30 days",
+        "startDate": "2026-10-19T00:00:00Z",
+        "endDate": "2026-11-17T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:51:07.8954073+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "startDate": "2026-10-19T00:00:00Z",
+        "endDate": "2026-11-17T00:00:00Z",
+        "status": 1
+      }
+    },
+    "activeCardInvoice": {
+      "id": "16db9261-6558-4860-b896-7ae63c2611bc",
+      "body": {
+        "id": "16db9261-6558-4860-b896-7ae63c2611bc",
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "receptionistName": "QA261029163854 reception",
+        "memberMembershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+        "classBookingId": null,
+        "classId": null,
+        "className": null,
+        "kind": "Membership",
+        "originalAmount": 0,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 member",
+        "packageName": "QA261029163854 30 days",
+        "amount": 10000,
+        "paymentMethod": 1,
+        "paymentDate": "2026-10-29T16:51:08.089176+00:00",
+        "status": 2
+      },
+      "request": {
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "memberMembershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+        "amount": 10000,
+        "paymentMethod": 1,
+        "status": 2
+      }
+    },
+    "otherActiveCard": {
+      "id": "ca782adc-f424-4c4f-b776-14f82bc3a5d0",
+      "body": {
+        "membershipId": "ca782adc-f424-4c4f-b776-14f82bc3a5d0",
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "memberName": "",
+        "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "packageName": "QA261029163854 30 days",
+        "startDate": "2026-10-19T00:00:00Z",
+        "endDate": "2026-11-17T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:51:08.2730201+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+        "startDate": "2026-10-19T00:00:00Z",
+        "endDate": "2026-11-17T00:00:00Z",
+        "status": 1
+      }
+    },
+    "otherActiveCardInvoice": {
+      "id": "6e430ead-aa23-4f2b-876d-96146054efab",
+      "body": {
+        "id": "6e430ead-aa23-4f2b-876d-96146054efab",
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "receptionistName": "QA261029163854 reception",
+        "memberMembershipId": "ca782adc-f424-4c4f-b776-14f82bc3a5d0",
+        "classBookingId": null,
+        "classId": null,
+        "className": null,
+        "kind": "Membership",
+        "originalAmount": 0,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 otherMember",
+        "packageName": "QA261029163854 30 days",
+        "amount": 10000,
+        "paymentMethod": 1,
+        "paymentDate": "2026-10-29T16:51:08.379567+00:00",
+        "status": 2
+      },
+      "request": {
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "memberMembershipId": "ca782adc-f424-4c4f-b776-14f82bc3a5d0",
+        "amount": 10000,
+        "paymentMethod": 1,
+        "status": 2
+      }
+    },
+    "checkIn": {
+      "id": "94b414df-ad9b-450b-a22d-440711d6b7ba",
+      "body": {
+        "id": "94b414df-ad9b-450b-a22d-440711d6b7ba",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "membershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+        "packageName": "QA261029163854 30 days",
+        "membershipEndDate": "2026-11-17T00:00:00Z",
+        "daysRemaining": 19,
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "recordedByAccountId": "e6948714-aa17-4005-aff2-606f51cb50eb",
+        "checkInTime": "2026-10-29T16:51:10.335999+00:00"
+      },
+      "request": {
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f"
+      }
+    },
+    "deskPaidBooking": {
+      "id": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+      "body": {
+        "originalPrice": 10000,
+        "discountPercent": 0,
+        "price": 10000,
+        "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+        "paymentMethod": 1,
+        "paymentExpiresAt": null,
+        "cancelledAt": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "eligibleMembershipId": null,
+        "membershipEndDate": null,
+        "id": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "memberName": "QA261029163854 otherMember",
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "className": "QA261029163854 paidClass",
+        "classStartDate": "2026-10-26T00:00:00Z",
+        "bookingDate": "2026-10-29T16:51:11.970867+00:00",
+        "status": 1
+      },
+      "request": {
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+        "paymentMethod": 1
+      }
+    },
+    "freeBooking": {
+      "id": "10d07c32-b58e-4121-9b31-0104529e9fea",
+      "body": {
+        "originalPrice": 0,
+        "discountPercent": 20,
+        "price": 0,
+        "invoiceId": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+        "paymentMethod": 2,
+        "paymentExpiresAt": null,
+        "cancelledAt": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "eligibleMembershipId": null,
+        "membershipEndDate": null,
+        "id": "10d07c32-b58e-4121-9b31-0104529e9fea",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+        "className": "QA261029163854 freeClass",
+        "classStartDate": "2026-10-26T00:00:00Z",
+        "bookingDate": "2026-10-29T16:55:31.227971+00:00",
+        "status": 1
+      }
+    },
+    "fullBooking": {
+      "id": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+      "body": {
+        "originalPrice": 0,
+        "discountPercent": 0,
+        "price": 0,
+        "invoiceId": "668853a5-cdcb-407c-be58-e471cc704c66",
+        "paymentMethod": 2,
+        "paymentExpiresAt": null,
+        "cancelledAt": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "eligibleMembershipId": null,
+        "membershipEndDate": null,
+        "id": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+        "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+        "memberName": "QA261029163854 otherMember",
+        "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+        "className": "QA261029163854 fullClass",
+        "classStartDate": "2026-10-26T00:00:00Z",
+        "bookingDate": "2026-10-29T16:55:31.620799+00:00",
+        "status": 1
+      }
+    },
+    "attendanceBooking": {
+      "id": "d888cf55-99a9-480b-b1f0-6b2215d4294b",
+      "body": {
+        "originalPrice": 0,
+        "discountPercent": 20,
+        "price": 0,
+        "invoiceId": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+        "paymentMethod": 2,
+        "paymentExpiresAt": null,
+        "cancelledAt": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "eligibleMembershipId": null,
+        "membershipEndDate": null,
+        "id": "d888cf55-99a9-480b-b1f0-6b2215d4294b",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+        "className": "QA261029163854 attendanceClass",
+        "classStartDate": "2026-10-26T00:00:00Z",
+        "bookingDate": "2026-10-29T16:55:32.345881+00:00",
+        "status": 1
+      }
+    },
+    "latePaidClass": {
+      "id": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+      "body": {
+        "price": 10000,
+        "id": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:55:34.439722+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "className": "QA261029163854 Late paid",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 10000,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 2
+      }
+    },
+    "latePaidSession": {
+      "id": "5a30da5f-76b4-426b-8393-31bb46301137",
+      "body": {
+        "id": "5a30da5f-76b4-426b-8393-31bb46301137",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-11-01T00:00:00Z",
+        "startTime": "09:00:00",
+        "endTime": "09:45:00"
+      },
+      "request": {
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-11-01T00:00:00Z",
+        "startTime": "09:00:00",
+        "endTime": "09:45:00"
+      }
+    },
+    "latePaidBooking": {
+      "id": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+      "body": {
+        "originalPrice": 10000,
+        "discountPercent": 20,
+        "price": 8000,
+        "invoiceId": "63796664-17ab-49d3-9983-1af67ac7264b",
+        "paymentMethod": 1,
+        "paymentExpiresAt": null,
+        "cancelledAt": null,
+        "refundAmount": null,
+        "refundPending": false,
+        "eligibleMembershipId": null,
+        "membershipEndDate": null,
+        "id": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "classStartDate": "2026-10-26T00:00:00Z",
+        "bookingDate": "2026-10-29T16:55:34.591987+00:00",
+        "status": 1
+      },
+      "request": {
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "paymentMethod": 1
+      }
+    },
+    "trainingClass": {
+      "id": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+      "body": {
+        "price": 0,
+        "id": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 1,
+        "createdAt": "2026-10-29T16:58:35.570611+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "className": "QA261029163854 Training recovery",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 0,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 2
+      }
+    },
+    "trainingSession": {
+      "id": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+      "body": {
+        "id": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "roomName": "QA261029163854 Room",
+        "date": "2026-11-02T00:00:00Z",
+        "startTime": "18:00:00",
+        "endTime": "18:45:00"
+      },
+      "request": {
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "roomId": "575edba3-e48e-43d1-a4ef-3beee1252a5f",
+        "date": "2026-10-28T00:00:00Z",
+        "startTime": "18:00:00",
+        "endTime": "18:45:00"
+      }
+    },
+    "trainingBooking": {
+      "id": "8f8ed5b0-b87f-4278-b9f2-a57ce89a8067"
+    },
+    "attendance": {
+      "id": "154ed582-cf97-4181-a385-8d5a73c56dfb",
+      "body": {
+        "id": "154ed582-cf97-4181-a385-8d5a73c56dfb",
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "className": "QA261029163854 Training recovery",
+        "sessionDate": "2026-10-28T00:00:00Z",
+        "sessionStartTime": "18:00:00",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "memberName": "QA261029163854 member",
+        "recordedBy": "15385eb7-5544-437f-82c7-c2b205202c4b",
+        "checkInTime": "2026-10-29T16:58:36.2800646+00:00",
+        "status": 1
+      },
+      "request": {
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "status": 1,
+        "recordedBy": "f4e3b462-34cf-4502-87b5-6d99e78e78d0"
+      }
+    },
+    "plan": {
+      "id": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+      "body": {
+        "trainingPlanId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.23504+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "title": "QA261029163854 plan recovery",
+        "contentDescription": "QA fixture, not a real training instruction",
+        "createdDate": "2026-10-29T00:00:00Z"
+      }
+    },
+    "trainingResult": {
+      "id": "2c708aae-31cc-46ca-9d5c-94fcd885855e",
+      "body": {
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "trainingResultId": "2c708aae-31cc-46ca-9d5c-94fcd885855e",
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "planTitle": "QA261029163854 plan recovery updated",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "performanceScore": 7.5,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:37.980471+00:00",
+        "updatedAt": null
+      },
+      "request": {
+        "planId": "b7a5ac7c-db00-4f00-b411-598d1e7f17c8",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "sessionId": "aab5b28a-70b2-48e3-b0ed-4d8441bff420",
+        "performanceScore": 7.5,
+        "coachComment": "QA temporary result",
+        "evaluationDate": "2026-10-28T00:00:00Z"
+      }
+    }
+  },
+  "cleanupNotes": [],
+  "options": {
+    "provider": "SePay",
+    "methods": [
+      2
+    ],
+    "holdMinutes": 15,
+    "upgrade": true
+  },
+  "packagePayment": {
+    "kind": "Membership",
+    "provider": "SePay",
+    "paymentMethod": 2,
+    "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE3109CA004F64D799DA04021A92660A4",
+    "bookingId": null,
+    "originalAmount": 10000,
+    "discountPercent": 0,
+    "creditAmount": 0,
+    "fromPackageName": null,
+    "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE3109CA004F64D799DA04021A92660A4",
+    "paymentReference": "SWPE3109CA004F64D799DA04021A92660A4",
+    "expiresAt": "2026-10-29T16:54:30.1809108+00:00",
+    "bankBin": "970403",
+    "bankAccountNumber": "050133548731",
+    "paymentId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+    "membershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+    "invoiceId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+    "amount": 10000,
+    "status": 1,
+    "paymentUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE3109CA004F64D799DA04021A92660A4"
+  },
+  "paymentDetail": {
+    "kind": "Membership",
+    "provider": "SePay",
+    "paymentMethod": 2,
+    "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE3109CA004F64D799DA04021A92660A4",
+    "classId": null,
+    "className": null,
+    "bookingId": null,
+    "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+    "originalAmount": 10000,
+    "discountPercent": 0,
+    "creditAmount": 0,
+    "fromPackageName": null,
+    "refundAmount": null,
+    "refundPending": false,
+    "refundReference": null,
+    "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE3109CA004F64D799DA04021A92660A4",
+    "paymentReference": "SWPE3109CA004F64D799DA04021A92660A4",
+    "expiresAt": "2026-10-29T16:54:30.18091+00:00",
+    "bankBin": "970403",
+    "bankAccountNumber": "050133548731",
+    "paymentId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+    "status": 1,
+    "amount": 10000,
+    "packageName": "QA261029163854 30 days",
+    "membershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+    "invoiceId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+    "paidAt": null
+  },
+  "uploadedImageUrl": "https://res.cloudinary.com/dqltosrrl/image/upload/v1793292675/leemmdkpnwnzhfza9cri.png",
+  "businessCompletedAt": "2026-10-29T16:51:16.422Z",
+  "pendingIds": [],
+  "paidInvoiceIds": [
+    "16db9261-6558-4860-b896-7ae63c2611bc",
+    "6e430ead-aa23-4f2b-876d-96146054efab"
+  ],
+  "upgradePayment": {
+    "kind": "Upgrade",
+    "provider": "SePay",
+    "paymentMethod": 2,
+    "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=94000&des=SWP418989B7D2B54DF4919917CB0D45C73B",
+    "bookingId": null,
+    "originalAmount": 100000,
+    "discountPercent": 0,
+    "creditAmount": 6000,
+    "fromPackageName": "QA261029163854 30 days",
+    "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=94000&des=SWP418989B7D2B54DF4919917CB0D45C73B",
+    "paymentReference": "SWP418989B7D2B54DF4919917CB0D45C73B",
+    "expiresAt": "2026-10-29T17:06:10.6708962+00:00",
+    "bankBin": "970403",
+    "bankAccountNumber": "050133548731",
+    "paymentId": "418989b7-d2b5-4df4-9199-17cb0d45c73b",
+    "membershipId": "c202345c-e386-4b80-b106-733d5a0dc139",
+    "invoiceId": "418989b7-d2b5-4df4-9199-17cb0d45c73b",
+    "amount": 94000,
+    "status": 1,
+    "paymentUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=94000&des=SWP418989B7D2B54DF4919917CB0D45C73B"
+  },
+  "renewal": {
+    "membershipId": "dd1e32b2-130c-4aa1-ac10-11656069f307",
+    "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+    "memberName": "QA261029163854 otherMember",
+    "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+    "packageName": "QA261029163854 30 days",
+    "startDate": "2026-11-18T00:00:00Z",
+    "endDate": "2026-12-17T00:00:00Z",
+    "status": 1,
+    "createdAt": "2026-10-29T16:51:11.5790425+00:00",
+    "updatedAt": null
+  },
+  "deskPaidBooking": {
+    "originalPrice": 10000,
+    "discountPercent": 0,
+    "price": 10000,
+    "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+    "paymentMethod": 1,
+    "paymentExpiresAt": null,
+    "cancelledAt": null,
+    "refundAmount": null,
+    "refundPending": false,
+    "eligibleMembershipId": null,
+    "membershipEndDate": null,
+    "id": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+    "memberId": "771dd5b7-29c1-46c8-8373-351fd5b49606",
+    "memberName": "QA261029163854 otherMember",
+    "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+    "className": "QA261029163854 paidClass",
+    "classStartDate": "2026-10-26T00:00:00Z",
+    "bookingDate": "2026-10-29T16:51:11.970867+00:00",
+    "status": 1
+  },
+  "refundPayment": {
+    "kind": "Class",
+    "provider": "Internal",
+    "paymentMethod": 1,
+    "payUrl": null,
+    "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+    "className": "QA261029163854 paidClass",
+    "bookingId": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+    "packageId": null,
+    "originalAmount": 10000,
+    "discountPercent": 0,
+    "creditAmount": 0,
+    "fromPackageName": null,
+    "refundAmount": null,
+    "refundPending": true,
+    "refundReference": null,
+    "qrCodeUrl": null,
+    "paymentReference": null,
+    "expiresAt": null,
+    "bankBin": null,
+    "bankAccountNumber": null,
+    "paymentId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+    "status": 2,
+    "amount": 10000,
+    "packageName": "",
+    "membershipId": null,
+    "invoiceId": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+    "paidAt": "2026-10-29T16:51:11.970867+00:00"
+  },
+  "expiryObserved": {
+    "kind": "Membership",
+    "provider": "SePay",
+    "paymentMethod": 2,
+    "payUrl": null,
+    "classId": null,
+    "className": null,
+    "bookingId": null,
+    "packageId": "f85651af-170b-4333-8672-1f9b86c24b0f",
+    "originalAmount": 10000,
+    "discountPercent": 0,
+    "creditAmount": 0,
+    "fromPackageName": null,
+    "refundAmount": null,
+    "refundPending": false,
+    "refundReference": null,
+    "qrCodeUrl": null,
+    "paymentReference": "SWPE3109CA004F64D799DA04021A92660A4",
+    "expiresAt": "2026-10-29T16:54:30.18091+00:00",
+    "bankBin": "970403",
+    "bankAccountNumber": "050133548731",
+    "paymentId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+    "status": 5,
+    "amount": 10000,
+    "packageName": "QA261029163854 30 days",
+    "membershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+    "invoiceId": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+    "paidAt": null
+  },
+  "secondPendingPackage": {
+    "kind": "Membership",
+    "provider": "SePay",
+    "paymentMethod": 2,
+    "payUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE0245407E2BA4ACFBE26D381D12F72CB",
+    "bookingId": null,
+    "originalAmount": 10000,
+    "discountPercent": 0,
+    "creditAmount": 0,
+    "fromPackageName": null,
+    "qrCodeUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE0245407E2BA4ACFBE26D381D12F72CB",
+    "paymentReference": "SWPE0245407E2BA4ACFBE26D381D12F72CB",
+    "expiresAt": "2026-10-29T17:10:32.1950083+00:00",
+    "bankBin": "970403",
+    "bankAccountNumber": "050133548731",
+    "paymentId": "e0245407-e2ba-4acf-be26-d381d12f72cb",
+    "membershipId": "7986815f-0dec-4e17-a2fb-6a57ab7c9d0b",
+    "invoiceId": "e0245407-e2ba-4acf-be26-d381d12f72cb",
+    "amount": 10000,
+    "status": 1,
+    "paymentUrl": "https://qr.sepay.vn/img?bank=970403&acc=050133548731&template=compact&amount=10000&des=SWPE0245407E2BA4ACFBE26D381D12F72CB"
+  },
+  "bulkPlanResult": {
+    "createdCount": 1,
+    "data": [
+      {
+        "trainingPlanId": "abe0aa76-9da2-48bf-b70f-d731766dcdcf",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "memberId": "cff4d277-b14c-4aa0-8074-ffb10c28574f",
+        "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+        "memberName": "QA261029163854 member",
+        "coachName": "QA261029163854 coach",
+        "className": "QA261029163854 Training recovery",
+        "title": "QA261029163854 bulk recovery",
+        "contentDescription": "QA fixture",
+        "createdDate": "2026-10-29T00:00:00Z",
+        "createdAt": "2026-10-29T16:58:39.000153+00:00",
+        "updatedAt": null
+      }
+    ]
+  },
+  "notificationId": "fc880fda-bce8-461c-88b0-da6bc6314b8c",
+  "followupCompletedAt": "2026-10-29T16:55:37.315Z",
+  "invoiceForUi": {
+    "id": "16db9261-6558-4860-b896-7ae63c2611bc",
+    "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+    "receptionistName": "QA261029163854 reception",
+    "memberMembershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+    "classBookingId": null,
+    "classId": null,
+    "className": null,
+    "kind": "Membership",
+    "originalAmount": 0,
+    "discountPercent": 0,
+    "creditAmount": 0,
+    "refundPending": false,
+    "memberName": "QA261029163854 member",
+    "packageName": "QA261029163854 30 days",
+    "amount": 10000,
+    "paymentMethod": 1,
+    "paymentDate": "2026-10-29T16:51:08.089176+00:00",
+    "status": 2
+  }
+}

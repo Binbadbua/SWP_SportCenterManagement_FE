@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
-import { formatDate, formatTimeRange, formatWeekday, todayUtcDateString } from '../../lib/format.js';
+import { formatDate, formatTimeRange, formatWeekday, todayCenterDateString } from '../../lib/format.js';
 import { EmptyState, ErrorNotice, Loading, SampleDataNotice } from '../../components/ui.jsx';
 import Icon from '../../components/Icon.jsx';
 
@@ -16,7 +16,7 @@ const addDays = (iso, n) => {
 // Public weekly timetable built from GET /api/schedules
 export default function Schedule() {
   const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
-  const [weekStart, setWeekStart] = useState(todayUtcDateString());
+  const [weekStart, setWeekStart] = useState(todayCenterDateString());
   const weekEnd = addDays(weekStart, 7);
 
   const days = useMemo(() => {
@@ -47,8 +47,8 @@ export default function Schedule() {
         <button type="button" className="round-btn" onClick={() => setWeekStart(addDays(weekStart, 7))} aria-label="Tuần sau">
           <Icon name="chevronRight" />
         </button>
-        {weekStart !== todayUtcDateString() && (
-          <button type="button" className="plain-btn" onClick={() => setWeekStart(todayUtcDateString())}>Về hôm nay</button>
+        {weekStart !== todayCenterDateString() && (
+          <button type="button" className="plain-btn" onClick={() => setWeekStart(todayCenterDateString())}>Về hôm nay</button>
         )}
       </div>
 

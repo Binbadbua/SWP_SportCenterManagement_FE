@@ -1,0 +1,67 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+import crypto from 'node:crypto';
+import {Audit,OUT,PASSWORD,rowsOf,idOf,date,day} from './api-audit.mjs';
+const a=new Audit('training-recovery'),f=JSON.parse(await fs.readFile(path.join(OUT,'fixtures.json'),'utf8'));
+a.spec=JSON.parse(await fs.readFile(path.join(OUT,'swagger.json'),'utf8'));
+const R={};for(const k of Object.keys(f.users))R[k]=await a.login(f.users[k].username,PASSWORD,k);
+const uid=k=>f.users[k].profileId,eid=k=>f.entities[k].id;
+const save=async()=>{await fs.writeFile(path.join(OUT,'fixtures.json'),JSON.stringify(f,null,2));await a.save();};
+async function make(k,p,r,b){const x=await a.expect('Create '+k,'POST',p,r,b,[200,201]);if(![200,201].includes(x.status))throw new Error(k+' setup failed');f.entities[k]={id:idOf(x.body),body:x.body,request:b};await save();return x.body;}
+try{
+ const c=await make('trainingClass','/api/classes',R.manager,{...f.entities.freeClass.request,className:f.prefix+' Training recovery'});
+ const ss={classId:eid('trainingClass'),roomId:eid('room'),date:date(4),startTime:'18:00:00',endTime:'18:45:00'};
+ await make('trainingSession','/api/class-sessions',R.manager,ss);
+ await a.expect('Member books QA training class','POST','/api/payments/class-checkout',R.member,{classId:eid('trainingClass'),paymentMethod:2},[200]);
+ const bs=await a.request('GET','/api/members/me/class-bookings',R.member);
+ f.entities.trainingBooking={id:rowsOf(bs.body).find(x=>x.classId===eid('trainingClass')&&x.status!==3)?.id};await save();
+ await a.expect('Move QA training session to yesterday','PUT','/api/class-sessions/'+eid('trainingSession'),R.manager,{...ss,date:date(-1)},[200,204]);f.entities.trainingSession.request={...ss,date:date(-1)};
+ await a.expect('Set QA class ongoing','PUT','/api/classes/'+eid('trainingClass'),R.manager,{...f.entities.trainingClass.request,status:2},[200,204]);f.entities.trainingClass.request.status=2;await save();
+ const ab={sessionId:eid('trainingSession'),memberId:uid('member'),status:1,recordedBy:f.users.manager.accountId};
+ const ar=await make('attendance','/api/attendances',R.coach,ab);
+ a.check('RecordedBy is derived from signed-in coach',ar.recordedBy===f.users.coach.accountId,{response:ar});
+ await a.expect('Duplicate attendance rejected','POST','/api/attendances',R.coach,ab,[400,409]);
+ await a.expect('Coach updates own attendance','PUT','/api/attendances/'+idOf(ar),R.coach,{status:2,recordedBy:f.users.manager.accountId},[200,204]);
+ await a.expect('Coach restores Present','PUT','/api/attendances/'+idOf(ar),R.coach,{status:1,recordedBy:f.users.coach.accountId},[200,204]);
+ await a.expect('Unassigned coach cannot edit attendance','PUT','/api/attendances/'+idOf(ar),R.otherCoach,{status:2,recordedBy:f.users.otherCoach.accountId},[403]);
+ const pb={coachId:uid('coach'),memberId:uid('member'),classId:eid('trainingClass'),title:f.prefix+' plan recovery',contentDescription:'QA fixture, not a real training instruction',createdDate:date(0)};
+ const p=await make('plan','/api/training-plans',R.coach,pb);
+ await a.expect('Coach reads plan detail','GET','/api/training-plans/'+idOf(p),R.coach,undefined,[200]);
+ await a.expect('Member reads own plan','GET','/api/training-plans/'+idOf(p),R.member,undefined,[200]);
+ await a.expect('Unassigned coach cannot read plan detail','GET','/api/training-plans/'+idOf(p),R.otherCoach,undefined,[403,404]);
+ await a.expect('Coach edits own plan','PUT','/api/training-plans/'+idOf(p),R.coach,{...pb,title:f.prefix+' plan recovery updated'},[200,204]);
+ await a.expect('Other coach cannot edit plan','PUT','/api/training-plans/'+idOf(p),R.otherCoach,{...pb,coachId:uid('otherCoach')},[403]);
+ const rb={planId:idOf(p),memberId:uid('member'),coachId:uid('coach'),sessionId:eid('trainingSession'),performanceScore:7.5,coachComment:'QA temporary result',evaluationDate:date(-1)};
+ const tr=await make('trainingResult','/api/training-results',R.coach,rb);
+ a.check('Result keeps explicit sessionId',tr.sessionId===eid('trainingSession'),{response:tr});
+ await a.expect('Coach edits own result','PUT','/api/training-results/'+idOf(tr),R.coach,{...rb,performanceScore:8},[200,204]);
+ await a.expect('Other coach cannot edit result','PUT','/api/training-results/'+idOf(tr),R.otherCoach,{...rb,performanceScore:5},[403]);
+ await a.expect('Score must be within 0-10','POST','/api/training-results',R.coach,{...rb,performanceScore:11},[400]);
+ await a.expect('Session must belong to plan class','POST','/api/training-results',R.coach,{...rb,sessionId:eid('freeClassSession')},[400]);
+ await a.expect('Coach cannot plan for unrelated member','POST','/api/training-plans',R.coach,{...pb,memberId:uid('otherMember')},[400,403]);
+ const bulk=await a.expect('Bulk plan creates for whole class','POST','/api/training-plans/class/'+eid('trainingClass'),R.coach,{title:f.prefix+' bulk recovery',contentDescription:'QA fixture',createdDate:date(0)},[200,201]);f.bulkPlanResult=bulk.body;await save();
+ await a.expect('Unassigned coach cannot bulk plan class','POST','/api/training-plans/class/'+eid('trainingClass'),R.otherCoach,{title:f.prefix+' forbidden'},[403]);
+ await a.expect('AI suggestions for actually enrolled member','POST','/api/ai/exercise-suggestions',R.coach,{memberId:uid('member'),goal:'Bai tap nhe tang suc ben',durationMinutes:20,equipment:'bodyweight',level:'beginner'},[200]);
+ const outsider=await a.request('GET','/api/coaches/me/members/'+uid('member')+'/training-results',R.otherCoach);
+ a.check('Unassigned coach does not receive another coach result',[403,404].includes(outsider.status)||(outsider.status===200&&rowsOf(outsider.body).length===0),{status:outsider.status,response:outsider.body});
+ const pdf=await a.request('GET','/api/invoices/'+eid('activeCardInvoice')+'/export',R.reception);
+ f.invoiceForUi=pdf.body;await save();
+ const live=await a.request('GET','/api/payments/'+f.packagePayment.paymentId,R.member);f.expiryObserved=live.body;
+ a.check('SePay order expires at 15-minute deadline',live.body.status===5,{response:live.body});
+ const cards=await a.request('GET','/api/members/me/memberships?pageSize=500',R.member);
+ a.check('Expired order does not activate membership',rowsOf(cards.body).find(x=>idOf(x)===f.packagePayment.membershipId)?.status===4,{response:cards.body});
+ const inv=await a.request('GET','/api/invoices/'+f.packagePayment.invoiceId,R.reception);
+ a.check('Expired order invoice is Cancelled',inv.body.status===3,{response:inv.body});
+ const foreign=await a.request('POST','/api/payments/upgrade-checkout',R.otherMember,{membershipId:eid('activeCard'),membershipPackageId:eid('longPackage'),paymentMethod:2,returnUrl:'http://localhost:5173/payment/result'});
+ a.check('Foreign membership cannot be upgraded',[400,403,404].includes(foreign.status),{status:foreign.status,response:foreign.body});
+ await a.expect('Reception can update manual invoice','PUT','/api/invoices/'+eid('activeCardInvoice'),R.reception,{paymentMethod:1,status:2},[200,204]);
+ const u=f.users.otherCoach,body={username:u.username,email:u.email,fullName:u.fullName,phone:u.phone,role:3,status:1};
+ const change=await a.expect('B50 manager changes isolated account role','PUT','/api/accounts/'+u.accountId,R.manager,body,[200,204]);
+ if([200,204].includes(change.status)){
+  const signed=await a.login(u.username,PASSWORD,'changedRole');
+  const me=await a.request('GET','/api/auth/me',signed);
+  a.check('New sign-in carries changed role',me.body.role==='Receptionist',{response:me.body});
+  await a.expect('Restore fixture coach role','PUT','/api/accounts/'+u.accountId,R.manager,{...body,role:2},[200,204]);
+ }
+}catch(e){a.check('Recovery setup completed',false,{error:String(e.stack||e)});}
+await save();process.stdout.write('TRAINING_RECOVERY_DONE\n');

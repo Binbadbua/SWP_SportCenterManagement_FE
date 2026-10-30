@@ -1,6 +1,4 @@
-// Who sent a notification. The API keeps no sender yet (CHANGELOG Part B, B57 asks for senderName / senderRole), so
-// what staff send from the website starts with a line "Người gửi: <name> · <role>" that the inbox shows apart.
-// Notifications the API writes itself (card expiry, payments) carry neither and come from the center.
+// New notifications use the API sender fields. Older messages can retain the first-line sender signature.
 import { AccountRole } from './enums.js';
 
 const SIGNATURE = 'Người gửi: ';
@@ -15,7 +13,7 @@ export const signed = (message, user) =>
 export function readNotification(n) {
   const text = String(n?.message ?? '');
   if (n?.senderName) {
-    return { sender: [n.senderName, roleLabel(n.senderRole)].filter(Boolean).join(' · '), message: text };
+    return { sender: [n.senderName, roleLabel(n.senderRole)].filter(Boolean).join(' · '), message: text.startsWith(SIGNATURE) ? text.slice(text.indexOf('\n') < 0 ? text.length : text.indexOf('\n') + 1) : text };
   }
   if (text.startsWith(SIGNATURE)) {
     const cut = text.indexOf('\n');

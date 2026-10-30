@@ -1,0 +1,136 @@
+{
+  "summary": {
+    "startedAt": "2026-10-30T03:42:48.586Z",
+    "baseUrl": "http://127.0.0.1:5173",
+    "mode": "refund-ui",
+    "status": "interrupted",
+    "updatedAt": "2026-10-30T03:43:57.881Z",
+    "checks": 5,
+    "passed": 0,
+    "failed": 5,
+    "routes": 2,
+    "requests": 0,
+    "apiFailures": 0,
+    "runtimeExceptions": 0,
+    "screenshots": 0,
+    "browser": {
+      "executable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+      "pid": 21136,
+      "protocolVersion": "1.3",
+      "product": "Chrome/156.0.8078.73",
+      "revision": "@2f9a11097447f226133bc1a31c787291a5eeab98",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+      "jsVersion": "15.6.75.25"
+    }
+  },
+  "checks": [
+    {
+      "id": "ui-001",
+      "name": "CenterManager /login?next=%2Fstaff",
+      "passed": false,
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "settled": false,
+      "path": "/",
+      "headings": [
+        "This site can’t be reached"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 0,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "127.0.0.1",
+      "apiErrors": []
+    },
+    {
+      "id": "ui-002",
+      "name": "CenterManager login form fields",
+      "passed": false
+    },
+    {
+      "id": "ui-003",
+      "name": "Receptionist /login?next=%2Fstaff",
+      "passed": false,
+      "role": "Receptionist",
+      "route": "/login?next=%2Fstaff",
+      "settled": false,
+      "path": "/",
+      "headings": [
+        "This site can’t be reached"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 0,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "127.0.0.1",
+      "apiErrors": []
+    },
+    {
+      "id": "ui-004",
+      "name": "Receptionist login form fields",
+      "passed": false
+    },
+    {
+      "id": "ui-005",
+      "name": "UI audit finishes successfully",
+      "passed": false,
+      "error": "Error: Reception login failed\n    at run (file:///C:/Users/AD/Downloads/FPT/SWP391/SportCenter/SWP_SportCenter.FrontEnd/scripts/qa/ui-refund.mjs:294:73)\n    at async file:///C:/Users/AD/Downloads/FPT/SWP391/SportCenter/SWP_SportCenter.FrontEnd/scripts/qa/ui-refund.mjs:323:7"
+    }
+  ],
+  "routes": [
+    {
+      "role": "CenterManager",
+      "route": "/login?next=%2Fstaff",
+      "settled": false,
+      "path": "/",
+      "headings": [
+        "This site can’t be reached"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 0,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "127.0.0.1",
+      "apiErrors": []
+    },
+    {
+      "role": "Receptionist",
+      "route": "/login?next=%2Fstaff",
+      "settled": false,
+      "path": "/",
+      "headings": [
+        "This site can’t be reached"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 0,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "127.0.0.1",
+      "apiErrors": []
+    }
+  ],
+  "requests": [],
+  "apiFailures": [],
+  "runtimeExceptions": [],
+  "consoleErrors": [],
+  "blockedWrites": [],
+  "screenshots": [],
+  "dialogs": [],
+  "payment": {
+    "paymentId": "2cbaf394-83e3-4cce-bcf2-558de96a0156",
+    "bookingId": "b33ad79e-e4ad-44c6-8d7e-36786732bc40",
+    "simulatedLedgerOnly": true
+  }
+}

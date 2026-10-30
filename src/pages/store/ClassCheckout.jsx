@@ -17,7 +17,7 @@ import { AgreeToPolicies } from '../../components/Policies.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice } from '../../components/ui.jsx';
 
 // A member books a class with a fee (CHANGELOG Part B, B53): POST /api/payments/class-checkout holds a place with a
-// pending invoice while the member pays — online through MoMo (B54, 15 minutes), or before that a bank transfer that
+// pending invoice while the member pays — online through SePay (B54, 15 minutes), or before that a bank transfer that
 // reception confirms (30 minutes). The API works out the amount (the class fee less the discount of the member's card);
 // this page shows the same figure beforehand. Only a class that has not started takes bookings. A free class is
 // booked straight from its page.
@@ -130,7 +130,7 @@ export default function ClassCheckout() {
         <h1 className="checkout__title">Đặt lớp và thanh toán</h1>
         <p className="muted">
           {opts?.online
-            ? `Học phí trả một lần cho cả khóa, thanh toán trực tuyến qua MoMo. Chỗ của bạn được giữ ${hold} phút; MoMo báo đã nhận tiền là bạn có chỗ trong lớp.`
+            ? `Học phí trả một lần cho cả khóa, thanh toán trực tuyến qua SePay. Chỗ của bạn được giữ ${hold} phút; SePay báo đã nhận tiền là bạn có chỗ trong lớp.`
             : `Học phí trả một lần cho cả khóa, bằng chuyển khoản. Chỗ của bạn được giữ ${hold} phút để lễ tân đối soát; lễ tân xác nhận xong là bạn có chỗ trong lớp.`}
         </p>
       </header>
@@ -202,7 +202,7 @@ export default function ClassCheckout() {
               <section className="checkout__step">
                 <h2 className="checkout__step-title"><span className="checkout__num">3</span> Phương thức thanh toán</h2>
                 {opts ? (
-                  <PayMethods value={method} onChange={setPicked} methods={opts.methods} />
+                  <PayMethods provider={opts?.provider} online={!!opts?.online} value={method} onChange={setPicked} methods={opts.methods} />
                 ) : (
                   <Loading label="Đang tải cách thanh toán" />
                 )}

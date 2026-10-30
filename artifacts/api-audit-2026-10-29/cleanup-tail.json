@@ -1,0 +1,2549 @@
+{
+  "summary": {
+    "name": "cleanup-tail",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "recordedAt": "2026-10-30T03:48:09.312Z",
+    "timezone": "Asia/Bangkok",
+    "checks": 5,
+    "passed": 3,
+    "failed": 2,
+    "requests": 10,
+    "documentedOperations": 143,
+    "operationsCalled": 10,
+    "operationsWithSuccess": 7
+  },
+  "results": [
+    {
+      "id": "cleanup-tail-001",
+      "name": "Close the only remaining synthetic QA class",
+      "passed": false,
+      "method": "PUT",
+      "endpoint": "/api/classes/ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+      "role": "manager_cleanup",
+      "status": 400,
+      "response": {
+        "title": "Huấn luyện viên không tồn tại.",
+        "status": 400,
+        "detail": "Huấn luyện viên không tồn tại.",
+        "message": "Huấn luyện viên không tồn tại.",
+        "traceId": "0HNPM6PMEKTVM:000000C7"
+      },
+      "error": null
+    },
+    {
+      "id": "cleanup-tail-002",
+      "name": "Record post-delete invoice visibility",
+      "passed": true,
+      "invoiceId": "99c3136e-4e84-4735-87c0-c38b5e071251",
+      "detailStatus": 200,
+      "detail": {
+        "id": "99c3136e-4e84-4735-87c0-c38b5e071251",
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "receptionistName": "QA261029163854 reception",
+        "memberMembershipId": "dd1e32b2-130c-4aa1-ac10-11656069f307",
+        "classBookingId": null,
+        "classId": null,
+        "className": null,
+        "kind": "Membership",
+        "originalAmount": 0,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 otherMember",
+        "packageName": "QA261029163854 30 days",
+        "amount": 10000,
+        "paymentMethod": 1,
+        "paymentDate": null,
+        "status": 1
+      },
+      "inList": true
+    },
+    {
+      "id": "cleanup-tail-003",
+      "name": "Try removing now unreferenced QA coaches",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/coaches/53698bc7-76dc-4e09-85bb-775040b90870",
+      "role": "manager_cleanup",
+      "status": 400,
+      "response": {
+        "title": "Không thể xóa Huấn luyện viên này vì họ đang phụ trách các lớp học.",
+        "status": 400,
+        "detail": "Không thể xóa Huấn luyện viên này vì họ đang phụ trách các lớp học.",
+        "message": "Không thể xóa Huấn luyện viên này vì họ đang phụ trách các lớp học.",
+        "traceId": "0HNPM6PMEKTVM:000000CB"
+      },
+      "error": null
+    },
+    {
+      "id": "cleanup-tail-004",
+      "name": "Try removing now unreferenced QA categories",
+      "passed": true,
+      "method": "DELETE",
+      "endpoint": "/api/categories/88a8990c-0afe-4f96-9384-48ce49884531",
+      "role": "manager_cleanup",
+      "status": 400,
+      "response": {
+        "title": "Không thể xóa bộ môn này vì đang có lớp học thuộc bộ môn này.",
+        "status": 400,
+        "detail": "Không thể xóa bộ môn này vì đang có lớp học thuộc bộ môn này.",
+        "message": "Không thể xóa bộ môn này vì đang có lớp học thuộc bộ môn này.",
+        "traceId": "0HNPM6PMEKTVM:000000CD"
+      },
+      "error": null
+    },
+    {
+      "id": "cleanup-tail-005",
+      "name": "No active visible class from this QA run remains",
+      "passed": false,
+      "remaining": [
+        {
+          "price": 10000,
+          "id": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+          "className": "QA261029163854 Late paid",
+          "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+          "categoryName": "QA261029163854 Sport",
+          "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+          "coachName": "QA261029163854 coach",
+          "maxCapacity": 5,
+          "currentEnrolled": 0,
+          "spotsLeft": 5,
+          "startDate": "2026-10-26T00:00:00Z",
+          "endDate": "2026-12-03T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-29T16:55:34.439722+00:00",
+          "updatedAt": "2026-10-29T16:55:34.708804+00:00"
+        }
+      ]
+    }
+  ],
+  "calls": [
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 1509,
+      "body": {
+        "userId": "44444444-4444-4444-4444-444444444444"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "demo_manager"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes/ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+      "role": "manager_cleanup",
+      "status": 200,
+      "ms": 125,
+      "body": {
+        "price": 10000,
+        "id": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+        "className": "QA261029163854 Late paid",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "coachName": "QA261029163854 coach",
+        "maxCapacity": 5,
+        "currentEnrolled": 0,
+        "spotsLeft": 5,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 2,
+        "createdAt": "2026-10-29T16:55:34.439722+00:00",
+        "updatedAt": "2026-10-29T16:55:34.708804+00:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "PUT",
+      "endpoint": "/api/classes/ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+      "role": "manager_cleanup",
+      "status": 400,
+      "ms": 596,
+      "body": {
+        "title": "Huấn luyện viên không tồn tại.",
+        "status": 400,
+        "detail": "Huấn luyện viên không tồn tại.",
+        "message": "Huấn luyện viên không tồn tại.",
+        "traceId": "0HNPM6PMEKTVM:000000C7"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "className": "QA261029163854 Late paid",
+        "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "maxCapacity": 5,
+        "price": 10000,
+        "startDate": "2026-10-26T00:00:00Z",
+        "endDate": "2026-12-03T00:00:00Z",
+        "status": 4
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices/99c3136e-4e84-4735-87c0-c38b5e071251",
+      "role": "manager_cleanup",
+      "status": 200,
+      "ms": 250,
+      "body": {
+        "id": "99c3136e-4e84-4735-87c0-c38b5e071251",
+        "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+        "receptionistName": "QA261029163854 reception",
+        "memberMembershipId": "dd1e32b2-130c-4aa1-ac10-11656069f307",
+        "classBookingId": null,
+        "classId": null,
+        "className": null,
+        "kind": "Membership",
+        "originalAmount": 0,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "QA261029163854 otherMember",
+        "packageName": "QA261029163854 30 days",
+        "amount": 10000,
+        "paymentMethod": 1,
+        "paymentDate": null,
+        "status": 1
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices",
+      "role": "manager_cleanup",
+      "status": 200,
+      "ms": 257,
+      "body": [
+        {
+          "id": "db456b61-686f-465e-b82e-e47c70b7b6a2",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "29930009-7e23-4b5b-b839-0f539bb2258b",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 2100000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Lê Hoàng Nam",
+          "packageName": "Thẻ Gym Tiêu Chuẩn 3 Tháng",
+          "amount": 2100000,
+          "paymentMethod": 1,
+          "paymentDate": "2026-10-26T14:42:11.488719+00:00",
+          "status": 2
+        },
+        {
+          "id": "8ef5f862-e3ed-4c68-ab6c-b487d2aadbf6",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "52539424-bf8f-4746-85fa-4e6192856ed6",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 1350000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Mai Thuận Thiên Sinh",
+          "packageName": "Thẻ Yoga & Pilates 3 Tháng",
+          "amount": 1350000,
+          "paymentMethod": 2,
+          "paymentDate": "2026-10-26T14:42:12.116464+00:00",
+          "status": 2
+        },
+        {
+          "id": "802530ca-074a-4b12-a190-bf276924f221",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "a884392a-759b-44bd-af09-28244037a1ce",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 2700000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Trần Minh Quân",
+          "packageName": "Thẻ Võ Thuật 3 Tháng",
+          "amount": 2700000,
+          "paymentMethod": 3,
+          "paymentDate": "2026-10-26T14:42:12.271871+00:00",
+          "status": 2
+        },
+        {
+          "id": "334f034e-315b-4402-9eb7-e9fd99b91dbf",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "3d2a4e08-becf-4b9c-9b17-56739ba0454c",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 700000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Nguyễn Thị Thu Hà",
+          "packageName": "Thẻ Cardio & HIIT 1 Tháng",
+          "amount": 700000,
+          "paymentMethod": 1,
+          "paymentDate": null,
+          "status": 1
+        },
+        {
+          "id": "ad2c5b20-05c0-42d5-8ae2-474b430e5d28",
+          "receptionistId": "fe8d5d93-4d9c-4b59-8491-c512e6c9709a",
+          "receptionistName": "Nguyễn Thu Trang",
+          "memberMembershipId": "4ed3aab1-0ead-46e8-982c-0edf59f4caed",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 1800000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Lê Đức Anh",
+          "packageName": "Thẻ Bóng Đồng Đội 3 Tháng",
+          "amount": 1800000,
+          "paymentMethod": 2,
+          "paymentDate": "2026-10-26T14:42:13.397257+00:00",
+          "status": 2
+        },
+        {
+          "id": "2fb53560-5010-45c2-9e4e-20d63c1b18ac",
+          "receptionistId": "6a9501ea-e7c8-4514-9dd6-b5a5a54388ad",
+          "receptionistName": "Lê Minh Đức",
+          "memberMembershipId": "d4b03438-f79f-4055-b996-086cd3a46bc5",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 500000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Phạm Ngọc Mai",
+          "packageName": "Thẻ Yoga Cơ Bản 1 Tháng",
+          "amount": 500000,
+          "paymentMethod": 1,
+          "paymentDate": "2026-10-26T14:42:14.796654+00:00",
+          "status": 2
+        },
+        {
+          "id": "0f3c8fef-724b-43a8-b0a9-6df0b548bb5b",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "2e21d094-f03b-48a9-ab14-ca675c1baf77",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 3600000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Hoàng Gia Bảo",
+          "packageName": "Thẻ Vợt Tennis & Pickleball 3 Tháng",
+          "amount": 3600000,
+          "paymentMethod": 3,
+          "paymentDate": "2026-10-26T14:42:14.976118+00:00",
+          "status": 2
+        },
+        {
+          "id": "03a3ebee-b5da-4105-8bdb-b95a79abdcdd",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "23c35ce6-6d74-40fe-81b3-f808daf95654",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 700000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Võ Thanh Trúc",
+          "packageName": "Thẻ Cardio & HIIT 1 Tháng",
+          "amount": 700000,
+          "paymentMethod": 1,
+          "paymentDate": null,
+          "status": 1
+        },
+        {
+          "id": "7d8cb9fa-b691-40c6-9f4d-073e574f38d3",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "f1c20e67-8234-4174-a029-4ccc22ad4279",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 2700000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Đặng Quốc Việt",
+          "packageName": "Thẻ Võ Thuật 3 Tháng",
+          "amount": 2700000,
+          "paymentMethod": 1,
+          "paymentDate": "2026-10-26T14:42:15.827797+00:00",
+          "status": 2
+        },
+        {
+          "id": "9f35ba8b-85af-4709-9552-aeaa8e5e7095",
+          "receptionistId": "fe8d5d93-4d9c-4b59-8491-c512e6c9709a",
+          "receptionistName": "Nguyễn Thu Trang",
+          "memberMembershipId": "fc88dfc4-e8d2-476d-83c1-9c2cfd43c948",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 4200000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Bùi Khánh Linh",
+          "packageName": "Thẻ Zumba & Nhảy 6 Tháng",
+          "amount": 4200000,
+          "paymentMethod": 3,
+          "paymentDate": "2026-10-26T14:42:15.995767+00:00",
+          "status": 2
+        },
+        {
+          "id": "9b28d334-3c0c-435b-b0df-708e09c8b026",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "6869627d-fdde-4c81-890b-c7b9ea02d4d0",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 1800000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Đỗ Hải Nam",
+          "packageName": "Thẻ Bóng Đồng Đội 3 Tháng",
+          "amount": 1800000,
+          "paymentMethod": 1,
+          "paymentDate": null,
+          "status": 1
+        },
+        {
+          "id": "978bf048-8e4f-487a-9534-8cf03f3a245b",
+          "receptionistId": "6a9501ea-e7c8-4514-9dd6-b5a5a54388ad",
+          "receptionistName": "Lê Minh Đức",
+          "memberMembershipId": "525f8bf3-eb5c-40f9-b17c-24e8860b36f6",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 12000000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Ngô Phương Thảo",
+          "packageName": "Thẻ Bạch Kim Trọn Gói 1 Năm",
+          "amount": 12000000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "ba7631b0-9f07-42c6-8719-245068cd60ef",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "337f46af-8e17-4dbd-b98d-e034dfc3ad81",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 12000000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Dương Tuấn Kiệt",
+          "packageName": "Thẻ Bạch Kim Trọn Gói 1 Năm",
+          "amount": 12000000,
+          "paymentMethod": 2,
+          "paymentDate": "2026-10-26T14:42:16.633703+00:00",
+          "status": 2
+        },
+        {
+          "id": "b1805ff2-efd1-4d0c-8c2d-22e74a30c705",
+          "receptionistId": "fe8d5d93-4d9c-4b59-8491-c512e6c9709a",
+          "receptionistName": "Nguyễn Thu Trang",
+          "memberMembershipId": "fd65ec98-35f5-4eaf-a120-55a98a09d678",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 4500000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Nguyễn Trần Huy Vũ",
+          "packageName": "Thẻ Boxing VIP 6 Tháng",
+          "amount": 4500000,
+          "paymentMethod": 3,
+          "paymentDate": "2026-10-26T14:44:14.791072+00:00",
+          "status": 2
+        },
+        {
+          "id": "f8735d35-41aa-48b9-831e-b3100ea43f4a",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "8fff7e3d-0a96-46c1-87f0-a823c7a05a8b",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 150000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Nguyễn Văn A",
+          "packageName": "Thẻ Trải Nghiệm 7 Ngày",
+          "amount": 150000,
+          "paymentMethod": 1,
+          "paymentDate": "2026-10-26T14:44:14.983462+00:00",
+          "status": 2
+        },
+        {
+          "id": "dd720111-13fc-469e-9590-e56c62cc71d0",
+          "receptionistId": "6a9501ea-e7c8-4514-9dd6-b5a5a54388ad",
+          "receptionistName": "Lê Minh Đức",
+          "memberMembershipId": "7b51e3e3-82b2-4439-95e6-090136af8f2e",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 800000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Võ Trung Thành",
+          "packageName": "Thẻ Gym Tiêu Chuẩn 1 Tháng",
+          "amount": 800000,
+          "paymentMethod": 2,
+          "paymentDate": "2026-10-26T14:44:16.09244+00:00",
+          "status": 2
+        },
+        {
+          "id": "f293611a-cc47-4204-970c-d8a506a6d110",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "bc76f310-5f65-4c20-96f8-f0530b69e955",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 12000000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Mai Thuận Thiên Sinh",
+          "packageName": "Thẻ Bạch Kim Trọn Gói 1 Năm",
+          "amount": 12000000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "1fd2a2e6-b6c3-4e0a-8477-d72c1c0afacf",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "9d13ed7e-a4b5-4b00-97d6-99ee3d925359",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 12000000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Mai Thuận Thiên Sinh",
+          "packageName": "Thẻ Bạch Kim Trọn Gói 1 Năm",
+          "amount": 12000000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "8e52e89a-6d6c-45d0-86be-a1f06f7d480a",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "a2dfd9f2-fb2b-440d-8bde-c13d29c3fbaa",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 800000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Nguyễn Văn A",
+          "packageName": "Gói 1 tháng",
+          "amount": 800000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "0f273f13-0fb5-45bc-8144-4bc65a700ef6",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "a0b7f08b-89c0-42c8-b59c-9a587a91f093",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 800000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Mai Thuận Thiên Sinh",
+          "packageName": "Gói 1 tháng",
+          "amount": 800000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "1a19b168-00f7-4e8e-a0b1-ee4e04f3fb1b",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "3229d2cc-68b5-4dfe-accf-9817b6a472fa",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "e9488e0a-1133-43d0-b758-9565832f66a1",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "2b41c4ba-7d33-4499-861c-3c9da674952a",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "6e430ead-aa23-4f2b-876d-96146054efab",
+          "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+          "receptionistName": "QA261029163854 reception",
+          "memberMembershipId": "ca782adc-f424-4c4f-b776-14f82bc3a5d0",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 0,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 1,
+          "paymentDate": "2026-10-29T16:51:08.379567+00:00",
+          "status": 2
+        },
+        {
+          "id": "aa7d0c5c-ce9e-4b90-be3b-37f01c9de69f",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": null,
+          "classBookingId": "36d4619e-1727-4735-9a0f-397b9b11fcd7",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "kind": "Class",
+          "originalAmount": 10000,
+          "discountPercent": 20,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "",
+          "amount": 8000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "418989b7-d2b5-4df4-9199-17cb0d45c73b",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "c202345c-e386-4b80-b106-733d5a0dc139",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Upgrade",
+          "originalAmount": 100000,
+          "discountPercent": 0,
+          "creditAmount": 6000,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "QA261029163854 90 days",
+          "amount": 94000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "16db9261-6558-4860-b896-7ae63c2611bc",
+          "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+          "receptionistName": "QA261029163854 reception",
+          "memberMembershipId": "df78280c-3b36-4577-ad57-85500bd46527",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 0,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 1,
+          "paymentDate": "2026-10-29T16:51:08.089176+00:00",
+          "status": 2
+        },
+        {
+          "id": "2dfade7d-77b0-41a5-bbbc-54bfbb1239db",
+          "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+          "receptionistName": "QA261029163854 reception",
+          "memberMembershipId": null,
+          "classBookingId": "37b29c43-c33c-4597-93ed-5c8d5c0f7bdc",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "kind": "Class",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "",
+          "amount": 10000,
+          "paymentMethod": 1,
+          "paymentDate": "2026-10-29T16:51:11.970867+00:00",
+          "status": 4
+        },
+        {
+          "id": "c304eeee-7c57-4510-806a-2a3f0d9d6d5e",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": null,
+          "classBookingId": "10d07c32-b58e-4121-9b31-0104529e9fea",
+          "classId": "c802f363-0d7d-4660-a102-c350908edf88",
+          "className": "QA261029163854 freeClass",
+          "kind": "Class",
+          "originalAmount": 0,
+          "discountPercent": 20,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "",
+          "amount": 0,
+          "paymentMethod": 2,
+          "paymentDate": "2026-10-29T16:55:31.227971+00:00",
+          "status": 2
+        },
+        {
+          "id": "668853a5-cdcb-407c-be58-e471cc704c66",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": null,
+          "classBookingId": "ffdbdeb4-7692-4481-8e7f-0443e80169a0",
+          "classId": "b40a954f-69e4-4114-ba56-b9ef22d0a89c",
+          "className": "QA261029163854 fullClass",
+          "kind": "Class",
+          "originalAmount": 0,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "",
+          "amount": 0,
+          "paymentMethod": 2,
+          "paymentDate": "2026-10-29T16:55:31.620799+00:00",
+          "status": 2
+        },
+        {
+          "id": "e0245407-e2ba-4acf-be26-d381d12f72cb",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "7986815f-0dec-4e17-a2fb-6a57ab7c9d0b",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "5b503dc3-f6a4-4009-8a5d-b2f2719cf3ad",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": null,
+          "classBookingId": "d888cf55-99a9-480b-b1f0-6b2215d4294b",
+          "classId": "b9fd5ada-5e4b-458a-b41c-9baeb811c692",
+          "className": "QA261029163854 attendanceClass",
+          "kind": "Class",
+          "originalAmount": 0,
+          "discountPercent": 20,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "",
+          "amount": 0,
+          "paymentMethod": 2,
+          "paymentDate": "2026-10-29T16:55:32.345881+00:00",
+          "status": 2
+        },
+        {
+          "id": "63796664-17ab-49d3-9983-1af67ac7264b",
+          "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+          "receptionistName": "QA261029163854 reception",
+          "memberMembershipId": null,
+          "classBookingId": "be00f2f0-267d-426a-82c7-428ef44dab4c",
+          "classId": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+          "className": "QA261029163854 Late paid",
+          "kind": "Class",
+          "originalAmount": 10000,
+          "discountPercent": 20,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "",
+          "amount": 8000,
+          "paymentMethod": 1,
+          "paymentDate": "2026-10-29T16:55:34.591987+00:00",
+          "status": 2
+        },
+        {
+          "id": "41b63b9a-f1cd-44d1-a8a6-1742977c2a78",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": null,
+          "classBookingId": "8f8ed5b0-b87f-4278-b9f2-a57ce89a8067",
+          "classId": "16ce452b-e81d-4c85-b39f-51ad9c6e017f",
+          "className": "QA261029163854 Training recovery",
+          "kind": "Class",
+          "originalAmount": 0,
+          "discountPercent": 20,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "",
+          "amount": 0,
+          "paymentMethod": 2,
+          "paymentDate": "2026-10-29T16:58:35.785876+00:00",
+          "status": 2
+        },
+        {
+          "id": "e3109ca0-04f6-4d79-9da0-4021a92660a4",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "f493e9bd-1ccc-4c6c-aa7f-16fbbbc03e93",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "d39dc5c8-111e-4a69-94ae-dde816bbabe2",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "bc73f69e-2f44-4698-81d1-177dcd665745",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Nguyễn Văn A",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "99c3136e-4e84-4735-87c0-c38b5e071251",
+          "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+          "receptionistName": "QA261029163854 reception",
+          "memberMembershipId": "dd1e32b2-130c-4aa1-ac10-11656069f307",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 0,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 1,
+          "paymentDate": null,
+          "status": 1
+        },
+        {
+          "id": "6d0754d8-a289-472e-a391-4dd5d38a42b4",
+          "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+          "receptionistName": "QA261029163854 reception",
+          "memberMembershipId": null,
+          "classBookingId": "5935e735-d3bc-4208-9bdd-4a67fa73ba70",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "kind": "Class",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": "2026-10-29T17:06:37.770566+00:00",
+          "status": 4
+        },
+        {
+          "id": "de22213d-e69e-4c75-aca5-05e19efe0634",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": null,
+          "classBookingId": "647bc50d-db5f-489a-bbbe-55059252285f",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "kind": "Class",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "95c11aff-dff0-4149-bf29-aa10562b9dac",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "2b5e7d54-ae88-4869-8c81-a893cdc333ca",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "9d1f7bb6-1c91-4843-85c0-618ab150fced",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": "c23d4ba1-7ad7-4317-989c-f58c5f27be3d",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 member",
+          "packageName": "QA261029163854 30 days",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "18e72277-1eed-4d49-9de7-2fa15508a596",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": null,
+          "classBookingId": "30fd0775-9528-449a-b6d3-e871d967e5c7",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "kind": "Class",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Nguyễn Văn A",
+          "packageName": "",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "c8ceb933-2474-4285-a53f-667e66136b9a",
+          "receptionistId": null,
+          "receptionistName": "",
+          "memberMembershipId": null,
+          "classBookingId": "fce078d3-28c7-41fa-bc9b-6ec0eccaf039",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "kind": "Class",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Nguyễn Văn A",
+          "packageName": "",
+          "amount": 10000,
+          "paymentMethod": 2,
+          "paymentDate": null,
+          "status": 3
+        },
+        {
+          "id": "2cbaf394-83e3-4cce-bcf2-558de96a0156",
+          "receptionistId": "a982065e-f96b-4443-8797-cf4f25c4fefa",
+          "receptionistName": "QA261029163854 reception",
+          "memberMembershipId": null,
+          "classBookingId": "b33ad79e-e4ad-44c6-8d7e-36786732bc40",
+          "classId": "f32118a1-42a1-40ea-8c11-431c643850d8",
+          "className": "QA261029163854 paidClass",
+          "kind": "Class",
+          "originalAmount": 10000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "QA261029163854 otherMember",
+          "packageName": "",
+          "amount": 10000,
+          "paymentMethod": 1,
+          "paymentDate": "2026-10-30T03:42:51.84516+00:00",
+          "status": 4
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches/53698bc7-76dc-4e09-85bb-775040b90870",
+      "role": "manager_cleanup",
+      "status": 200,
+      "ms": 81,
+      "body": {
+        "id": "53698bc7-76dc-4e09-85bb-775040b90870",
+        "accountId": "15385eb7-5544-437f-82c7-c2b205202c4b",
+        "fullName": "QA261029163854 coach",
+        "phone": "0916385401",
+        "email": "qa_261029163854_coach@example.invalid",
+        "avatar": "",
+        "specialization": "QA",
+        "experienceYears": 2,
+        "dob": "1990-01-01T00:00:00Z",
+        "gender": "Other"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/coaches/53698bc7-76dc-4e09-85bb-775040b90870",
+      "role": "manager_cleanup",
+      "status": 400,
+      "ms": 308,
+      "body": {
+        "title": "Không thể xóa Huấn luyện viên này vì họ đang phụ trách các lớp học.",
+        "status": 400,
+        "detail": "Không thể xóa Huấn luyện viên này vì họ đang phụ trách các lớp học.",
+        "message": "Không thể xóa Huấn luyện viên này vì họ đang phụ trách các lớp học.",
+        "traceId": "0HNPM6PMEKTVM:000000CB"
+      },
+      "error": null,
+      "contentType": "application/problem+json"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories/88a8990c-0afe-4f96-9384-48ce49884531",
+      "role": "manager_cleanup",
+      "status": 200,
+      "ms": 569,
+      "body": {
+        "id": "88a8990c-0afe-4f96-9384-48ce49884531",
+        "categoryName": "QA261029163854 Sport",
+        "description": "QA261029163854 temporary integration audit - no real funds",
+        "createdAt": "2026-10-29T16:39:25.972703+00:00",
+        "updatedAt": "2026-10-29T16:51:04.186741+00:00"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "DELETE",
+      "endpoint": "/api/categories/88a8990c-0afe-4f96-9384-48ce49884531",
+      "role": "manager_cleanup",
+      "status": 400,
+      "ms": 419,
+      "body": {
+        "title": "Không thể xóa bộ môn này vì đang có lớp học thuộc bộ môn này.",
+        "status": 400,
+        "detail": "Không thể xóa bộ môn này vì đang có lớp học thuộc bộ môn này.",
+        "message": "Không thể xóa bộ môn này vì đang có lớp học thuộc bộ môn này.",
+        "traceId": "0HNPM6PMEKTVM:000000CD"
+      },
+      "error": null,
+      "contentType": "application/problem+json"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "role": "manager_cleanup",
+      "status": 200,
+      "ms": 116,
+      "body": [
+        {
+          "price": 0,
+          "id": "786ef6a4-e18a-4716-9565-d5166545599b",
+          "className": "Boxing Đốt Mỡ Cấp Tốc",
+          "categoryId": "1f87f71f-bd7b-49d9-ac66-89146c561827",
+          "categoryName": "Boxing",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 12,
+          "currentEnrolled": 3,
+          "spotsLeft": 9,
+          "startDate": "2026-01-09T00:00:00Z",
+          "endDate": "2026-12-01T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:27.585913+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "2ee6a923-2688-41bb-92c5-3104e9b9b625",
+          "className": "Yoga Chào Mặt Trời",
+          "categoryId": "a7345a3c-52e3-4354-a31c-020986ce62f1",
+          "categoryName": "Yoga",
+          "coachId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "coachName": "Trần Thanh Bình",
+          "maxCapacity": 20,
+          "currentEnrolled": 3,
+          "spotsLeft": 17,
+          "startDate": "2026-10-15T00:00:00Z",
+          "endDate": "2026-11-15T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:27.192544+00:00",
+          "updatedAt": "2026-10-29T14:13:26.320489+00:00"
+        },
+        {
+          "price": 0,
+          "id": "9d3564fa-4f3d-4b5a-be17-a5e07a4d4cc9",
+          "className": "Bơi Lội Trẻ Em K2",
+          "categoryId": "2b7d4171-5a37-476f-8af2-d40679900c99",
+          "categoryName": "Bơi lội",
+          "coachId": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "coachName": "Lê Hoàng Yến",
+          "maxCapacity": 15,
+          "currentEnrolled": 0,
+          "spotsLeft": 15,
+          "startDate": "2026-01-06T00:00:00Z",
+          "endDate": "2026-01-09T00:00:00Z",
+          "status": 3,
+          "createdAt": "2026-10-26T14:41:27.68521+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "a6b6a5cf-243b-4c65-bb1f-6b84c00c1e9b",
+          "className": "Pilates Trị Liệu Cột Sống",
+          "categoryId": "13921296-7fdc-4cec-b38b-9ac4d6a08231",
+          "categoryName": "Pilates",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 12,
+          "currentEnrolled": 3,
+          "spotsLeft": 9,
+          "startDate": "2026-10-15T00:00:00Z",
+          "endDate": "2026-12-15T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:27.88908+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần",
+          "categoryId": "73e63b9e-8373-4519-a63d-a3ad7a1325ab",
+          "categoryName": "Zumba",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 30,
+          "currentEnrolled": 3,
+          "spotsLeft": 27,
+          "startDate": "2026-11-01T00:00:00Z",
+          "endDate": "2026-12-31T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:27.788476+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "ffbc7d88-54ad-4816-bb8b-d2ba11034780",
+          "className": "Kickboxing Căn Bản Nữ",
+          "categoryId": "eadc7c78-73c4-4f78-b3e3-87e118a5b324",
+          "categoryName": "Kickboxing",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 10,
+          "currentEnrolled": 1,
+          "spotsLeft": 9,
+          "startDate": "2026-10-20T00:00:00Z",
+          "endDate": "2026-12-21T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.242247+00:00",
+          "updatedAt": "2026-10-29T14:13:26.320489+00:00"
+        },
+        {
+          "price": 0,
+          "id": "e1dc7406-601f-4446-95b7-5bf1acbc6d14",
+          "className": "Cầu Lông Sinh Viên",
+          "categoryId": "ca0330ee-aae6-4aeb-afc0-f7260217a6fe",
+          "categoryName": "Cầu lông",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 8,
+          "currentEnrolled": 1,
+          "spotsLeft": 7,
+          "startDate": "2026-10-01T00:00:00Z",
+          "endDate": "2026-12-31T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.31138+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "a4d4d664-b8a5-4720-a08a-a4ab53aa19ce",
+          "className": "Bóng Rổ Thiếu Niên U15",
+          "categoryId": "1f96a13c-1dee-46c0-ad94-6dffaccb1e57",
+          "categoryName": "Bóng rổ",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 24,
+          "currentEnrolled": 0,
+          "spotsLeft": 24,
+          "startDate": "2026-11-01T00:00:00Z",
+          "endDate": "2027-01-31T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:27.989723+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "5d5241c6-acff-429c-9f5c-82f42536b4ae",
+          "className": "Gym Kỹ Thuật Nâng Cao",
+          "categoryId": "77e8f964-1036-4319-b07b-5b3749841adb",
+          "categoryName": "Gym",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 5,
+          "currentEnrolled": 0,
+          "spotsLeft": 5,
+          "startDate": "2026-08-01T00:00:00Z",
+          "endDate": "2026-09-30T00:00:00Z",
+          "status": 3,
+          "createdAt": "2026-10-26T14:41:28.394514+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân",
+          "categoryId": "5e121bb4-ff37-4535-9f1b-f4f7a274f1bf",
+          "categoryName": "Đạp xe trong nhà",
+          "coachId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "coachName": "Nguyễn Mạnh Hùng",
+          "maxCapacity": 20,
+          "currentEnrolled": 4,
+          "spotsLeft": 16,
+          "startDate": "2026-10-01T00:00:00Z",
+          "endDate": "2026-11-30T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.154042+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "8090d08c-4d1e-4612-9727-ee442ab69353",
+          "className": "Tennis Cơ Bản Cho Người Mới",
+          "categoryId": "1c7cb609-f516-44c2-b8c9-6af3b7ab5792",
+          "categoryName": "Tennis",
+          "coachId": "a0fa0412-ccf8-4c40-81b1-4423033b34f8",
+          "coachName": "Phạm Quốc Tuấn",
+          "maxCapacity": 8,
+          "currentEnrolled": 3,
+          "spotsLeft": 5,
+          "startDate": "2026-10-02T00:00:00Z",
+          "endDate": "2026-12-22T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.556925+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "d8f0dd81-4d63-40ff-b955-1e18dacc6b4d",
+          "className": "Bóng Bàn Phản Xạ Nhanh",
+          "categoryId": "49b204d0-48b7-414a-9787-ad25a051cfbd",
+          "categoryName": "Bóng bàn",
+          "coachId": "a0fa0412-ccf8-4c40-81b1-4423033b34f8",
+          "coachName": "Phạm Quốc Tuấn",
+          "maxCapacity": 12,
+          "currentEnrolled": 3,
+          "spotsLeft": 9,
+          "startDate": "2026-10-09T00:00:00Z",
+          "endDate": "2027-01-01T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.649111+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "ba5e2254-1f4d-4ac3-a01a-2ce90c0d7dc1",
+          "className": "Futsal Phong Trào Tối Thứ 3-5",
+          "categoryId": "8acaa8f6-9017-4557-9e63-544845fc3c64",
+          "categoryName": "Bóng đá",
+          "coachId": "3410b882-cb3d-49a3-a983-8aad9a3aa300",
+          "coachName": "Đỗ Minh Khang",
+          "maxCapacity": 16,
+          "currentEnrolled": 3,
+          "spotsLeft": 13,
+          "startDate": "2026-09-25T00:00:00Z",
+          "endDate": "2026-12-18T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.745234+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "45a21785-5eb5-42b8-b959-8e703cb820e8",
+          "className": "Chạy Bộ 10K Buổi Sáng",
+          "categoryId": "15ea3886-bc8d-464f-bfba-84a4c5f04690",
+          "categoryName": "Chạy bộ",
+          "coachId": "67a3bbcc-3201-461d-ab70-c54ab7b4e41c",
+          "coachName": "Vũ Thị Lan",
+          "maxCapacity": 25,
+          "currentEnrolled": 4,
+          "spotsLeft": 21,
+          "startDate": "2026-10-03T00:00:00Z",
+          "endDate": "2026-12-02T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.829808+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "d425f60e-7d91-4515-a259-d7a1b0caea7c",
+          "className": "HIIT Đốt Mỡ 45 Phút",
+          "categoryId": "176e06bb-dd35-4232-b439-24b6fc2d0e63",
+          "categoryName": "HIIT",
+          "coachId": "67a3bbcc-3201-461d-ab70-c54ab7b4e41c",
+          "coachName": "Vũ Thị Lan",
+          "maxCapacity": 18,
+          "currentEnrolled": 4,
+          "spotsLeft": 14,
+          "startDate": "2026-10-13T00:00:00Z",
+          "endDate": "2026-12-12T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:28.914516+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "e4c6b5d8-7d62-44fb-90ba-04bccc985316",
+          "className": "Bóng Chuyền Hơi Nam Nữ",
+          "categoryId": "b01f0a2d-d7af-48cb-8989-7578cd08d4f6",
+          "categoryName": "Bóng chuyền",
+          "coachId": "3410b882-cb3d-49a3-a983-8aad9a3aa300",
+          "coachName": "Đỗ Minh Khang",
+          "maxCapacity": 16,
+          "currentEnrolled": 2,
+          "spotsLeft": 14,
+          "startDate": "2026-10-28T00:00:00Z",
+          "endDate": "2026-12-22T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-26T14:41:29.081772+00:00",
+          "updatedAt": "2026-10-29T14:13:26.320489+00:00"
+        },
+        {
+          "price": 0,
+          "id": "426d67ee-5f3a-453d-925d-06496e174ce3",
+          "className": "Taekwondo Thiếu Niên",
+          "categoryId": "58598cff-e673-4f39-936a-570bbf6ffe92",
+          "categoryName": "Taekwondo",
+          "coachId": "2224a691-949c-4b65-89f0-9276be92b498",
+          "coachName": "Hoàng Văn Long",
+          "maxCapacity": 20,
+          "currentEnrolled": 1,
+          "spotsLeft": 19,
+          "startDate": "2026-10-30T00:00:00Z",
+          "endDate": "2027-01-21T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:29.177634+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "bdf8b867-49be-47c9-97b6-0375eb4d1536",
+          "className": "Muay Thai Kỹ Thuật Đối Kháng",
+          "categoryId": "2d3c6cba-1e6f-4c5e-a20a-8caaa360e807",
+          "categoryName": "Muay Thai",
+          "coachId": "3ac18beb-a224-477e-851e-ff122d59eb84",
+          "coachName": "Lương Đức Thắng",
+          "maxCapacity": 14,
+          "currentEnrolled": 2,
+          "spotsLeft": 12,
+          "startDate": "2026-11-02T00:00:00Z",
+          "endDate": "2027-01-01T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:29.282506+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "8fb4e521-c0e7-463d-96da-af756c72d2b1",
+          "className": "Pickleball Nhập Môn",
+          "categoryId": "f62fbbcb-3065-4713-b89e-9e088388696d",
+          "categoryName": "Pickleball",
+          "coachId": "a0fa0412-ccf8-4c40-81b1-4423033b34f8",
+          "coachName": "Phạm Quốc Tuấn",
+          "maxCapacity": 8,
+          "currentEnrolled": 3,
+          "spotsLeft": 5,
+          "startDate": "2026-10-26T00:00:00Z",
+          "endDate": "2026-12-07T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:28.990431+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 0,
+          "id": "ed5fce4c-e834-4faf-9317-0b07cffa112f",
+          "className": "Leo Núi Trong Nhà Cơ Bản",
+          "categoryId": "b6f89d76-8a22-4b47-8396-50cb17bbef29",
+          "categoryName": "Leo núi",
+          "coachId": "54d5ee17-66fa-402e-95ca-a298eb9f7880",
+          "coachName": "Trần Bảo Châu",
+          "maxCapacity": 10,
+          "currentEnrolled": 3,
+          "spotsLeft": 7,
+          "startDate": "2026-11-06T00:00:00Z",
+          "endDate": "2026-12-22T00:00:00Z",
+          "status": 1,
+          "createdAt": "2026-10-26T14:41:29.487325+00:00",
+          "updatedAt": null
+        },
+        {
+          "price": 10000,
+          "id": "ce37f5d3-bc88-4de8-95e5-a3186c2a1c1a",
+          "className": "QA261029163854 Late paid",
+          "categoryId": "88a8990c-0afe-4f96-9384-48ce49884531",
+          "categoryName": "QA261029163854 Sport",
+          "coachId": "53698bc7-76dc-4e09-85bb-775040b90870",
+          "coachName": "QA261029163854 coach",
+          "maxCapacity": 5,
+          "currentEnrolled": 0,
+          "spotsLeft": 5,
+          "startDate": "2026-10-26T00:00:00Z",
+          "endDate": "2026-12-03T00:00:00Z",
+          "status": 2,
+          "createdAt": "2026-10-29T16:55:34.439722+00:00",
+          "updatedAt": "2026-10-29T16:55:34.708804+00:00"
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ],
+  "coverage": [
+    {
+      "method": "GET",
+      "path": "/",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/accounts",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/accounts/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/chat",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/ai/exercise-suggestions",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/session/{sessionId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/attendances/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/attendances",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/attendances/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/audit-logs",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/audit-logs/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/register",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/login",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/logout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/forgot-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/reset-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/auth/change-password",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/center-managers",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/center-managers/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/center-managers/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/check-ins",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/classes",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/classes/{id}",
+      "calls": 1,
+      "statuses": [
+        400
+      ],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/classes/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/classes/{classId}/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-bookings/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-bookings",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-bookings/{bookingId}/member/{memberId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/class-sessions",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/class-sessions/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/class-sessions/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/class-sessions/class/{classId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/coaches",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/coaches/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/coaches/{id}",
+      "calls": 1,
+      "statuses": [
+        400
+      ],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/classes",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/revenue",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/members/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/memberships/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/dashboard/classes/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "POST",
+      "path": "/api/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/invoices/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/invoices/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/invoices",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/invoices/{id}/export",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/media/images",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/members",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/members/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/members/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{id}/summary",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/class-bookings",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/attendances",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/{memberId}/memberships",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/memberships/{id}/status",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/renew",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/memberships/{id}/cancel",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/membership-packages",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/membership-packages/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/notifications/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/{id}/read",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/notifications/read-all",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/notifications",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/notifications/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/options",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/class-checkout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/upgrade-checkout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/cancel",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{id}/refund-confirm",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/checkout",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/{paymentId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/payments/{paymentId}/confirm",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/payments/mock-gateway",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/receptionists",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/receptionists/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/account/{accountId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/receptionists/me",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/rooms",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/rooms/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/sepay/webhook",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/categories",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/categories/{id}",
+      "calls": 1,
+      "statuses": [
+        200
+      ],
+      "success": true
+    },
+    {
+      "method": "PUT",
+      "path": "/api/categories/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/categories/{id}",
+      "calls": 1,
+      "statuses": [
+        400
+      ],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/support-requests",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/support-requests",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/support-requests/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans/class/{classId}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-plans/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-plans/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-plans/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-plans",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "PUT",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "DELETE",
+      "path": "/api/training-results/{id}",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/members/me/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/api/coaches/me/members/{memberId}/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "POST",
+      "path": "/api/training-results",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    },
+    {
+      "method": "GET",
+      "path": "/WeatherForecast",
+      "calls": 0,
+      "statuses": [],
+      "success": false
+    }
+  ]
+}
