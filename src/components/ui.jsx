@@ -123,9 +123,10 @@ export function ErrorNotice({ error, onRetry }) {
 /* Loading & empty ---------------------------------------------------------- */
 export function Loading({ label = 'Đang tải' }) {
   return (
-    <div className="loading" role="status">
-      <span className="loading__bar" />
+    <div className="loading-state" role="status">
+      <div className="loading" aria-hidden="true"><span className="loading__bar" /></div>
       <span className="visually-hidden">{label}…</span>
+      <SlowHint active after={6000}>Đang chờ máy chủ phản hồi. Lần tải đầu có thể mất thêm thời gian.</SlowHint>
     </div>
   );
 }

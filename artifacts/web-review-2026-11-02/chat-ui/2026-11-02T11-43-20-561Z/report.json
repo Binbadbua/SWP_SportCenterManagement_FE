@@ -1,0 +1,44 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T11:43:20.562Z",
+    "baseUrl": "http://127.0.0.1:5182",
+    "mode": "Actual widget + fully simulated APIs",
+    "status": "interrupted",
+    "updatedAt": "2026-11-02T11:43:42.013Z",
+    "checks": 1,
+    "passed": 0,
+    "failed": 1,
+    "requests": 0,
+    "chatRequests": 0,
+    "runtimeExceptions": 0,
+    "screenshots": 0,
+    "browser": {
+      "executable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+      "pid": 21604,
+      "protocolVersion": "1.3",
+      "product": "Chrome/156.0.8078.74",
+      "revision": "@d331de35ca8ab1358c7a17e4bd41627d55eaef51",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+      "jsVersion": "15.6.75.25"
+    }
+  },
+  "checks": [
+    {
+      "id": "chat-001",
+      "name": "Chat UI run completes",
+      "passed": false,
+      "error": "Error: Chat launcher missing on /\n    at Page.visit (file:///C:/Users/AD/Downloads/FPT/SWP391/SportCenter/SWP_SportCenter.FrontEnd/scripts/qa/ai-chat-ui.mjs:89:201)\n    at async run (file:///C:/Users/AD/Downloads/FPT/SWP391/SportCenter/SWP_SportCenter.FrontEnd/scripts/qa/ai-chat-ui.mjs:133:2)\n    at async file:///C:/Users/AD/Downloads/FPT/SWP391/SportCenter/SWP_SportCenter.FrontEnd/scripts/qa/ai-chat-ui.mjs:205:5"
+    }
+  ],
+  "routes": [
+    "/"
+  ],
+  "requests": [],
+  "chatCalls": [],
+  "optionsCalls": 0,
+  "runtimeExceptions": [],
+  "consoleErrors": [],
+  "blockedWrites": [],
+  "screenshots": [],
+  "expectedMockDrops": []
+}

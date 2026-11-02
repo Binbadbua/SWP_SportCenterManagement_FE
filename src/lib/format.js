@@ -64,20 +64,20 @@ export const todayUtcDateString = () => new Date().toISOString().slice(0, 10);
 // (the phone column must be unique). Show those as empty.
 export const realPhone = (p) => (/^(pending|legacy)-/i.test(p ?? '') ? '' : (p ?? ''));
 
-// Today on the visitor's clock, "YYYY-MM-DD" — the calendar day the center's sessions use
-export const todayLocalDateString = (now = new Date()) => {
-  const pad = (n) => String(n).padStart(2, '0');
-  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
-};
+// Legacy name used by schedule/attendance views: their calendar follows the center too.
+export const todayLocalDateString = todayCenterDateString;
+const centerClockFormat = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23',
+});
+const centerClock = (now) => centerClockFormat.format(now);
 
 // A session has ended once its date (stored as UTC midnight) is before today, or it is today and
-// its end time ("HH:mm:ss", the center's local time) has passed. Compared on the visitor's clock.
+// its end time ("HH:mm:ss", the center's local time) has passed. Compared on the center's clock.
 export const isSessionOver = (s, now = new Date()) => {
-  const pad = (n) => String(n).padStart(2, '0');
-  const today = todayLocalDateString(now);
+  const today = todayCenterDateString(now);
   const day = String(s.date).slice(0, 10);
   if (day !== today) return day < today;
-  const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  const time = centerClock(now);
   return String(s.endTime ?? '').padEnd(8, ':00').slice(0, 8) <= time;
 };
 
@@ -112,11 +112,10 @@ export const moneyInWords = (value) => {
 
 // A session has begun once its day is before today, or it is today and its start time has passed
 export const isSessionStarted = (s, now = new Date()) => {
-  const pad = (n) => String(n).padStart(2, '0');
-  const today = todayLocalDateString(now);
+  const today = todayCenterDateString(now);
   const day = String(s.date).slice(0, 10);
   if (day !== today) return day < today;
-  const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  const time = centerClock(now);
   return String(s.startTime ?? '').padEnd(8, ':00').slice(0, 8) <= time;
 };
 

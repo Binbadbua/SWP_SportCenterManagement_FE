@@ -1,0 +1,29 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T03:05:58.650Z",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "scope": "No persisted QA accounts/entities, no real-user reset/mail request, no successful media upload intended. Uses a unique nonexistent @example.invalid address.",
+    "status": "interrupted",
+    "error": "Error: Cannot read live Swagger: HTTP 0",
+    "finishedAt": "2026-11-02T03:06:53.669Z",
+    "checks": 0,
+    "passed": 0,
+    "failed": 0,
+    "requests": 1
+  },
+  "results": [],
+  "calls": [
+    {
+      "method": "GET",
+      "endpoint": "/swagger/v1/swagger.json",
+      "role": "anonymous",
+      "status": 0,
+      "ms": 55017,
+      "body": null,
+      "error": "TimeoutError: The operation was aborted due to timeout"
+    }
+  ],
+  "notes": [
+    "Controlled negative responses do not establish delivery of email/OTP or successful real-user password reset. No credentials/tokens retained in report."
+  ]
+}

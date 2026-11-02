@@ -1,0 +1,501 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T11:49:30.525Z",
+    "baseUrl": "http://127.0.0.1:5182",
+    "mode": "payment-feedback-with-simulated-responses",
+    "status": "completed",
+    "responseSource": "Simulated payment GET responses; no real bank operation or payment status changed.",
+    "updatedAt": "2026-11-02T11:49:49.733Z",
+    "checks": 23,
+    "passed": 22,
+    "failed": 1,
+    "routes": 4,
+    "requests": 14,
+    "apiFailures": 1,
+    "runtimeExceptions": 0,
+    "screenshots": 1,
+    "browser": {
+      "executable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+      "pid": 20080,
+      "protocolVersion": "1.3",
+      "product": "Chrome/156.0.8078.74",
+      "revision": "@d331de35ca8ab1358c7a17e4bd41627d55eaef51",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+      "jsVersion": "15.6.75.25"
+    }
+  },
+  "checks": [
+    {
+      "id": "ui-001",
+      "name": "visitor /payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "passed": true,
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "settled": true,
+      "path": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "headings": [
+        "Chuyển khoản qua SePay",
+        "Chưa tải được mã QR",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1176,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "id": "ui-002",
+      "name": "Pending mock order offers manual checking",
+      "passed": true
+    },
+    {
+      "id": "ui-003",
+      "name": "Manual check shows loading and disables the button",
+      "passed": true
+    },
+    {
+      "id": "ui-004",
+      "name": "Pending response tells the user that confirmation has not arrived",
+      "passed": true
+    },
+    {
+      "id": "ui-005",
+      "name": "Pending feedback advises against transferring again",
+      "passed": true
+    },
+    {
+      "id": "ui-006",
+      "name": "Pending response does not show a successful payment",
+      "passed": true
+    },
+    {
+      "id": "ui-007",
+      "name": "Authoritative Paid response updates the page",
+      "passed": true
+    },
+    {
+      "id": "ui-008",
+      "name": "Slow polling/manual refreshes do not overlap",
+      "passed": true,
+      "maxConcurrentReads": 1
+    },
+    {
+      "id": "ui-009",
+      "name": "visitor /payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "passed": true,
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "settled": true,
+      "path": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "headings": [
+        "Đơn đã hết hạn",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 820,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "id": "ui-010",
+      "name": "An expired order still allows checking a late confirmation",
+      "passed": true
+    },
+    {
+      "id": "ui-011",
+      "name": "Expired check asks for reconciliation without a second transfer",
+      "passed": true
+    },
+    {
+      "id": "ui-012",
+      "name": "visitor /payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "passed": true,
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "settled": true,
+      "path": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "headings": [
+        "Chuyển khoản qua SePay",
+        "Chưa tải được mã QR",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1176,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "id": "ui-013",
+      "name": "Read failure is shown to the user",
+      "passed": true
+    },
+    {
+      "id": "ui-014",
+      "name": "Manual button recovers after failure",
+      "passed": true
+    },
+    {
+      "id": "ui-015",
+      "name": "visitor /payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "passed": true,
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "settled": true,
+      "path": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "headings": [
+        "Chuyển khoản qua SePay",
+        "Chưa tải được mã QR",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1176,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "id": "ui-016",
+      "name": "Hidden payment tab does not keep polling",
+      "passed": true,
+      "before": 12,
+      "after": 12
+    },
+    {
+      "id": "ui-017",
+      "name": "Returning from the bank app checks immediately",
+      "passed": true,
+      "latencyMs": 26
+    },
+    {
+      "id": "ui-018",
+      "name": "Focus, visibility and online share one pending read",
+      "passed": false,
+      "maxConcurrentReads": 2
+    },
+    {
+      "id": "ui-019",
+      "name": "Returning shows server Paid without waiting for the poll interval",
+      "passed": true,
+      "latencyMs": 253
+    },
+    {
+      "id": "ui-020",
+      "name": "Paid removes polling and resume listeners",
+      "passed": true,
+      "before": 14,
+      "after": 14
+    },
+    {
+      "id": "ui-021",
+      "name": "No uncaught UI runtime exceptions",
+      "passed": true
+    },
+    {
+      "id": "ui-022",
+      "name": "No unexpected business write attempted",
+      "passed": true
+    },
+    {
+      "id": "ui-023",
+      "name": "All payment reads were intercepted for a synthetic ID",
+      "passed": true,
+      "mockReads": 14
+    }
+  ],
+  "routes": [
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "settled": true,
+      "path": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "headings": [
+        "Chuyển khoản qua SePay",
+        "Chưa tải được mã QR",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1176,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "settled": true,
+      "path": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "headings": [
+        "Đơn đã hết hạn",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 820,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "settled": true,
+      "path": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "headings": [
+        "Chuyển khoản qua SePay",
+        "Chưa tải được mã QR",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1176,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "settled": true,
+      "path": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "headings": [
+        "Chuyển khoản qua SePay",
+        "Chưa tải được mã QR",
+        "Tập luyện",
+        "Thành viên",
+        "Liên hệ"
+      ],
+      "alerts": [],
+      "fatal": false,
+      "rootLength": 1176,
+      "loading": 0,
+      "sample": false,
+      "overflow": false,
+      "width": 1440,
+      "title": "SportCenter",
+      "apiErrors": []
+    }
+  ],
+  "requests": [
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.62",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620172416,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.63",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620172416,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 2
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.64",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620172933,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1404
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.65",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620174702,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1397
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.127",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620176684,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 2
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.128",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620176684,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 2
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.129",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620177342,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 899
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.191",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620179083,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 1
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.192",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620179083,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 2
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.193",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620179717,
+      "status": 500,
+      "mimeType": "application/json",
+      "ms": 899
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.255",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620181190,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 2
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.256",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620181191,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 2
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.257",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620184742,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 602
+    },
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.258",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620186372,
+      "status": 200,
+      "mimeType": "application/json",
+      "ms": 2
+    }
+  ],
+  "apiFailures": [
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "id": "28912.193",
+      "method": "GET",
+      "endpoint": "/api/payments/00000000-0000-4000-8000-000000000099",
+      "startedAt": 1793620179717,
+      "status": 500,
+      "mimeType": "application/json"
+    }
+  ],
+  "runtimeExceptions": [],
+  "consoleErrors": [],
+  "blockedWrites": [],
+  "screenshots": [
+    {
+      "role": "visitor",
+      "route": "/payment/result?paymentId=00000000-0000-4000-8000-000000000099",
+      "path": "artifacts/web-review-2026-11-02/payment-ui/2026-11-02T11-49-30-466Z/screenshots/ui-2026-11-02T11-49-30-524Z/manual-check-pending.png"
+    }
+  ],
+  "dialogs": [],
+  "payment": null
+}

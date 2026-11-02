@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   Link,
   NavLink,
@@ -10,7 +10,7 @@ import { isStaff, useAuth } from "../context/AuthContext.jsx";
 import { AccountRole } from "../lib/enums.js";
 import Icon from "../components/Icon.jsx";
 import Logo from "../components/Logo.jsx";
-import { Button, EmptyState } from "../components/ui.jsx";
+import { Button, EmptyState, Loading } from "../components/ui.jsx";
 
 // Sidebar navigation by role. `preview: true` = UI only, no back-end API yet.
 export const STAFF_NAV = [
@@ -226,7 +226,7 @@ export default function StaffLayout() {
           ))}
         </nav>
         <main className="staff__main" id="main">
-          <Outlet />
+          <Suspense fallback={<Loading label="Đang mở trang" />}><Outlet /></Suspense>
         </main>
       </div>
     </div>

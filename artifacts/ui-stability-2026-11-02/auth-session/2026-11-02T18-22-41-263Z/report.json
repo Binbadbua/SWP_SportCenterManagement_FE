@@ -1,0 +1,68 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T18:22:41.264Z",
+    "mode": "Actual React AuthProvider; two real same-origin tabs sharing localStorage; fake JWTs and in-memory login only.",
+    "baseUrl": "http://127.0.0.1:60071",
+    "status": "completed",
+    "finishedAt": "2026-11-02T18:22:44.811Z",
+    "checks": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "name": "Two actual tabs start as guests in the isolated shared context",
+      "passed": true
+    },
+    {
+      "name": "Signing in tab A synchronizes the member identity to tab B",
+      "passed": true
+    },
+    {
+      "name": "Shared stored session matches its token",
+      "passed": true
+    },
+    {
+      "name": "Switching account and role in tab A replaces tab B identity",
+      "passed": true
+    },
+    {
+      "name": "Captured updates from account A cannot patch account B",
+      "passed": true
+    },
+    {
+      "name": "Signout in tab A makes tab B a guest",
+      "passed": true
+    },
+    {
+      "name": "Captured profile callbacks cannot resurrect a signed-out session",
+      "passed": true
+    },
+    {
+      "name": "Mismatched session access_token and current token are rejected",
+      "passed": true
+    },
+    {
+      "name": "An old same-account token callback cannot overwrite a renewed session",
+      "passed": true
+    },
+    {
+      "name": "localStorage.clear propagates guest state to the peer tab",
+      "passed": true
+    },
+    {
+      "name": "A saved user without a token remains a guest",
+      "passed": true
+    },
+    {
+      "name": "Preset profile IDs avoid all profile and external API requests",
+      "passed": true
+    },
+    {
+      "name": "No uncaught browser errors occurred across both tabs",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "runtimeErrors": []
+}

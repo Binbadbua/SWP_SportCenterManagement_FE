@@ -590,3 +590,6 @@
   .invoice-page { max-width: none; padding: 0; }
   .invoice { padding: 0; border: 0; }
 }
+
+/* A slow API should keep a readable status beside the loading indicator. */
+.loading-state > .slow-hint { margin: -12px 0 18px; text-align: center; font-size: 13px; }

@@ -1,0 +1,40 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T03:06:26.957Z",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "timezone": "Asia/Bangkok",
+    "scope": "AI inference, authentication and GETs with existing demo accounts only. No QA resources, payment mutation or BE source edits.",
+    "status": "interrupted",
+    "error": "Error: Swagger unavailable",
+    "finishedAt": "2026-11-02T03:07:21.979Z",
+    "checks": 1,
+    "passed": 0,
+    "failed": 1,
+    "requests": 1
+  },
+  "observations": [],
+  "skipped": [],
+  "results": [
+    {
+      "id": "ai-nov2-001",
+      "name": "Live Swagger available",
+      "passed": false,
+      "endpoint": "/swagger/v1/swagger.json",
+      "status": 0,
+      "ms": 55020,
+      "response": null,
+      "error": "TimeoutError: The operation was aborted due to timeout"
+    }
+  ],
+  "calls": [
+    {
+      "method": "GET",
+      "endpoint": "/swagger/v1/swagger.json",
+      "role": "anonymous",
+      "status": 0,
+      "ms": 55020,
+      "body": null,
+      "error": "TimeoutError: The operation was aborted due to timeout"
+    }
+  ]
+}

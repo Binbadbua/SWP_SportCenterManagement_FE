@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+import { Suspense, useEffect } from 'react';
+import { Loading } from '../components/ui.jsx';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header, { PromoStrip } from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
@@ -16,7 +17,7 @@ export default function StoreLayout() {
       <Header />
       <PromoStrip />
       <main id="main">
-        <Outlet />
+        <Suspense fallback={<Loading label="Đang mở trang" />}><Outlet /></Suspense>
       </main>
       <Footer />
     </div>

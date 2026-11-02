@@ -27,6 +27,11 @@ const crud = (base) => ({
 });
 
 export const api = {
+  ai: {
+    options: (options) => http.get("/api/ai/options", options),
+    chat: (body, options) => http.post("/api/ai/chat", body, { timeoutMs: 35000, ...options }),
+    exerciseSuggestions: (body, options) => http.post("/api/ai/exercise-suggestions", body, { timeoutMs: 35000, ...options }),
+  },
   categories: crud("/api/categories"),
   rooms: crud("/api/rooms"),
 

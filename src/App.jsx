@@ -1,33 +1,36 @@
+import { lazy, Suspense } from 'react';
+import { useAuth } from './context/AuthContext.jsx';
+import { Button, Loading } from './components/ui.jsx';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { ToastProvider } from './components/Toast.jsx';
 import StoreLayout from './layouts/StoreLayout.jsx';
 import StaffLayout from './layouts/StaffLayout.jsx';
 import Home from './pages/store/Home.jsx';
-import Classes from './pages/store/Classes.jsx';
-import ClassDetail from './pages/store/ClassDetail.jsx';
-import ClassCheckout from './pages/store/ClassCheckout.jsx';
-import Schedule from './pages/store/Schedule.jsx';
-import Memberships from './pages/store/Memberships.jsx';
-import Coaches from './pages/store/Coaches.jsx';
-import CoachDetail from './pages/store/CoachDetail.jsx';
-import Checkout from './pages/store/Checkout.jsx';
-import UpgradeCheckout from './pages/store/UpgradeCheckout.jsx';
-import PaymentResult from './pages/store/PaymentResult.jsx';
-import Login from './pages/store/Login.jsx';
-import Register from './pages/store/Register.jsx';
-import Account from './pages/store/Account.jsx';
-import Help from './pages/store/Help.jsx';
-import Policy from './pages/store/Policy.jsx';
-import InvoicePrint from './pages/InvoicePrint.jsx';
-import NotFound from './pages/NotFound.jsx';
-import Dashboard from './pages/staff/Dashboard.jsx';
-import Attendance from './pages/staff/Attendance.jsx';
-import Bookings from './pages/staff/Bookings.jsx';
-import CheckIns from './pages/staff/CheckIns.jsx';
-import StaffNotifications from './pages/staff/Notifications.jsx';
-import CrudPage from './pages/staff/CrudPage.jsx';
-import { resources } from './pages/staff/resources.jsx';
+const Classes = lazy(() => import('./pages/store/Classes.jsx'));
+const ClassDetail = lazy(() => import('./pages/store/ClassDetail.jsx'));
+const ClassCheckout = lazy(() => import('./pages/store/ClassCheckout.jsx'));
+const Schedule = lazy(() => import('./pages/store/Schedule.jsx'));
+const Memberships = lazy(() => import('./pages/store/Memberships.jsx'));
+const Coaches = lazy(() => import('./pages/store/Coaches.jsx'));
+const CoachDetail = lazy(() => import('./pages/store/CoachDetail.jsx'));
+const Checkout = lazy(() => import('./pages/store/Checkout.jsx'));
+const UpgradeCheckout = lazy(() => import('./pages/store/UpgradeCheckout.jsx'));
+const PaymentResult = lazy(() => import('./pages/store/PaymentResult.jsx'));
+const Login = lazy(() => import('./pages/store/Login.jsx'));
+const Register = lazy(() => import('./pages/store/Register.jsx'));
+const Account = lazy(() => import('./pages/store/Account.jsx'));
+const Help = lazy(() => import('./pages/store/Help.jsx'));
+const Policy = lazy(() => import('./pages/store/Policy.jsx'));
+const InvoicePrint = lazy(() => import('./pages/InvoicePrint.jsx'));
+const NotFound = lazy(() => import('./pages/NotFound.jsx'));
+const Dashboard = lazy(() => import('./pages/staff/Dashboard.jsx'));
+const Attendance = lazy(() => import('./pages/staff/Attendance.jsx'));
+const Bookings = lazy(() => import('./pages/staff/Bookings.jsx'));
+const CheckIns = lazy(() => import('./pages/staff/CheckIns.jsx'));
+const StaffNotifications = lazy(() => import('./pages/staff/Notifications.jsx'));
+const ResourceRoute = lazy(() => import('./pages/staff/ResourceRoute.jsx'));
+const AiChatWidget = lazy(() => import('./components/AiChatWidget.jsx'));
 
 // Staff list pages: URL -> config in resources.jsx
 const CRUD_ROUTES = {
@@ -53,9 +56,11 @@ const CRUD_ROUTES = {
 
 export default function App() {
   const location = useLocation();
+  const { user } = useAuth();
+  const identity = [user?.accountId ?? 'guest', user?.role ?? user?.Role ?? '', user?.access_token ?? ''].join(':');
   return (
     <ToastProvider>
-      <ErrorBoundary resetKey={location.pathname}>
+      <ErrorBoundary key={identity} resetKey={location.pathname + location.search}>
       <Routes>
         <Route element={<StoreLayout />}>
           <Route index element={<Home />} />
@@ -86,15 +91,23 @@ export default function App() {
           <Route path="notifications" element={<StaffNotifications />} />
           {Object.entries(CRUD_ROUTES).map(([path, key]) => (
             // key= forces a fresh page (and fresh hooks) when moving between list pages
-            <Route key={path} path={path} element={<CrudPage key={key} config={resources[key]} />} />
+            <Route key={path} path={path} element={<ResourceRoute key={key} resourceKey={key} />} />
           ))}
           <Route path="*" element={<NotFound />} />
         </Route>
 
         {/* A bare page, so that only the invoice is printed */}
-        <Route path="print/invoices/:id" element={<InvoicePrint />} />
+        <Route path="print/invoices/:id" element={<Suspense fallback={<Loading label="Đang mở hóa đơn" />}><InvoicePrint /></Suspense>} />
       </Routes>
       </ErrorBoundary>
+      {!location.pathname.startsWith('/print/') && (
+        <ErrorBoundary key={'chat:' + identity} resetKey={identity} fallback={({ retry }) => (
+          <Button variant="secondary" size="sm" onClick={retry}
+            style={{ position: 'fixed', bottom: 20, right: 20, zIndex: 65 }}>Thử mở lại trợ lý AI</Button>
+        )}>
+          <Suspense fallback={null}><AiChatWidget /></Suspense>
+        </ErrorBoundary>
+      )}
     </ToastProvider>
   );
 }

@@ -1,0 +1,68 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T11:36:40.729Z",
+    "mode": "Actual React hook; deferred local loaders; no API/business requests.",
+    "baseUrl": "http://127.0.0.1:60845",
+    "status": "completed",
+    "finishedAt": "2026-11-02T11:36:43.393Z",
+    "checks": 13,
+    "passed": 13,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "name": "Initial load is pending with empty data",
+      "passed": true
+    },
+    {
+      "name": "Current request supplies data",
+      "passed": true
+    },
+    {
+      "name": "Manual refresh preserves data while loading",
+      "passed": true
+    },
+    {
+      "name": "An earlier manual response cannot replace the latest one",
+      "passed": true
+    },
+    {
+      "name": "Changed dependencies hide previous private data on first render",
+      "passed": true
+    },
+    {
+      "name": "Stale dependency response cannot overwrite the new owner",
+      "passed": true
+    },
+    {
+      "name": "Skip clears old data and loading state",
+      "passed": true
+    },
+    {
+      "name": "A response after skip cannot restore old data",
+      "passed": true
+    },
+    {
+      "name": "Resuming after skip loads the next owner",
+      "passed": true
+    },
+    {
+      "name": "Explicit offline sample fallback still works",
+      "passed": true
+    },
+    {
+      "name": "Stale 401 after unmount cannot log out or alert the current session",
+      "passed": true
+    },
+    {
+      "name": "No accidental API fetch was attempted",
+      "passed": true
+    },
+    {
+      "name": "No uncaught browser runtime error",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "runtimeErrors": []
+}

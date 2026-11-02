@@ -1,0 +1,33 @@
+{
+    "recordedAt":  "2026-11-02T18:36:08.1969856Z",
+    "command":  "npm.cmd run build",
+    "status":  "passed",
+    "modules":  96,
+    "entry":  {
+                  "gzipKBReportedByVite":  89.2,
+                  "path":  "/assets/index-BcHycsx2.js",
+                  "sha256":  "D0784DA3B2957D47BBF3632B472957BA596D1308874453D632CD33CCF01F2889",
+                  "bytes":  285389
+              },
+    "indexModulePreloads":  [
+                                {
+                                    "bytes":  48377,
+                                    "path":  "/assets/jsx-runtime-D5OEy9xs.js"
+                                },
+                                {
+                                    "bytes":  2511,
+                                    "path":  "/assets/Icon-BShF9x06.js"
+                                },
+                                {
+                                    "bytes":  3096,
+                                    "path":  "/assets/format-BOL1-RNH.js"
+                                },
+                                {
+                                    "bytes":  1982,
+                                    "path":  "/assets/membership-Bzpzi3lS.js"
+                                }
+                            ],
+    "entryPlusIndexPreloadBytes":  341355,
+    "largeChunkWarning":  false,
+    "scope":  "Actual final production build; not total app transfer size or production performance certification."
+}

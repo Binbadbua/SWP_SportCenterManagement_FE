@@ -1,0 +1,94 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T11:47:05.152Z",
+    "baseUrl": "http://127.0.0.1:5182",
+    "mode": "Actual widget + fully simulated APIs",
+    "status": "interrupted",
+    "updatedAt": "2026-11-02T11:47:26.956Z",
+    "checks": 1,
+    "passed": 0,
+    "failed": 1,
+    "requests": 8,
+    "chatRequests": 0,
+    "runtimeExceptions": 0,
+    "screenshots": 1,
+    "browser": {
+      "executable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+      "pid": 8520,
+      "protocolVersion": "1.3",
+      "product": "Chrome/156.0.8078.74",
+      "revision": "@d331de35ca8ab1358c7a17e4bd41627d55eaef51",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+      "jsVersion": "15.6.75.25"
+    }
+  },
+  "checks": [
+    {
+      "id": "chat-001",
+      "name": "Chat UI run completes",
+      "passed": false,
+      "error": "Error: Chat launcher missing on /\n    at Page.visit (file:///C:/Users/AD/Downloads/FPT/SWP391/SportCenter/SWP_SportCenter.FrontEnd/scripts/qa/ai-chat-ui.mjs:91:384)\n    at async run (file:///C:/Users/AD/Downloads/FPT/SWP391/SportCenter/SWP_SportCenter.FrontEnd/scripts/qa/ai-chat-ui.mjs:135:2)\n    at async file:///C:/Users/AD/Downloads/FPT/SWP391/SportCenter/SWP_SportCenter.FrontEnd/scripts/qa/ai-chat-ui.mjs:207:5"
+    }
+  ],
+  "routes": [
+    "/"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793620026736
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793620026736
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793620026736
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793620026737
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793620026737
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793620026738
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793620026740
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793620026740
+    }
+  ],
+  "chatCalls": [],
+  "optionsCalls": 0,
+  "runtimeExceptions": [],
+  "consoleErrors": [],
+  "blockedWrites": [],
+  "screenshots": [
+    {
+      "name": "startup-failure",
+      "path": "artifacts/web-review-2026-11-02/chat-ui/2026-11-02T11-47-05-151Z/screenshots/startup-failure.png"
+    }
+  ],
+  "expectedMockDrops": [],
+  "startupFailure": {
+    "body": "Bỏ qua, tới nội dung chính\nLiên hệ\n|\nTrợ giúp\n|\nĐăng ký\n|\nĐăng nhập\nSPORTCENTER\nLớp học\nLịch học\nGói tập\nHuấn luyện viên\n\nBuổi tập đầu tiên miễn phí\n\nĐăng ký ngay\nTìm lớp học\n\nMÙA GIẢI MỚI · ĐANG MỞ LỚP\n\nBƠI XA\nHƠN NỮA.\n\nYoga lúc bình minh, Tập tạ sau giờ làm. Chọn lớp, đặt chỗ và chúng tôi sẽ giữ chỗ cho bạn.\n\nĐẶT LỚP NGAY\nXem gói tập\nChọn môn của bạn\nTất cả lớp học\n\nTập theo nhóm\n\nTập cùng nhau vui hơn\nXem các lớp học\n\nHuấn luyện\n\nKế hoạch dành riêng cho bạn\nGặp các huấn luyện viên\nSắp khai giảng\nXem tất cả\n\nChưa có lớp nào mở đăng ký.\n\nMỘT THẺ.\nMỌI SÂN TẬP.\n\nMột thẻ cho mọi môn: tự tập ở phòng gym, cardio, hồ bơi và đặt các lớp có huấn luyện viên. Bạn chọn thời hạn phù hợp với mình.\n\nCác gói tập sẽ sớm được cập nhật. Xem gói tập\n\nĐăng ký và thanh toán trực tuyến ngay trên web.\n\nSPORTCENTER\n\nLớp học, sân tập và huấn luyện viên dưới một mái nhà.\n\nTẬP LUYỆN\nTất cả lớp học\nLịch học trong tuần\nHuấn luyện viên\nTHÀNH VIÊN\nGói tập & bảng giá\nĐăng ký\nTài khoản của tôi\nLIÊN HỆ\nSportCenter\nMở cửa hằng ngày 05:30–22:30\nLễ tân: 0388 300 001\n© 2026 SportCenter\nĐiều khoản\nBảo mật\nTrợ giúp\nNhân viên đăng nhập\nAI\nTrợ lý AI",
+    "html": "<div class=\"store\"><a href=\"#main\" class=\"skip-link\">Bỏ qua, tới nội dung chính</a><div class=\"utility-bar\"><div class=\"utility-bar__inner\"><a href=\"#find-us\">Liên hệ</a><span aria-hidden=\"true\">|</span><a href=\"/help\" data-discover=\"true\">Trợ giúp</a><span aria-hidden=\"true\">|</span><a href=\"/register\" data-discover=\"true\">Đăng ký</a><span aria-hidden=\"true\">|</span><a href=\"/login\" data-discover=\"true\">Đăng nhập</a></div></div><header class=\"site-header \"><div class=\"site-header__inner\"><a class=\"logo \" aria-label=\"Trang chủ SportCenter\" href=\"/\" data-discover=\"true\"><svg class=\"logo__mark\" viewBox=\"0 0 30 22\" aria-hidden=\"true\"><path d=\"M0 22 L9 0 H30 L21 22 Z\"></path></svg><span class=\"logo__word\">SportCenter</span></a><nav class=\"main-nav\" aria-label=\"Điều hướng chính\"><a class=\"main-nav__link\" href=\"/classes\" data-discover=\"true\">Lớp học</a><a class=\"main-nav__link\" href=\"/schedule\" data-discover=\"true\">Lịch học</a><a class=\"main-nav__link\" href=\"/memberships\" data-discover=\"true\">Gói tập</a><a class=\"main-nav__link\" href=\"/coaches\" data-discover=\"true\">Huấn luyện viên</a></nav><div class=\"site-header__tools\"><form class=\"search-pill\" role=\"search\"><button type=\"submit\" class=\"search-pill__btn\" aria-label=\"Tìm lớp học\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"10.5\" cy=\"10.5\" r=\"6.5\"></circle><path d=\"m15.5 15.5 5 5\"></path></svg></button><input placeholder=\"Tìm lớp học\" aria-label=\"Tìm lớp học\" type=\"search\" value=\"\"></form><a class=\"icon-btn\" aria-label=\"Lớp tôi đã đặt\" title=\"Lớp tôi đã đặt\" href=\"/account?tab=bookings\" data-discover=\"true\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><rect x=\"3.5\" y=\"5\" width=\"17\" height=\"15.5\" rx=\"2\"></rect><path d=\"M3.5 10h17M8 3v4M16 3v4\"></path></svg></a><a class=\"icon-btn\" aria-label=\"Tài khoản\" title=\"Tài khoản\" href=\"/login\" data-discover=\"true\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"8.5\" r=\"4\"></circle><path d=\"M4.5 20.5c1.2-3.6 4-5.5 7.5-5.5s6.3 1.9 7.5 5.5\"></path></svg></a><button type=\"button\" class=\"icon-btn menu-toggle\" aria-label=\"Menu\" aria-expanded=\"false\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 7h16M4 12h16M4 17h16\"></path></svg></button></div></div></header><div class=\"promo-strip\"><p>Buổi tập đầu tiên miễn phí</p><p class=\"promo-strip__links\"><a href=\"/register\" data-discover=\"true\">Đăng ký ngay</a><a href=\"/classes\" data-discover=\"true\">Tìm lớp học</a></p></div><main id=\"main\"><section class=\"hero hero--cycled\" style=\"--hero-fade: 1200ms; --hero-zoom: 5800ms;\"><img class=\"hero__img \" alt=\"\" decoding=\"async\" src=\"/images/tennis.jpg\" aria-hidden=\"true\" style=\"object-position: 60% 40%;\"><img class=\"hero__img \" alt=\"\" decoding=\"async\" src=\"/images/yoga.jpg\" aria-hidden=\"true\" style=\"object-position: center 40%;\"><img class=\"hero__img is-active\" alt=\"Vận động viên bơi bướm trong làn bơi\" decoding=\"async\" src=\"/images/swimming.jpg\" style=\"object-position: center 45%;\"><img class=\"hero__img \" alt=\"\" aria-hidden=\"true\" decoding=\"async\" src=\"/images/hiit-ropes.jpg\" style=\"object-position: 70% center;\"><img class=\"hero__img \" alt=\"\" aria-hidden=\"true\" decoding=\"async\" style=\"object-position: center 30%;\"><div class=\"hero__shade\"></div><div class=\"hero__content container \"><p class=\"hero__eyebrow label\">Mùa giải mới · đang mở lớp</p><h1 class=\"hero__title display\">Bơi xa<br>hơn nữa.</h1><p class=\"hero__lead\">Yoga lúc bình minh, Tập tạ sau giờ làm. Chọn lớp, đặt chỗ và chúng tôi sẽ giữ chỗ cho bạn.</p><div class=\"hero__actions\"><a class=\"btn btn--offset btn--lg\" href=\"/classes\" data-discover=\"true\"><span>Đặt lớp ngay</span><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"M4 12h15m-5-5 5 5-5 5\"></path></svg></a><a class=\"hero__link\" href=\"/memberships\" data-discover=\"true\">Xem gói tập</a></div></div></section><section class=\"rail\" aria-label=\"Chọn môn của bạn\"><div class=\"rail__head container\"><h2 class=\"section-title\">Chọn môn của bạn</h2><div class=\"rail__controls\"><a class=\"text-link\" href=\"/classes\" data-discover=\"true\">Tất cả lớp học</a><button type=\"button\" class=\"round-btn\" aria-label=\"Cuộn sang trái\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m15 6-6 6 6 6\"></path></svg></button><button type=\"button\" class=\"round-btn\" aria-label=\"Cuộn sang phải\"><svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.5\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><path d=\"m9 6 6 6-6 6\"></path></svg></button></div></div><div class=\"rail__track rail__track--auto\"><div class=\"rail__copy\" aria-hidden=\"true\" inert=\"\" hidden=\"\"></div></div></section><section class=\"container split\"><a class=\"feature-tile\" href=\"/classes\" data-discover=\"true\"><img alt=\"\" loading=\"lazy\" src=\"/images/group-fitness.jpg\"><div class=\"feature-tile__text\"><p class=\"feature-tile__kicker\">Tập theo nhóm</p><h2 class=\"feature-tile__title\">Tập cùng nhau vui hơn</h2><span class=\"btn btn--inverse btn--sm\">Xem các lớp học</span></div></a><a class=\"feature-tile\" href=\"/coaches\" data-discover=\"true\"><img alt=\"\" loading=\"lazy\" src=\"/images/coach-overhead.jpg\"><div class=\"feature-tile__text\"><p class=\"feature-tile__kicker\">Huấn luyện</p><h2 class=\"feature-tile__title\">Kế hoạch dành riêng cho bạn</h2><span class=\"btn btn--inverse btn--sm\">Gặp các huấn luyện viên</span></div></a></section><section class=\"container block\"><div class=\"block__head\"><h2 class=\"section-title\">Sắp khai giảng</h2><a class=\"text-link\" href=\"/classes\" data-discover=\"true\">Xem tất cả</a></div><p class=\"muted\">Chưa có lớp nào mở đăng ký.</p></section><section class=\"band\"><div class=\"container\"><div class=\"band__head\"><h2 class=\"band__title display\">Một thẻ.<br>Mọi sân tập.</h2><p class=\"band__lead\">Một thẻ cho mọi môn: tự tập ở phòng gym, cardio, hồ bơi và đặt các lớp có huấn luyện viên. Bạn chọn thời hạn phù hợp với mình.</p></div><p class=\"band__lead\">Các gói tập sẽ sớm được cập nhật. <a class=\"text-link\" href=\"/memberships\" data-discover=\"true\">Xem gói tập</a></p><p class=\"band__note\">Đăng ký và thanh toán trực tuyến ngay trên web.</p></div></section></main><footer class=\"site-footer\" id=\"find-us\"><div class=\"container site-footer__grid\"><div class=\"site-footer__brand\"><a class=\"logo logo--inverse\" aria-label=\"Trang chủ SportCenter\" href=\"/\" data-discover=\"true\"><svg class=\"logo__mark\" viewBox=\"0 0 30 22\" aria-hidden=\"true\"><path d=\"M0 22 L9 0 H30 L21 22 Z\"></path></svg><span class=\"logo__word\">SportCenter</span></a><p>Lớp học, sân tập và huấn luyện viên dưới một mái nhà.</p></div><div><h2 class=\"site-footer__title\">Tập luyện</h2><ul><li><a href=\"/classes\" data-discover=\"true\">Tất cả lớp học</a></li><li><a href=\"/schedule\" data-discover=\"true\">Lịch học trong tuần</a></li><li><a href=\"/coaches\" data-discover=\"true\">Huấn luyện viên</a></li></ul></div><div><h2 class=\"site-footer__title\">Thành viên</h2><ul><li><a href=\"/memberships\" data-discover=\"true\">Gói tập &amp; bảng giá</a></li><li><a href=\"/register\" data-discover=\"true\">Đăng ký</a></li><li><a href=\"/account\" data-discover=\"true\">Tài khoản của tôi</a></li></ul></div><div><h2 class=\"site-footer__title\">Liên hệ</h2><address>SportCenter<br>Mở cửa hằng ngày 05:30–22:30<br>Lễ tân: <a href=\"tel:0388300001\">0388 300 001</a></address></div></div><div class=\"container site-footer__base\"><span>© 2026 SportCenter</span><span><a href=\"/terms\" data-discover=\"true\">Điều khoản</a><a href=\"/privacy\" data-discover=\"true\">Bảo mật</a><a href=\"/help\" data-discover=\"true\">Trợ giúp</a><a href=\"/staff\" data-discover=\"true\">Nhân viên đăng nhập</a></span></div></footer></div><div class=\"ai-chat no-print\"><button type=\"button\" class=\"ai-chat__launcher \" aria-label=\"Mở trợ lý AI\" aria-expanded=\"false\"><span class=\"ai-chat__launcher-icon\" aria-hidden=\"true\">AI</span><span>Trợ lý AI</span></button></div><div class=\"toasts\" aria-live=\"polite\"></div>"
+  }
+}

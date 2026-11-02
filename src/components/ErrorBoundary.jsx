@@ -19,6 +19,10 @@ export default class ErrorBoundary extends Component {
 
   render() {
     if (!this.state.error) return this.props.children;
+    if (Object.prototype.hasOwnProperty.call(this.props, 'fallback')) {
+      const retry = () => this.setState({ error: null });
+      return typeof this.props.fallback === 'function' ? this.props.fallback({ error: this.state.error, retry }) : this.props.fallback;
+    }
     return (
       <div className="container page">
         <div className="empty">

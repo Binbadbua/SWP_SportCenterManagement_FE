@@ -14,7 +14,11 @@ const TOKEN_KEY = "sportcenter.token"; // Thêm key để lưu Token bảo mật
 
 const read = () => {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY)) ?? null;
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!saved || typeof saved !== 'object' || Array.isArray(saved) || !token) return null;
+    if (saved.access_token && saved.access_token !== token) return null;
+    return saved;
   } catch {
     return null;
   }
@@ -34,6 +38,17 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(read);
   // idle | loading | ready | error — whether user[PROFILE[role].key] could be found
   const [profile, setProfile] = useState({ status: "idle", error: null });
+
+  // Other tabs share the token: keep the displayed identity in the same session.
+  useEffect(() => {
+    const sync = (event) => {
+      if (event.key !== null && event.key !== STORAGE_KEY && event.key !== TOKEN_KEY) return;
+      setUser(read());
+      setProfile({ status: "idle", error: null });
+    };
+    window.addEventListener('storage', sync);
+    return () => window.removeEventListener('storage', sync);
+  }, []);
 
   const save = useCallback((nextUser, token) => {
     setUser(nextUser);
@@ -127,11 +142,13 @@ export function AuthProvider({ children }) {
   );
 
   const signOut = useCallback(() => save(null, null), [save]);
-  const updateUser = useCallback(
-    (patch) =>
-      save({ ...(read() ?? {}), ...patch }, localStorage.getItem(TOKEN_KEY)),
-    [save],
-  );
+  const updateUser = useCallback((patch) => {
+    const current = read();
+    if (!current || current.accountId !== user?.accountId) return;
+    if (user?.access_token && current.access_token !== user.access_token) return;
+    // Ignore profile responses that finish after logout or a session switch.
+    save({ ...current, ...patch }, localStorage.getItem(TOKEN_KEY));
+  }, [save, user?.accountId, user?.access_token]);
 
   // Look up the profile ID once per sign-in; it is saved with the session afterwards.
   const role = user?.role;

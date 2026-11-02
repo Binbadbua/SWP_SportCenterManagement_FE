@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { api, isMissingRoute } from '../../api/endpoints.js';
-import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
-import { usePaymentOptions } from '../../hooks/usePricing.js';
+import { usePaymentOptionsState } from '../../hooks/usePricing.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import { addDaysToDateInput, formatDate, formatMoney, fromDateInput, realPhone, todayCenterDateString } from '../../lib/format.js';
 import { afterCheckout } from '../../lib/payments.js';
@@ -22,8 +21,9 @@ export default function Checkout() {
   const member = isMember(user);
   const navigate = useNavigate();
   const location = useLocation();
-  const opts = usePaymentOptions();
-  const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
+  const paymentOptions = usePaymentOptionsState();
+  const opts = paymentOptions.data;
+  const packages = useApi(() => api.packages.list(), []);
   const me = useApi(() => api.members.me.get(), [user?.accountId], { skip: !member });
   const mine = useApi(() => api.memberships.mine(), [user?.accountId], { skip: !member });
   const invoices = useApi(() => api.invoices.mine(), [user?.accountId], { skip: !member });
@@ -36,6 +36,8 @@ export default function Checkout() {
   const [paying, setPaying] = useState(false);
   const [failure, setFailure] = useState(null);
   const [unavailable, setUnavailable] = useState(false);
+  const requiredData = [packages, paymentOptions, ...(member ? [me, mine, invoices] : [])];
+  const readinessBlocked = requiredData.some((state) => state.loading || state.error || state.usingSample);
 
   const today = todayCenterDateString();
   // With a membership still running, the new one starts the day after it ends
@@ -49,13 +51,21 @@ export default function Checkout() {
   const method = picked ?? opts?.methods[0];
   const hold = opts?.holdMinutes ?? 30;
 
-  if (packages.loading) {
+  if (requiredData.some((state) => state.loading)) {
     return (
       <div className="container page">
         <Loading />
       </div>
     );
   }
+  const loadErrors = requiredData.filter((state) => state.error);
+  if (loadErrors.length) return (
+    <div className="container page narrow">
+      <h1 className="panel-title">Chưa tải được thông tin đăng ký gói</h1>
+      {loadErrors.map((state, index) => <ErrorNotice key={index} error={state.error} onRetry={state.reload} />)}
+      <Button variant="secondary" to="/memberships">Về các gói tập</Button>
+    </div>
+  );
   if (!pkg || pkg.status !== 1) {
     return (
       <div className="container page">
@@ -68,7 +78,7 @@ export default function Checkout() {
 
   const pay = async (e) => {
     e.preventDefault();
-    if (mine.loading || invoices.loading || pendingOrder.checking || pendingOrder.error) return;
+    if (paying || !member || readinessBlocked || pendingOrder.checking || pendingOrder.error || !opts) return;
     const found = {};
     if (!start || start < today) found.startDate = 'Ngày bắt đầu phải từ hôm nay trở đi.';
     if (!agree) found.agree = 'Bạn cần đồng ý với điều khoản trước khi thanh toán.';
@@ -234,13 +244,13 @@ export default function Checkout() {
                 </Notice>
               )}
               {failure && <p className="field__error" role="alert">{failure}</p>}
-              <Button type="submit" form="checkout-form" size="lg" block disabled={paying || mine.loading || invoices.loading || pendingOrder.checking || !!pendingOrder.error || !opts}>
+              <Button type="submit" form="checkout-form" size="lg" block disabled={paying || readinessBlocked || pendingOrder.checking || !!pendingOrder.error || !opts}>
                 {paying ? 'Đang tạo giao dịch…' : `Xác nhận và thanh toán ${formatMoney(pkg.price)}`}
               </Button>
               <p className="checkout__safe muted">
                 <Icon name="check" size={16} strokeWidth={2} />{' '}
                 {opts?.online
-                  ? `Bước này chưa trừ tiền: bạn quét mã QR hoặc nhập thẻ ở bước sau; quá ${hold} phút chưa thanh toán thì đơn tự hủy.`
+                  ? `Bước này chưa trừ tiền: bạn quét mã QR bằng ứng dụng ngân hàng ở bước sau; quá ${hold} phút chưa thanh toán thì đơn tự hủy.`
                   : `Bước này chưa trừ tiền: bạn chuyển khoản ở bước sau; quá ${hold} phút lễ tân chưa xác nhận thì đơn tự hủy.`}
               </p>
             </>

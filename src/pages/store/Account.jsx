@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api, isMissingRoute } from "../../api/endpoints.js";
 import * as mock from "../../api/mockData.js";
@@ -71,6 +71,15 @@ export default function Account() {
   const tab = TABS.some((t) => t.key === params.get("tab"))
     ? params.get("tab")
     : "bookings";
+  const tabsRef = useRef(null);
+  useEffect(() => {
+    const nav = tabsRef.current;
+    const active = nav?.querySelector('[aria-current="page"]');
+    if (!nav || !active) return;
+    const parent = nav.getBoundingClientRect(), item = active.getBoundingClientRect();
+    if (item.left < parent.left) nav.scrollLeft -= parent.left - item.left + 8;
+    else if (item.right > parent.right) nav.scrollLeft += item.right - parent.right + 8;
+  }, [tab]);
 
   if (!user) {
     return (
@@ -117,7 +126,7 @@ export default function Account() {
         </div>
       </header>
 
-      <nav className="tabs" aria-label="Các mục tài khoản">
+      <nav ref={tabsRef} className="tabs" aria-label="Các mục tài khoản">
         {TABS.map((t) => (
           <button
             key={t.key}

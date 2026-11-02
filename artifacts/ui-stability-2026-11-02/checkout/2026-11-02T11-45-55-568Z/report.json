@@ -1,0 +1,105 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T11:45:55.568Z",
+    "mode": "Actual checkout and class-detail components with in-memory fixtures; no external API or financial writes.",
+    "baseUrl": "http://127.0.0.1:60418",
+    "status": "completed",
+    "finishedAt": "2026-11-02T11:45:58.695Z",
+    "checks": 21,
+    "passed": 21,
+    "failed": 0
+  },
+  "checks": [
+    {
+      "name": "Class checkout cannot submit while cards and bookings are unknown",
+      "passed": true
+    },
+    {
+      "name": "Class checkout still waits for duplicate-booking data after cards load",
+      "passed": true
+    },
+    {
+      "name": "Resolved class checkout exposes the authoritative discounted total",
+      "passed": true
+    },
+    {
+      "name": "Delayed checkout never creates a financial record",
+      "passed": true
+    },
+    {
+      "name": "Payment-options 503 shows a retryable failure",
+      "passed": true
+    },
+    {
+      "name": "Payment outage does not pretend to use the old desk-transfer flow",
+      "passed": true
+    },
+    {
+      "name": "Payment options recover through the visible retry action",
+      "passed": true
+    },
+    {
+      "name": "Payment-options retry never creates a financial record",
+      "passed": true
+    },
+    {
+      "name": "Upgrade card failure is shown as an error rather than an empty account",
+      "passed": true
+    },
+    {
+      "name": "Upgrade form recovers after cards load on retry",
+      "passed": true
+    },
+    {
+      "name": "Upgrade retry never creates a financial record",
+      "passed": true
+    },
+    {
+      "name": "A genuinely missing options route retains the legacy fallback",
+      "passed": true
+    },
+    {
+      "name": "Legacy capability check creates no financial record",
+      "passed": true
+    },
+    {
+      "name": "Staff uses held-seat count even when confirmed roster is empty",
+      "passed": true
+    },
+    {
+      "name": "Held-seat display check creates no booking",
+      "passed": true
+    },
+    {
+      "name": "Date default regression exercises the configured date fields",
+      "passed": true,
+      "count": 4
+    },
+    {
+      "name": "Staff date default is valid: schedule.date",
+      "passed": true,
+      "value": "2026-11-02"
+    },
+    {
+      "name": "Staff date default is valid: memberships.startDate",
+      "passed": true,
+      "value": "2026-11-02"
+    },
+    {
+      "name": "Staff date default is valid: trainingPlans.createdDate",
+      "passed": true,
+      "value": "2026-11-02"
+    },
+    {
+      "name": "Staff date default is valid: trainingResults.evaluationDate",
+      "passed": true,
+      "value": "2026-11-02"
+    },
+    {
+      "name": "No uncaught browser runtime errors during checkout scenarios",
+      "passed": true,
+      "errors": []
+    }
+  ],
+  "runtimeErrors": []
+}

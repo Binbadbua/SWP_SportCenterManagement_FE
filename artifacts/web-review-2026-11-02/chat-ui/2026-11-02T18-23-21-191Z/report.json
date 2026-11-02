@@ -1,0 +1,1083 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T18:23:21.192Z",
+    "baseUrl": "http://127.0.0.1:5182",
+    "mode": "Actual widget + fully simulated APIs",
+    "status": "completed",
+    "updatedAt": "2026-11-02T18:24:12.790Z",
+    "checks": 43,
+    "passed": 43,
+    "failed": 0,
+    "requests": 101,
+    "chatRequests": 15,
+    "runtimeExceptions": 0,
+    "screenshots": 4,
+    "browser": {
+      "executable": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+      "pid": 22588,
+      "protocolVersion": "1.3",
+      "product": "Chrome/156.0.8078.74",
+      "revision": "@d331de35ca8ab1358c7a17e4bd41627d55eaef51",
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/156.0.0.0 Safari/537.36",
+      "jsVersion": "15.6.75.25"
+    }
+  },
+  "checks": [
+    {
+      "id": "chat-001",
+      "name": "Guest sees sign-in CTA",
+      "passed": true
+    },
+    {
+      "id": "chat-002",
+      "name": "Guest opening chat sends no AI request",
+      "passed": true
+    },
+    {
+      "id": "chat-003",
+      "name": "Member options load without claiming provider verification",
+      "passed": true
+    },
+    {
+      "id": "chat-004",
+      "name": "Opening focuses the question field",
+      "passed": true
+    },
+    {
+      "id": "chat-005",
+      "name": "Empty question is not sendable",
+      "passed": true
+    },
+    {
+      "id": "chat-006",
+      "name": "Sending shows progress and disables editing",
+      "passed": true
+    },
+    {
+      "id": "chat-007",
+      "name": "Repeated submit shares one inference",
+      "passed": true,
+      "requests": 1
+    },
+    {
+      "id": "chat-008",
+      "name": "Real reply text and disclaimer rendered",
+      "passed": true
+    },
+    {
+      "id": "chat-009",
+      "name": "Next question sends only completed history pairs",
+      "passed": true
+    },
+    {
+      "id": "chat-010",
+      "name": "503 is actionable and keeps input",
+      "passed": true
+    },
+    {
+      "id": "chat-011",
+      "name": "Retry replaces the failed turn without duplicate bubble",
+      "passed": true
+    },
+    {
+      "id": "chat-012",
+      "name": "Failed turn was not leaked into provider history",
+      "passed": true
+    },
+    {
+      "id": "chat-013",
+      "name": "429 asks user to wait instead of auto-retrying",
+      "passed": true
+    },
+    {
+      "id": "chat-014",
+      "name": "429 does not trigger an automatic inference loop",
+      "passed": true
+    },
+    {
+      "id": "chat-015",
+      "name": "HTTP200 error object is rejected as answer",
+      "passed": true
+    },
+    {
+      "id": "chat-016",
+      "name": "Cancel restores input and permits another question",
+      "passed": true
+    },
+    {
+      "id": "chat-017",
+      "name": "A cancelled late answer cannot appear",
+      "passed": true
+    },
+    {
+      "id": "chat-018",
+      "name": "New conversation aborts and ignores pending response",
+      "passed": true
+    },
+    {
+      "id": "chat-019",
+      "name": "Slow request has a readable waiting message",
+      "passed": true
+    },
+    {
+      "id": "chat-020",
+      "name": "35second deadline releases the form with retry message",
+      "passed": true,
+      "elapsedMs": 35011
+    },
+    {
+      "id": "chat-021",
+      "name": "Question field enforces maxLength2000",
+      "passed": true
+    },
+    {
+      "id": "chat-022",
+      "name": "Browser typing cannot exceed2000characters",
+      "passed": true
+    },
+    {
+      "id": "chat-023",
+      "name": "Exactly2000characters are sent successfully",
+      "passed": true
+    },
+    {
+      "id": "chat-024",
+      "name": "IME Enter does not submit unfinished Vietnamese input",
+      "passed": true
+    },
+    {
+      "id": "chat-025",
+      "name": "ShiftEnter inserts a newline without sending",
+      "passed": true
+    },
+    {
+      "id": "chat-026",
+      "name": "Reply HTML remains inert plain text",
+      "passed": true
+    },
+    {
+      "id": "chat-027",
+      "name": "Account switch clears conversation and pending private response",
+      "passed": true
+    },
+    {
+      "id": "chat-028",
+      "name": "New account starts with empty provider history",
+      "passed": true
+    },
+    {
+      "id": "chat-029",
+      "name": "Conversation is not persisted in browser storage",
+      "passed": true
+    },
+    {
+      "id": "chat-030",
+      "name": "Cross-tab storage identity change resets private UI",
+      "passed": true
+    },
+    {
+      "id": "chat-031",
+      "name": "Cross-tab account change rejects an old pending reply",
+      "passed": true
+    },
+    {
+      "id": "chat-032",
+      "name": "Cross-tab storage clear signs out and clears chat",
+      "passed": true
+    },
+    {
+      "id": "chat-033",
+      "name": "Cross-tab signout shows guest gate without private messages",
+      "passed": true
+    },
+    {
+      "id": "chat-034",
+      "name": "375px panel fits viewport without horizontal overflow",
+      "passed": true
+    },
+    {
+      "id": "chat-035",
+      "name": "Reduced viewport keeps composer and controls visible",
+      "passed": true
+    },
+    {
+      "id": "chat-036",
+      "name": "Escape closes panel and returns keyboard focus",
+      "passed": true
+    },
+    {
+      "id": "chat-037",
+      "name": "Chat does not appear in print output",
+      "passed": true
+    },
+    {
+      "id": "chat-038",
+      "name": "Invoice print route unmounts chat entirely",
+      "passed": true
+    },
+    {
+      "id": "chat-039",
+      "name": "Staff coach can use the same widget",
+      "passed": true
+    },
+    {
+      "id": "chat-040",
+      "name": "Signout removes stored session and closes private chat",
+      "passed": true
+    },
+    {
+      "id": "chat-041",
+      "name": "After signout only guest CTA is shown",
+      "passed": true
+    },
+    {
+      "id": "chat-042",
+      "name": "No unexpected business writes were attempted",
+      "passed": true
+    },
+    {
+      "id": "chat-043",
+      "name": "No uncaught runtime exceptions",
+      "passed": true,
+      "exceptions": []
+    }
+  ],
+  "routes": [
+    "/",
+    "/login?next=%2F",
+    "/login?next=%2F",
+    "/login?next=%2F",
+    "/print/invoices/00000000-0000-4000-8000-000000000099",
+    "/",
+    "/login?next=%2Fstaff"
+  ],
+  "requests": [
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643802973
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643802974
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643802975
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643802975
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643802976
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643802976
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643802976
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643802976
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "startedAt": 1793643803880
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me",
+      "startedAt": 1793643803922
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643803955
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643803955
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643803956
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643803956
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643803956
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643803956
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643803957
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643803957
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643803995
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643804109
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643804843
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643805413
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643805536
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643805562
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643806174
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643806335
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643806342
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643806500
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643808509
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643808668
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643808672
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643810331
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643845347
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643845510
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643845620
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643845987
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643846158
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643846171
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643846330
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "startedAt": 1793643846500
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me",
+      "startedAt": 1793643846539
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643846551
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643846606
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643846607
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643846607
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643846607
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643846608
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643846608
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643846609
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643846609
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643848465
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643848475
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643848497
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643848498
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643848498
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643848498
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643848498
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643848499
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643848499
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643848499
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643848514
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643850442
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643850442
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643850443
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643850443
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643850444
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643850444
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643850444
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643850445
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "startedAt": 1793643850723
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me",
+      "startedAt": 1793643850753
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643850767
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643850810
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643850811
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643850811
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643850812
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643850813
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643850813
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643850813
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643850813
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643851471
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643851747
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643851747
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643851748
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643851748
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643851748
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643851748
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643851748
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643851748
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "startedAt": 1793643852048
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches/me",
+      "startedAt": 1793643852073
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "startedAt": 1793643852083
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "startedAt": 1793643852196
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643852339
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643852339
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643852340
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643852340
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "startedAt": 1793643852340
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/classes",
+      "startedAt": 1793643852341
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches",
+      "startedAt": 1793643852341
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/membership-packages?pageSize=500",
+      "startedAt": 1793643852341
+    }
+  ],
+  "chatCalls": [
+    {
+      "id": 1,
+      "networkId": "3184.104",
+      "request": {
+        "message": "Thẻ thành viên khác lớp có HLV thế nào?",
+        "history": []
+      },
+      "startedAt": 1793643804106,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "finishedAt": 1793643804808
+    },
+    {
+      "id": 2,
+      "networkId": "3184.105",
+      "request": {
+        "message": "Còn lịch tập thì xem ở đâu?",
+        "history": [
+          {
+            "role": "user",
+            "content": "Thẻ thành viên khác lớp có HLV thế nào?"
+          },
+          {
+            "role": "assistant",
+            "content": "Phản hồi mô phỏng: thẻ dành cho tự tập, lớp có HLV được đăng ký riêng."
+          }
+        ]
+      },
+      "startedAt": 1793643804836,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "finishedAt": 1793643804838
+    },
+    {
+      "id": 3,
+      "networkId": "3184.106",
+      "request": {
+        "message": "Câu hỏi cần thử lại",
+        "history": [
+          {
+            "role": "user",
+            "content": "Thẻ thành viên khác lớp có HLV thế nào?"
+          },
+          {
+            "role": "assistant",
+            "content": "Phản hồi mô phỏng: thẻ dành cho tự tập, lớp có HLV được đăng ký riêng."
+          },
+          {
+            "role": "user",
+            "content": "Còn lịch tập thì xem ở đâu?"
+          },
+          {
+            "role": "assistant",
+            "content": "Mở Tài khoản của tôi → Lịch tập."
+          }
+        ]
+      },
+      "startedAt": 1793643805405,
+      "actor": "member-one",
+      "httpStatus": 503,
+      "finishedAt": 1793643805507
+    },
+    {
+      "id": 4,
+      "networkId": "3184.107",
+      "request": {
+        "message": "Câu hỏi cần thử lại",
+        "history": [
+          {
+            "role": "user",
+            "content": "Thẻ thành viên khác lớp có HLV thế nào?"
+          },
+          {
+            "role": "assistant",
+            "content": "Phản hồi mô phỏng: thẻ dành cho tự tập, lớp có HLV được đăng ký riêng."
+          },
+          {
+            "role": "user",
+            "content": "Còn lịch tập thì xem ở đâu?"
+          },
+          {
+            "role": "assistant",
+            "content": "Mở Tài khoản của tôi → Lịch tập."
+          }
+        ]
+      },
+      "startedAt": 1793643805531,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "finishedAt": 1793643805532
+    },
+    {
+      "id": 5,
+      "networkId": "3184.108",
+      "request": {
+        "message": "Kiểm tra giới hạn câu hỏi",
+        "history": [
+          {
+            "role": "user",
+            "content": "Thẻ thành viên khác lớp có HLV thế nào?"
+          },
+          {
+            "role": "assistant",
+            "content": "Phản hồi mô phỏng: thẻ dành cho tự tập, lớp có HLV được đăng ký riêng."
+          },
+          {
+            "role": "user",
+            "content": "Còn lịch tập thì xem ở đâu?"
+          },
+          {
+            "role": "assistant",
+            "content": "Mở Tài khoản của tôi → Lịch tập."
+          },
+          {
+            "role": "user",
+            "content": "Câu hỏi cần thử lại"
+          },
+          {
+            "role": "assistant",
+            "content": "Đã thử lại thành công bằng phản hồi mô phỏng."
+          }
+        ]
+      },
+      "startedAt": 1793643805557,
+      "actor": "member-one",
+      "httpStatus": 429,
+      "finishedAt": 1793643805558
+    },
+    {
+      "id": 6,
+      "networkId": "3184.110",
+      "request": {
+        "message": "Không coi error thành reply",
+        "history": []
+      },
+      "startedAt": 1793643806332,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "finishedAt": 1793643806333
+    },
+    {
+      "id": 7,
+      "networkId": "3184.112",
+      "request": {
+        "message": "Hủy yêu cầu chậm",
+        "history": []
+      },
+      "startedAt": 1793643806498,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "cancelled": true,
+      "fulfillDropped": true,
+      "finishedAt": 1793643808300
+    },
+    {
+      "id": 8,
+      "networkId": "3184.114",
+      "request": {
+        "message": "Xóa trong lúc đang chờ",
+        "history": []
+      },
+      "startedAt": 1793643808665,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "cancelled": true,
+      "fulfillDropped": true,
+      "finishedAt": 1793643809967
+    },
+    {
+      "id": 9,
+      "networkId": "3184.116",
+      "request": {
+        "message": "Kiểm tra timeout35giây",
+        "history": []
+      },
+      "startedAt": 1793643810328,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "cancelled": true,
+      "fulfillDropped": true,
+      "finishedAt": 1793643847330
+    },
+    {
+      "id": 10,
+      "networkId": "3184.121",
+      "request": {
+        "message": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "history": []
+      },
+      "startedAt": 1793643845508,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "finishedAt": 1793643845509
+    },
+    {
+      "id": 11,
+      "networkId": "3184.124",
+      "request": {
+        "message": "Hiển thị nội dung như văn bản",
+        "history": []
+      },
+      "startedAt": 1793643846154,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "finishedAt": 1793643846155
+    },
+    {
+      "id": 12,
+      "networkId": "3184.126",
+      "request": {
+        "message": "PRIVATE_ACCOUNT_ONE",
+        "history": []
+      },
+      "startedAt": 1793643846327,
+      "actor": "member-one",
+      "httpStatus": 200,
+      "cancelled": true,
+      "fulfillDropped": true,
+      "finishedAt": 1793643847928
+    },
+    {
+      "id": 13,
+      "networkId": "3184.157",
+      "request": {
+        "message": "Câu đầu của tài khoản hai",
+        "history": []
+      },
+      "startedAt": 1793643848463,
+      "actor": "member-two",
+      "httpStatus": 200,
+      "finishedAt": 1793643848464
+    },
+    {
+      "id": 14,
+      "networkId": "3184.158",
+      "request": {
+        "message": "PRIVATE_STORAGE_PENDING",
+        "history": [
+          {
+            "role": "user",
+            "content": "Câu đầu của tài khoản hai"
+          },
+          {
+            "role": "assistant",
+            "content": "Phản hồi mới chỉ cho tài khoản hai."
+          }
+        ]
+      },
+      "startedAt": 1793643848473,
+      "actor": "member-two",
+      "httpStatus": 200,
+      "cancelled": true,
+      "fulfillDropped": true,
+      "finishedAt": 1793643850075
+    },
+    {
+      "id": 15,
+      "networkId": "3184.255",
+      "request": {
+        "message": "Câu hỏi từ coach",
+        "history": []
+      },
+      "startedAt": 1793643852194,
+      "actor": "coach",
+      "httpStatus": 200,
+      "finishedAt": 1793643852194
+    }
+  ],
+  "optionsCalls": 14,
+  "runtimeExceptions": [],
+  "consoleErrors": [
+    {
+      "browserLog": "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+      "url": "http://127.0.0.1:5182/api/ai/chat"
+    },
+    {
+      "browserLog": "Failed to load resource: the server responded with a status of 429 (Too Many Requests)",
+      "url": "http://127.0.0.1:5182/api/ai/chat"
+    }
+  ],
+  "blockedWrites": [],
+  "screenshots": [
+    {
+      "name": "guest-sign-in",
+      "path": "artifacts/web-review-2026-11-02/chat-ui/2026-11-02T18-23-21-191Z/screenshots/guest-sign-in.png"
+    },
+    {
+      "name": "member-conversation-desktop",
+      "path": "artifacts/web-review-2026-11-02/chat-ui/2026-11-02T18-23-21-191Z/screenshots/member-conversation-desktop.png"
+    },
+    {
+      "name": "member-chat-mobile-375",
+      "path": "artifacts/web-review-2026-11-02/chat-ui/2026-11-02T18-23-21-191Z/screenshots/member-chat-mobile-375.png"
+    },
+    {
+      "name": "member-chat-small-height",
+      "path": "artifacts/web-review-2026-11-02/chat-ui/2026-11-02T18-23-21-191Z/screenshots/member-chat-small-height.png"
+    }
+  ],
+  "expectedMockDrops": [
+    {
+      "request": 7,
+      "message": "Error: Invalid InterceptionId."
+    },
+    {
+      "request": 8,
+      "message": "Error: Invalid InterceptionId."
+    },
+    {
+      "request": 9,
+      "message": "Error: Invalid InterceptionId."
+    },
+    {
+      "request": 12,
+      "message": "Error: Invalid InterceptionId."
+    },
+    {
+      "request": 14,
+      "message": "Error: Invalid InterceptionId."
+    }
+  ]
+}

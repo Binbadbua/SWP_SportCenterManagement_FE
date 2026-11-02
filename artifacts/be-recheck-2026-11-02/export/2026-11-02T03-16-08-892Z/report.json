@@ -1,0 +1,177 @@
+{
+  "summary": {
+    "recordedAt": "2026-11-02T03:16:11.077Z",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "checks": 3,
+    "passed": 3,
+    "failed": 0,
+    "requests": 6,
+    "scope": "Read-only correction of an initial Member export policy assumption; FE Member printing uses its own invoice list."
+  },
+  "results": [
+    {
+      "id": "export-policy-001",
+      "name": "Canonical export works for receptionist",
+      "passed": true,
+      "method": "GET",
+      "endpoint": "/api/invoices/802530ca-074a-4b12-a190-bf276924f221/export",
+      "role": "Receptionist",
+      "status": 200,
+      "response": {
+        "id": "802530ca-074a-4b12-a190-bf276924f221",
+        "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+        "receptionistName": "Test Receptionist",
+        "memberMembershipId": "a884392a-759b-44bd-af09-28244037a1ce",
+        "classBookingId": null,
+        "classId": null,
+        "className": null,
+        "kind": "Membership",
+        "originalAmount": 2700000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "Trần Minh Quân",
+        "packageName": "Thẻ Võ Thuật 3 Tháng",
+        "amount": 2700000,
+        "paymentMethod": 3,
+        "paymentDate": "2026-10-26T14:42:12.271871+00:00",
+        "status": 2
+      },
+      "error": null
+    },
+    {
+      "id": "export-policy-002",
+      "name": "Member uses own invoice list for FE print, staff export remains protected",
+      "passed": true,
+      "method": "GET",
+      "endpoint": "/api/invoices/802530ca-074a-4b12-a190-bf276924f221/export",
+      "role": "Member",
+      "status": 403,
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "export-policy-003",
+      "name": "Old duplicate export alias has been removed",
+      "passed": true,
+      "method": "GET",
+      "endpoint": "/api/invoices/invoices/802530ca-074a-4b12-a190-bf276924f221/export",
+      "role": "Receptionist",
+      "status": 404,
+      "response": null,
+      "error": null
+    }
+  ],
+  "calls": [
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 842,
+      "body": {
+        "userId": "acd8962c-f8ff-4b40-b2e0-a02daad66889"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "nguyen.thu.trang"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 888,
+      "body": {
+        "userId": "09bf34a7-fed7-4175-b7ed-b8e402f4ca32"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "quan.tm"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/members/me/invoices",
+      "role": "Member",
+      "status": 200,
+      "ms": 104,
+      "body": [
+        {
+          "id": "802530ca-074a-4b12-a190-bf276924f221",
+          "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+          "receptionistName": "Test Receptionist",
+          "memberMembershipId": "a884392a-759b-44bd-af09-28244037a1ce",
+          "classBookingId": null,
+          "classId": null,
+          "className": null,
+          "kind": "Membership",
+          "originalAmount": 2700000,
+          "discountPercent": 0,
+          "creditAmount": 0,
+          "refundPending": false,
+          "memberName": "Trần Minh Quân",
+          "packageName": "Thẻ Võ Thuật 3 Tháng",
+          "amount": 2700000,
+          "paymentMethod": 3,
+          "paymentDate": "2026-10-26T14:42:12.271871+00:00",
+          "status": 2
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices/802530ca-074a-4b12-a190-bf276924f221/export",
+      "role": "Receptionist",
+      "status": 200,
+      "ms": 95,
+      "body": {
+        "id": "802530ca-074a-4b12-a190-bf276924f221",
+        "receptionistId": "48ef0260-48c1-4373-b50f-0dd9eac0636b",
+        "receptionistName": "Test Receptionist",
+        "memberMembershipId": "a884392a-759b-44bd-af09-28244037a1ce",
+        "classBookingId": null,
+        "classId": null,
+        "className": null,
+        "kind": "Membership",
+        "originalAmount": 2700000,
+        "discountPercent": 0,
+        "creditAmount": 0,
+        "refundPending": false,
+        "memberName": "Trần Minh Quân",
+        "packageName": "Thẻ Võ Thuật 3 Tháng",
+        "amount": 2700000,
+        "paymentMethod": 3,
+        "paymentDate": "2026-10-26T14:42:12.271871+00:00",
+        "status": 2
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices/802530ca-074a-4b12-a190-bf276924f221/export",
+      "role": "Member",
+      "status": 403,
+      "ms": 62,
+      "body": null,
+      "error": null,
+      "contentType": null
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/invoices/invoices/802530ca-074a-4b12-a190-bf276924f221/export",
+      "role": "Receptionist",
+      "status": 404,
+      "ms": 189,
+      "body": null,
+      "error": null,
+      "contentType": null
+    }
+  ]
+}

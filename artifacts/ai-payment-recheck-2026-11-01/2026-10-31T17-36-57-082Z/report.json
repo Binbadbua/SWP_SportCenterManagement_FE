@@ -1,0 +1,1486 @@
+{
+  "summary": {
+    "startedAt": "2026-10-31T17:36:57.085Z",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "scope": "Existing demo logins, GET data, AI inference only. No QA entities/payment/booking created; no webhook/confirm/refund.",
+    "status": "completed",
+    "finishedAt": "2026-10-31T17:37:48.858Z",
+    "checks": 16,
+    "passed": 11,
+    "failed": 5,
+    "requests": 23
+  },
+  "observations": [
+    {
+      "aiRoutes": [
+        "/api/ai/chat",
+        "/api/ai/exercise-suggestions"
+      ],
+      "eventRoutes": []
+    },
+    {
+      "memberChat": {
+        "status": 503,
+        "ms": 78,
+        "body": {
+          "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+          "status": 503,
+          "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+          "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+          "traceId": "0HNPNEMF0BRFA:0000000E"
+        }
+      },
+      "catalogue": [
+        {
+          "id": "1f87f71f-bd7b-49d9-ac66-89146c561827",
+          "name": "Boxing"
+        },
+        {
+          "id": "a7345a3c-52e3-4354-a31c-020986ce62f1",
+          "name": "Yoga"
+        },
+        {
+          "id": "2b7d4171-5a37-476f-8af2-d40679900c99",
+          "name": "Bơi lội"
+        },
+        {
+          "id": "13921296-7fdc-4cec-b38b-9ac4d6a08231",
+          "name": "Pilates"
+        },
+        {
+          "id": "73e63b9e-8373-4519-a63d-a3ad7a1325ab",
+          "name": "Zumba"
+        },
+        {
+          "id": "eadc7c78-73c4-4f78-b3e3-87e118a5b324",
+          "name": "Kickboxing"
+        },
+        {
+          "id": "ca0330ee-aae6-4aeb-afc0-f7260217a6fe",
+          "name": "Cầu lông"
+        },
+        {
+          "id": "1f96a13c-1dee-46c0-ad94-6dffaccb1e57",
+          "name": "Bóng rổ"
+        },
+        {
+          "id": "77e8f964-1036-4319-b07b-5b3749841adb",
+          "name": "Gym"
+        },
+        {
+          "id": "5e121bb4-ff37-4535-9f1b-f4f7a274f1bf",
+          "name": "Đạp xe trong nhà"
+        },
+        {
+          "id": "1c7cb609-f516-44c2-b8c9-6af3b7ab5792",
+          "name": "Tennis"
+        },
+        {
+          "id": "49b204d0-48b7-414a-9787-ad25a051cfbd",
+          "name": "Bóng bàn"
+        },
+        {
+          "id": "8acaa8f6-9017-4557-9e63-544845fc3c64",
+          "name": "Bóng đá"
+        },
+        {
+          "id": "15ea3886-bc8d-464f-bfba-84a4c5f04690",
+          "name": "Chạy bộ"
+        },
+        {
+          "id": "176e06bb-dd35-4232-b439-24b6fc2d0e63",
+          "name": "HIIT"
+        },
+        {
+          "id": "b01f0a2d-d7af-48cb-8989-7578cd08d4f6",
+          "name": "Bóng chuyền"
+        },
+        {
+          "id": "58598cff-e673-4f39-936a-570bbf6ffe92",
+          "name": "Taekwondo"
+        },
+        {
+          "id": "2d3c6cba-1e6f-4c5e-a20a-8caaa360e807",
+          "name": "Muay Thai"
+        },
+        {
+          "id": "f62fbbcb-3065-4713-b89e-9e088388696d",
+          "name": "Pickleball"
+        },
+        {
+          "id": "b6f89d76-8a22-4b47-8396-50cb17bbef29",
+          "name": "Leo núi"
+        },
+        {
+          "id": "88a8990c-0afe-4f96-9384-48ce49884531",
+          "name": "QA261029163854 Sport"
+        },
+        {
+          "id": "79e90d3f-da62-4f11-97aa-45382d072fbb",
+          "name": "QA_RECHECK_261030060103 sport"
+        },
+        {
+          "id": "5ecaed96-37cd-4fcb-9671-69f7fd719673",
+          "name": "QA_RECHECK_261030060850 sport"
+        }
+      ]
+    },
+    {
+      "skipped": "Schedule/history/answer accuracy/scope need a successful provider answer first."
+    },
+    {
+      "exercise": {
+        "status": 503,
+        "ms": 302,
+        "body": {
+          "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+          "status": 503,
+          "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+          "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+          "traceId": "0HNPNEMF0BRFA:00000013"
+        },
+        "usesExistingRosterMember": true
+      }
+    },
+    {
+      "paymentRead": 1,
+      "httpStatus": 200,
+      "ms": 2913,
+      "data": {
+        "status": 5,
+        "provider": "SePay",
+        "paidAt": null,
+        "amount": 8000
+      },
+      "error": null
+    },
+    {
+      "paymentRead": 2,
+      "httpStatus": 200,
+      "ms": 212,
+      "data": {
+        "status": 5,
+        "provider": "SePay",
+        "paidAt": null,
+        "amount": 8000
+      },
+      "error": null
+    },
+    {
+      "paymentRead": 3,
+      "httpStatus": 200,
+      "ms": 285,
+      "data": {
+        "status": 5,
+        "provider": "SePay",
+        "paidAt": null,
+        "amount": 8000
+      },
+      "error": null
+    }
+  ],
+  "results": [
+    {
+      "id": "ai-readiness-001",
+      "name": "Live Swagger responds",
+      "passed": true,
+      "status": 200,
+      "ms": 30370,
+      "endpoint": "/swagger/v1/swagger.json",
+      "response": "[saved separately]",
+      "error": null
+    },
+    {
+      "id": "ai-readiness-002",
+      "name": "Anonymous cannot chat",
+      "passed": true,
+      "status": 401,
+      "ms": 92,
+      "endpoint": "/api/ai/chat",
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "ai-readiness-003",
+      "name": "Coach cannot use member chat",
+      "passed": false,
+      "status": 503,
+      "ms": 1002,
+      "endpoint": "/api/ai/chat",
+      "response": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:00000007"
+      },
+      "error": null
+    },
+    {
+      "id": "ai-readiness-004",
+      "name": "Reception cannot use member chat",
+      "passed": false,
+      "status": 503,
+      "ms": 120,
+      "endpoint": "/api/ai/chat",
+      "response": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:00000008"
+      },
+      "error": null
+    },
+    {
+      "id": "ai-readiness-005",
+      "name": "Manager cannot use member chat",
+      "passed": false,
+      "status": 503,
+      "ms": 105,
+      "endpoint": "/api/ai/chat",
+      "response": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:00000009"
+      },
+      "error": null
+    },
+    {
+      "id": "ai-readiness-006",
+      "name": "Empty chat rejected",
+      "passed": true,
+      "status": 400,
+      "ms": 83,
+      "endpoint": "/api/ai/chat",
+      "response": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "Message": [
+            "The Message field is required."
+          ]
+        },
+        "traceId": "00-e5ecab437aac0778798c6e2bbd06ca11-f3418371ac2e463e-00"
+      },
+      "error": null
+    },
+    {
+      "id": "ai-readiness-007",
+      "name": "Whitespace chat rejected",
+      "passed": true,
+      "status": 400,
+      "ms": 88,
+      "endpoint": "/api/ai/chat",
+      "response": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "Message": [
+            "The Message field is required."
+          ]
+        },
+        "traceId": "00-130e2c8536ff4fbb3be70916ce9a0062-f0f7e937cb096e5e-00"
+      },
+      "error": null
+    },
+    {
+      "id": "ai-readiness-008",
+      "name": "Chat over 2000 characters rejected",
+      "passed": true,
+      "status": 400,
+      "ms": 72,
+      "endpoint": "/api/ai/chat",
+      "response": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "Message": [
+            "The field Message must be a string or array type with a maximum length of '2000'."
+          ]
+        },
+        "traceId": "00-01277ee772de0983484029b0b7d3a4f5-018fa9dcdcb662a4-00"
+      },
+      "error": null
+    },
+    {
+      "id": "ai-readiness-009",
+      "name": "Read current catalogue for comparison",
+      "passed": true,
+      "status": 200,
+      "ms": 220,
+      "endpoint": "/api/categories",
+      "response": [
+        {
+          "id": "1f87f71f-bd7b-49d9-ac66-89146c561827",
+          "categoryName": "Boxing",
+          "description": "Huấn luyện kỹ thuật đấm bốc, phản xạ và rèn luyện thể lực cường độ cao.",
+          "createdAt": "2026-10-26T14:40:43.493872+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "a7345a3c-52e3-4354-a31c-020986ce62f1",
+          "categoryName": "Yoga",
+          "description": "Lớp học cải thiện độ dẻo dai, cân bằng cơ thể và sức khỏe tinh thần.",
+          "createdAt": "2026-10-26T14:40:44.442591+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "2b7d4171-5a37-476f-8af2-d40679900c99",
+          "categoryName": "Bơi lội",
+          "description": "Các lớp bơi lội tổng hợp từ cơ bản đến nâng cao.",
+          "createdAt": "2026-10-26T14:40:44.51157+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "13921296-7fdc-4cec-b38b-9ac4d6a08231",
+          "categoryName": "Pilates",
+          "description": "Phương pháp tập luyện tăng cường sự linh hoạt, cải thiện tư thế và sức mạnh cơ lõi.",
+          "createdAt": "2026-10-26T14:40:44.601932+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "73e63b9e-8373-4519-a63d-a3ad7a1325ab",
+          "categoryName": "Zumba",
+          "description": "Môn khiêu vũ thể hình kết hợp âm nhạc Latin sôi động giúp đốt calo hiệu quả.",
+          "createdAt": "2026-10-26T14:40:44.685662+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "eadc7c78-73c4-4f78-b3e3-87e118a5b324",
+          "categoryName": "Kickboxing",
+          "description": "Kết hợp giữa võ thuật và cardio cường độ cao, giúp tự vệ và săn chắc cơ thể.",
+          "createdAt": "2026-10-26T14:40:44.760899+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "ca0330ee-aae6-4aeb-afc0-f7260217a6fe",
+          "categoryName": "Cầu lông",
+          "description": "Thể thao đối kháng rèn luyện phản xạ nhanh, sức bền và sự khéo léo.",
+          "createdAt": "2026-10-26T14:40:44.839624+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "1f96a13c-1dee-46c0-ad94-6dffaccb1e57",
+          "categoryName": "Bóng rổ",
+          "description": "Môn thể thao đồng đội giúp phát triển chiều cao, sự linh hoạt và kỹ năng phối hợp.",
+          "createdAt": "2026-10-26T14:40:44.914609+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "77e8f964-1036-4319-b07b-5b3749841adb",
+          "categoryName": "Gym",
+          "description": "Tập luyện phát triển cơ bắp và sức mạnh với các thiết bị hiện đại và tạ tự do.",
+          "createdAt": "2026-10-26T14:40:44.991426+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "5e121bb4-ff37-4535-9f1b-f4f7a274f1bf",
+          "categoryName": "Đạp xe trong nhà",
+          "description": "Bài tập Cardio cường độ cao trên xe đạp chậm trong nhà kết hợp âm nhạc sôi động.",
+          "createdAt": "2026-10-26T14:40:45.078159+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "1c7cb609-f516-44c2-b8c9-6af3b7ab5792",
+          "categoryName": "Tennis",
+          "description": "Kỹ thuật thuận tay, trái tay, giao bóng và chiến thuật đánh đơn/đôi trên sân cứng trong nhà.",
+          "createdAt": "2026-10-26T14:40:45.162066+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "49b204d0-48b7-414a-9787-ad25a051cfbd",
+          "categoryName": "Bóng bàn",
+          "description": "Bóng bàn từ cơ bản đến thi đấu: cầm vợt, giật bóng, xoáy và phản xạ nhanh.",
+          "createdAt": "2026-10-26T14:40:45.23913+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "8acaa8f6-9017-4557-9e63-544845fc3c64",
+          "categoryName": "Bóng đá",
+          "description": "Futsal sân 5 người: dẫn bóng, chuyền, sút và phối hợp đồng đội.",
+          "createdAt": "2026-10-26T14:40:45.319142+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "15ea3886-bc8d-464f-bfba-84a4c5f04690",
+          "categoryName": "Chạy bộ",
+          "description": "Chạy bộ trên đường chạy trong nhà: kỹ thuật thở, sải chân và giáo án 5K–10K.",
+          "createdAt": "2026-10-26T14:40:45.404198+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "176e06bb-dd35-4232-b439-24b6fc2d0e63",
+          "categoryName": "HIIT",
+          "description": "Tập cường độ cao ngắt quãng với dây thừng, kettlebell và bodyweight để đốt mỡ nhanh.",
+          "createdAt": "2026-10-26T14:40:45.472866+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "b01f0a2d-d7af-48cb-8989-7578cd08d4f6",
+          "categoryName": "Bóng chuyền",
+          "description": "Bóng chuyền trong nhà: chuyền, đệm, đập, chắn bóng và đội hình 6 người.",
+          "createdAt": "2026-10-26T14:40:45.547656+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "58598cff-e673-4f39-936a-570bbf6ffe92",
+          "categoryName": "Taekwondo",
+          "description": "Đòn chân, quyền và tự vệ Taekwondo; thi lên đai định kỳ mỗi quý.",
+          "createdAt": "2026-10-26T14:40:45.629885+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "2d3c6cba-1e6f-4c5e-a20a-8caaa360e807",
+          "categoryName": "Muay Thai",
+          "description": "Muay Thái: đòn chỏ, gối, đá vòng cầu và clinch; tăng sức bền và phản xạ.",
+          "createdAt": "2026-10-26T14:40:45.699733+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "f62fbbcb-3065-4713-b89e-9e088388696d",
+          "categoryName": "Pickleball",
+          "description": "Môn vợt dễ chơi cho mọi lứa tuổi: luật chơi, dink, volley và đánh đôi.",
+          "createdAt": "2026-10-26T14:40:45.770617+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "b6f89d76-8a22-4b47-8396-50cb17bbef29",
+          "categoryName": "Leo núi",
+          "description": "Leo núi trong nhà (bouldering và top-rope): kỹ thuật bám, di chuyển và an toàn.",
+          "createdAt": "2026-10-26T14:40:45.840389+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "88a8990c-0afe-4f96-9384-48ce49884531",
+          "categoryName": "QA261029163854 Sport",
+          "description": "QA261029163854 temporary integration audit - no real funds",
+          "createdAt": "2026-10-29T16:39:25.972703+00:00",
+          "updatedAt": "2026-10-29T16:51:04.186741+00:00"
+        },
+        {
+          "id": "79e90d3f-da62-4f11-97aa-45382d072fbb",
+          "categoryName": "QA_RECHECK_261030060103 sport",
+          "description": "Temporary BE fix verification",
+          "createdAt": "2026-10-30T06:03:06.720737+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "5ecaed96-37cd-4fcb-9671-69f7fd719673",
+          "categoryName": "QA_RECHECK_261030060850 sport",
+          "description": "Temporary BE fix verification",
+          "createdAt": "2026-10-30T06:09:06.213194+00:00",
+          "updatedAt": null
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "ai-readiness-010",
+      "name": "Member chat produces a usable answer",
+      "passed": false,
+      "status": 503,
+      "ms": 78,
+      "endpoint": "/api/ai/chat",
+      "response": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:0000000E"
+      },
+      "error": null
+    },
+    {
+      "id": "ai-readiness-011",
+      "name": "Anonymous cannot request exercise suggestions",
+      "passed": true,
+      "status": 401,
+      "ms": 62,
+      "endpoint": "/api/ai/exercise-suggestions",
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "ai-readiness-012",
+      "name": "Member cannot use coach exercise endpoint",
+      "passed": true,
+      "status": 403,
+      "ms": 76,
+      "endpoint": "/api/ai/exercise-suggestions",
+      "response": null,
+      "error": null
+    },
+    {
+      "id": "ai-readiness-013",
+      "name": "Exercise duration below contract rejected",
+      "passed": true,
+      "status": 400,
+      "ms": 89,
+      "endpoint": "/api/ai/exercise-suggestions",
+      "response": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "DurationMinutes": [
+            "The field DurationMinutes must be between 10 and 120."
+          ]
+        },
+        "traceId": "00-4fcf978110ec510d70f8e3b9cd82ee65-62524d31df051973-00"
+      },
+      "error": null
+    },
+    {
+      "id": "ai-readiness-014",
+      "name": "Read existing coach roster",
+      "passed": true,
+      "status": 200,
+      "ms": 608,
+      "endpoint": "/api/coaches/me/members",
+      "response": [
+        {
+          "trainingGoal": "Học Muay Thai để tự vệ",
+          "gender": "Male",
+          "dob": "1994-12-01T00:00:00Z",
+          "memberId": "30636352-c38d-4a2b-b332-06aa330a24d2",
+          "fullName": "Đặng Quốc Việt",
+          "phone": "0368100007",
+          "email": "viet.dq@sportcenter.test",
+          "classId": "786ef6a4-e18a-4716-9565-d5166545599b",
+          "className": "Boxing Đốt Mỡ Cấp Tốc"
+        },
+        {
+          "trainingGoal": "HIIT giảm mỡ nội tạng",
+          "gender": "Male",
+          "dob": "1990-07-07T00:00:00Z",
+          "memberId": "afd964df-b84b-448c-8847-5df469b44a6c",
+          "fullName": "Phan Văn Hậu",
+          "phone": "0368100015",
+          "email": "hau.pv@sportcenter.test",
+          "classId": "786ef6a4-e18a-4716-9565-d5166545599b",
+          "className": "Boxing Đốt Mỡ Cấp Tốc"
+        },
+        {
+          "trainingGoal": "Tăng cơ, giảm mỡ bụng",
+          "gender": "Male",
+          "dob": "2001-03-14T00:00:00Z",
+          "memberId": "87da75bf-8e50-4b3a-ac34-6d26b6599cc3",
+          "fullName": "Trần Minh Quân",
+          "phone": "0368100001",
+          "email": "quan.tm@sportcenter.test",
+          "classId": "786ef6a4-e18a-4716-9565-d5166545599b",
+          "className": "Boxing Đốt Mỡ Cấp Tốc"
+        },
+        {
+          "trainingGoal": "Chơi pickleball cuối tuần",
+          "gender": "Female",
+          "dob": "2003-12-12T00:00:00Z",
+          "memberId": "62aa8932-2853-4fd6-9ad9-752cbea57783",
+          "fullName": "Mai Anh Thư",
+          "phone": "0368100014",
+          "email": "thu.ma@sportcenter.test",
+          "classId": "e1dc7406-601f-4446-95b7-5bf1acbc6d14",
+          "className": "Cầu Lông Sinh Viên"
+        },
+        {
+          "trainingGoal": "Giảm 5kg trước Tết",
+          "gender": "Female",
+          "dob": "1998-07-22T00:00:00Z",
+          "memberId": "0238e5e4-6861-42ed-9c45-bf10177651e6",
+          "fullName": "Nguyễn Thị Thu Hà",
+          "phone": "0368100002",
+          "email": "ha.ntt@sportcenter.test",
+          "classId": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân"
+        },
+        {
+          "trainingGoal": "HIIT giảm mỡ nội tạng",
+          "gender": "Male",
+          "dob": "1990-07-07T00:00:00Z",
+          "memberId": "afd964df-b84b-448c-8847-5df469b44a6c",
+          "fullName": "Phan Văn Hậu",
+          "phone": "0368100015",
+          "email": "hau.pv@sportcenter.test",
+          "classId": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân"
+        },
+        {
+          "trainingGoal": "Tăng sức bền tim mạch",
+          "gender": "Male",
+          "dob": "1993-03-08T00:00:00Z",
+          "memberId": "f6ec93e5-81b9-4339-a672-7d47ddfc3679",
+          "fullName": "Trương Hoàng Phúc",
+          "phone": "0368100013",
+          "email": "phuc.th@sportcenter.test",
+          "classId": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân"
+        },
+        {
+          "trainingGoal": "Chạy 10K dưới 60 phút",
+          "gender": "Female",
+          "dob": "2002-05-09T00:00:00Z",
+          "memberId": "2f7dc95c-dc2a-4a95-a6f9-d7a26f7ac758",
+          "fullName": "Võ Thanh Trúc",
+          "phone": "0368100006",
+          "email": "truc.vt@sportcenter.test",
+          "classId": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân"
+        },
+        {
+          "trainingGoal": "Giữ dáng với Zumba và Kickboxing",
+          "gender": "Female",
+          "dob": "2004-02-27T00:00:00Z",
+          "memberId": "6f8c6acd-c6ef-475e-89ba-735259abc4f2",
+          "fullName": "Bùi Khánh Linh",
+          "phone": "0368100008",
+          "email": "linh.bk@sportcenter.test",
+          "classId": "ffbc7d88-54ad-4816-bb8b-d2ba11034780",
+          "className": "Kickboxing Căn Bản Nữ"
+        },
+        {
+          "trainingGoal": "Giữ dáng với Zumba và Kickboxing",
+          "gender": "Female",
+          "dob": "2004-02-27T00:00:00Z",
+          "memberId": "6f8c6acd-c6ef-475e-89ba-735259abc4f2",
+          "fullName": "Bùi Khánh Linh",
+          "phone": "0368100008",
+          "email": "linh.bk@sportcenter.test",
+          "classId": "a6b6a5cf-243b-4c65-bb1f-6b84c00c1e9b",
+          "className": "Pilates Trị Liệu Cột Sống"
+        },
+        {
+          "trainingGoal": "Tập yoga giảm stress",
+          "gender": "Female",
+          "dob": "1997-04-03T00:00:00Z",
+          "memberId": "ef607d2b-e5fb-4d5f-8cb4-a31ffacdd14b",
+          "fullName": "Ngô Phương Thảo",
+          "phone": "0368100010",
+          "email": "thao.np@sportcenter.test",
+          "classId": "a6b6a5cf-243b-4c65-bb1f-6b84c00c1e9b",
+          "className": "Pilates Trị Liệu Cột Sống"
+        },
+        {
+          "trainingGoal": "Dẻo dai, giảm đau lưng",
+          "gender": "Female",
+          "dob": "2000-01-30T00:00:00Z",
+          "memberId": "83cea852-de58-434d-a061-9a52925a6f60",
+          "fullName": "Phạm Ngọc Mai",
+          "phone": "0368100004",
+          "email": "mai.pn@sportcenter.test",
+          "classId": "a6b6a5cf-243b-4c65-bb1f-6b84c00c1e9b",
+          "className": "Pilates Trị Liệu Cột Sống"
+        },
+        {
+          "trainingGoal": "Giữ dáng với Zumba và Kickboxing",
+          "gender": "Female",
+          "dob": "2004-02-27T00:00:00Z",
+          "memberId": "6f8c6acd-c6ef-475e-89ba-735259abc4f2",
+          "fullName": "Bùi Khánh Linh",
+          "phone": "0368100008",
+          "email": "linh.bk@sportcenter.test",
+          "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần"
+        },
+        {
+          "trainingGoal": "Chơi pickleball cuối tuần",
+          "gender": "Female",
+          "dob": "2003-12-12T00:00:00Z",
+          "memberId": "62aa8932-2853-4fd6-9ad9-752cbea57783",
+          "fullName": "Mai Anh Thư",
+          "phone": "0368100014",
+          "email": "thu.ma@sportcenter.test",
+          "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần"
+        },
+        {
+          "trainingGoal": "Giảm 5kg trước Tết",
+          "gender": "Female",
+          "dob": "1998-07-22T00:00:00Z",
+          "memberId": "0238e5e4-6861-42ed-9c45-bf10177651e6",
+          "fullName": "Nguyễn Thị Thu Hà",
+          "phone": "0368100002",
+          "email": "ha.ntt@sportcenter.test",
+          "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần"
+        },
+        {
+          "trainingGoal": "Cải thiện sức khỏe cơ thể",
+          "gender": "Male",
+          "dob": "2003-06-12T00:00:00Z",
+          "memberId": "94f3065a-27fc-4a3e-bb81-3b249f0d8521",
+          "fullName": "Nguyễn Văn A",
+          "phone": "0902966889",
+          "email": "nguyenvana@gmail.com",
+          "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần"
+        }
+      ],
+      "error": null
+    },
+    {
+      "id": "ai-readiness-015",
+      "name": "Coach exercise suggestions produce an answer",
+      "passed": false,
+      "status": 503,
+      "ms": 302,
+      "endpoint": "/api/ai/exercise-suggestions",
+      "response": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:00000013"
+      },
+      "error": null
+    },
+    {
+      "id": "ai-readiness-016",
+      "name": "Read current payment options",
+      "passed": true,
+      "status": 200,
+      "ms": 186,
+      "endpoint": "/api/payments/options",
+      "response": {
+        "provider": "SePay",
+        "methods": [
+          2
+        ],
+        "holdMinutes": 15,
+        "upgrade": true
+      },
+      "error": null
+    }
+  ],
+  "calls": [
+    {
+      "method": "GET",
+      "endpoint": "/swagger/v1/swagger.json",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 30370,
+      "body": "[saved separately as swagger.json]",
+      "error": null,
+      "contentType": "application/json;charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 7790,
+      "body": {
+        "userId": "09bf34a7-fed7-4175-b7ed-b8e402f4ca32"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "quan.tm"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 2311,
+      "body": {
+        "userId": "66666666-6666-6666-6666-666666666666"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "nguyen.manh.hung"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 2115,
+      "body": {
+        "userId": "44444444-4444-4444-4444-444444444444"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "demo_manager"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 2585,
+      "body": {
+        "userId": "acd8962c-f8ff-4b40-b2e0-a02daad66889"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "nguyen.thu.trang"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "anonymous",
+      "status": 401,
+      "ms": 92,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "message": "Trung tâm có những môn nào?"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "Coach",
+      "status": 503,
+      "ms": 1002,
+      "body": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:00000007"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "message": "Trung tâm có những môn nào?"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "Receptionist",
+      "status": 503,
+      "ms": 120,
+      "body": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:00000008"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "message": "Trung tâm có những môn nào?"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "Manager",
+      "status": 503,
+      "ms": 105,
+      "body": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:00000009"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "message": "Trung tâm có những môn nào?"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "Member",
+      "status": 400,
+      "ms": 83,
+      "body": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "Message": [
+            "The Message field is required."
+          ]
+        },
+        "traceId": "00-e5ecab437aac0778798c6e2bbd06ca11-f3418371ac2e463e-00"
+      },
+      "error": null,
+      "contentType": "application/problem+json; charset=utf-8",
+      "request": {
+        "message": ""
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "Member",
+      "status": 400,
+      "ms": 88,
+      "body": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "Message": [
+            "The Message field is required."
+          ]
+        },
+        "traceId": "00-130e2c8536ff4fbb3be70916ce9a0062-f0f7e937cb096e5e-00"
+      },
+      "error": null,
+      "contentType": "application/problem+json; charset=utf-8",
+      "request": {
+        "message": "   "
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "Member",
+      "status": 400,
+      "ms": 72,
+      "body": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "Message": [
+            "The field Message must be a string or array type with a maximum length of '2000'."
+          ]
+        },
+        "traceId": "00-01277ee772de0983484029b0b7d3a4f5-018fa9dcdcb662a4-00"
+      },
+      "error": null,
+      "contentType": "application/problem+json; charset=utf-8",
+      "request": {
+        "message": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/categories",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 220,
+      "body": [
+        {
+          "id": "1f87f71f-bd7b-49d9-ac66-89146c561827",
+          "categoryName": "Boxing",
+          "description": "Huấn luyện kỹ thuật đấm bốc, phản xạ và rèn luyện thể lực cường độ cao.",
+          "createdAt": "2026-10-26T14:40:43.493872+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "a7345a3c-52e3-4354-a31c-020986ce62f1",
+          "categoryName": "Yoga",
+          "description": "Lớp học cải thiện độ dẻo dai, cân bằng cơ thể và sức khỏe tinh thần.",
+          "createdAt": "2026-10-26T14:40:44.442591+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "2b7d4171-5a37-476f-8af2-d40679900c99",
+          "categoryName": "Bơi lội",
+          "description": "Các lớp bơi lội tổng hợp từ cơ bản đến nâng cao.",
+          "createdAt": "2026-10-26T14:40:44.51157+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "13921296-7fdc-4cec-b38b-9ac4d6a08231",
+          "categoryName": "Pilates",
+          "description": "Phương pháp tập luyện tăng cường sự linh hoạt, cải thiện tư thế và sức mạnh cơ lõi.",
+          "createdAt": "2026-10-26T14:40:44.601932+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "73e63b9e-8373-4519-a63d-a3ad7a1325ab",
+          "categoryName": "Zumba",
+          "description": "Môn khiêu vũ thể hình kết hợp âm nhạc Latin sôi động giúp đốt calo hiệu quả.",
+          "createdAt": "2026-10-26T14:40:44.685662+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "eadc7c78-73c4-4f78-b3e3-87e118a5b324",
+          "categoryName": "Kickboxing",
+          "description": "Kết hợp giữa võ thuật và cardio cường độ cao, giúp tự vệ và săn chắc cơ thể.",
+          "createdAt": "2026-10-26T14:40:44.760899+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "ca0330ee-aae6-4aeb-afc0-f7260217a6fe",
+          "categoryName": "Cầu lông",
+          "description": "Thể thao đối kháng rèn luyện phản xạ nhanh, sức bền và sự khéo léo.",
+          "createdAt": "2026-10-26T14:40:44.839624+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "1f96a13c-1dee-46c0-ad94-6dffaccb1e57",
+          "categoryName": "Bóng rổ",
+          "description": "Môn thể thao đồng đội giúp phát triển chiều cao, sự linh hoạt và kỹ năng phối hợp.",
+          "createdAt": "2026-10-26T14:40:44.914609+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "77e8f964-1036-4319-b07b-5b3749841adb",
+          "categoryName": "Gym",
+          "description": "Tập luyện phát triển cơ bắp và sức mạnh với các thiết bị hiện đại và tạ tự do.",
+          "createdAt": "2026-10-26T14:40:44.991426+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "5e121bb4-ff37-4535-9f1b-f4f7a274f1bf",
+          "categoryName": "Đạp xe trong nhà",
+          "description": "Bài tập Cardio cường độ cao trên xe đạp chậm trong nhà kết hợp âm nhạc sôi động.",
+          "createdAt": "2026-10-26T14:40:45.078159+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "1c7cb609-f516-44c2-b8c9-6af3b7ab5792",
+          "categoryName": "Tennis",
+          "description": "Kỹ thuật thuận tay, trái tay, giao bóng và chiến thuật đánh đơn/đôi trên sân cứng trong nhà.",
+          "createdAt": "2026-10-26T14:40:45.162066+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "49b204d0-48b7-414a-9787-ad25a051cfbd",
+          "categoryName": "Bóng bàn",
+          "description": "Bóng bàn từ cơ bản đến thi đấu: cầm vợt, giật bóng, xoáy và phản xạ nhanh.",
+          "createdAt": "2026-10-26T14:40:45.23913+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "8acaa8f6-9017-4557-9e63-544845fc3c64",
+          "categoryName": "Bóng đá",
+          "description": "Futsal sân 5 người: dẫn bóng, chuyền, sút và phối hợp đồng đội.",
+          "createdAt": "2026-10-26T14:40:45.319142+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "15ea3886-bc8d-464f-bfba-84a4c5f04690",
+          "categoryName": "Chạy bộ",
+          "description": "Chạy bộ trên đường chạy trong nhà: kỹ thuật thở, sải chân và giáo án 5K–10K.",
+          "createdAt": "2026-10-26T14:40:45.404198+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "176e06bb-dd35-4232-b439-24b6fc2d0e63",
+          "categoryName": "HIIT",
+          "description": "Tập cường độ cao ngắt quãng với dây thừng, kettlebell và bodyweight để đốt mỡ nhanh.",
+          "createdAt": "2026-10-26T14:40:45.472866+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "b01f0a2d-d7af-48cb-8989-7578cd08d4f6",
+          "categoryName": "Bóng chuyền",
+          "description": "Bóng chuyền trong nhà: chuyền, đệm, đập, chắn bóng và đội hình 6 người.",
+          "createdAt": "2026-10-26T14:40:45.547656+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "58598cff-e673-4f39-936a-570bbf6ffe92",
+          "categoryName": "Taekwondo",
+          "description": "Đòn chân, quyền và tự vệ Taekwondo; thi lên đai định kỳ mỗi quý.",
+          "createdAt": "2026-10-26T14:40:45.629885+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "2d3c6cba-1e6f-4c5e-a20a-8caaa360e807",
+          "categoryName": "Muay Thai",
+          "description": "Muay Thái: đòn chỏ, gối, đá vòng cầu và clinch; tăng sức bền và phản xạ.",
+          "createdAt": "2026-10-26T14:40:45.699733+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "f62fbbcb-3065-4713-b89e-9e088388696d",
+          "categoryName": "Pickleball",
+          "description": "Môn vợt dễ chơi cho mọi lứa tuổi: luật chơi, dink, volley và đánh đôi.",
+          "createdAt": "2026-10-26T14:40:45.770617+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "b6f89d76-8a22-4b47-8396-50cb17bbef29",
+          "categoryName": "Leo núi",
+          "description": "Leo núi trong nhà (bouldering và top-rope): kỹ thuật bám, di chuyển và an toàn.",
+          "createdAt": "2026-10-26T14:40:45.840389+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "88a8990c-0afe-4f96-9384-48ce49884531",
+          "categoryName": "QA261029163854 Sport",
+          "description": "QA261029163854 temporary integration audit - no real funds",
+          "createdAt": "2026-10-29T16:39:25.972703+00:00",
+          "updatedAt": "2026-10-29T16:51:04.186741+00:00"
+        },
+        {
+          "id": "79e90d3f-da62-4f11-97aa-45382d072fbb",
+          "categoryName": "QA_RECHECK_261030060103 sport",
+          "description": "Temporary BE fix verification",
+          "createdAt": "2026-10-30T06:03:06.720737+00:00",
+          "updatedAt": null
+        },
+        {
+          "id": "5ecaed96-37cd-4fcb-9671-69f7fd719673",
+          "categoryName": "QA_RECHECK_261030060850 sport",
+          "description": "Temporary BE fix verification",
+          "createdAt": "2026-10-30T06:09:06.213194+00:00",
+          "updatedAt": null
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "Member",
+      "status": 503,
+      "ms": 78,
+      "body": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:0000000E"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "message": "Trung tâm có những môn thể thao nào? Kể tên một vài môn đang có trong hệ thống."
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/exercise-suggestions",
+      "role": "anonymous",
+      "status": 401,
+      "ms": 62,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "goal": "Tăng sức bền",
+        "durationMinutes": 20
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/exercise-suggestions",
+      "role": "Member",
+      "status": 403,
+      "ms": 76,
+      "body": null,
+      "error": null,
+      "contentType": null,
+      "request": {
+        "goal": "Tăng sức bền",
+        "durationMinutes": 20
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/exercise-suggestions",
+      "role": "Coach",
+      "status": 400,
+      "ms": 89,
+      "body": {
+        "type": "https://tools.ietf.org/html/rfc9110#section-15.5.1",
+        "title": "One or more validation errors occurred.",
+        "status": 400,
+        "errors": {
+          "DurationMinutes": [
+            "The field DurationMinutes must be between 10 and 120."
+          ]
+        },
+        "traceId": "00-4fcf978110ec510d70f8e3b9cd82ee65-62524d31df051973-00"
+      },
+      "error": null,
+      "contentType": "application/problem+json; charset=utf-8",
+      "request": {
+        "goal": "Tăng sức bền",
+        "durationMinutes": 5
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches/me/members",
+      "role": "Coach",
+      "status": 200,
+      "ms": 608,
+      "body": [
+        {
+          "trainingGoal": "Học Muay Thai để tự vệ",
+          "gender": "Male",
+          "dob": "1994-12-01T00:00:00Z",
+          "memberId": "30636352-c38d-4a2b-b332-06aa330a24d2",
+          "fullName": "Đặng Quốc Việt",
+          "phone": "0368100007",
+          "email": "viet.dq@sportcenter.test",
+          "classId": "786ef6a4-e18a-4716-9565-d5166545599b",
+          "className": "Boxing Đốt Mỡ Cấp Tốc"
+        },
+        {
+          "trainingGoal": "HIIT giảm mỡ nội tạng",
+          "gender": "Male",
+          "dob": "1990-07-07T00:00:00Z",
+          "memberId": "afd964df-b84b-448c-8847-5df469b44a6c",
+          "fullName": "Phan Văn Hậu",
+          "phone": "0368100015",
+          "email": "hau.pv@sportcenter.test",
+          "classId": "786ef6a4-e18a-4716-9565-d5166545599b",
+          "className": "Boxing Đốt Mỡ Cấp Tốc"
+        },
+        {
+          "trainingGoal": "Tăng cơ, giảm mỡ bụng",
+          "gender": "Male",
+          "dob": "2001-03-14T00:00:00Z",
+          "memberId": "87da75bf-8e50-4b3a-ac34-6d26b6599cc3",
+          "fullName": "Trần Minh Quân",
+          "phone": "0368100001",
+          "email": "quan.tm@sportcenter.test",
+          "classId": "786ef6a4-e18a-4716-9565-d5166545599b",
+          "className": "Boxing Đốt Mỡ Cấp Tốc"
+        },
+        {
+          "trainingGoal": "Chơi pickleball cuối tuần",
+          "gender": "Female",
+          "dob": "2003-12-12T00:00:00Z",
+          "memberId": "62aa8932-2853-4fd6-9ad9-752cbea57783",
+          "fullName": "Mai Anh Thư",
+          "phone": "0368100014",
+          "email": "thu.ma@sportcenter.test",
+          "classId": "e1dc7406-601f-4446-95b7-5bf1acbc6d14",
+          "className": "Cầu Lông Sinh Viên"
+        },
+        {
+          "trainingGoal": "Giảm 5kg trước Tết",
+          "gender": "Female",
+          "dob": "1998-07-22T00:00:00Z",
+          "memberId": "0238e5e4-6861-42ed-9c45-bf10177651e6",
+          "fullName": "Nguyễn Thị Thu Hà",
+          "phone": "0368100002",
+          "email": "ha.ntt@sportcenter.test",
+          "classId": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân"
+        },
+        {
+          "trainingGoal": "HIIT giảm mỡ nội tạng",
+          "gender": "Male",
+          "dob": "1990-07-07T00:00:00Z",
+          "memberId": "afd964df-b84b-448c-8847-5df469b44a6c",
+          "fullName": "Phan Văn Hậu",
+          "phone": "0368100015",
+          "email": "hau.pv@sportcenter.test",
+          "classId": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân"
+        },
+        {
+          "trainingGoal": "Tăng sức bền tim mạch",
+          "gender": "Male",
+          "dob": "1993-03-08T00:00:00Z",
+          "memberId": "f6ec93e5-81b9-4339-a672-7d47ddfc3679",
+          "fullName": "Trương Hoàng Phúc",
+          "phone": "0368100013",
+          "email": "phuc.th@sportcenter.test",
+          "classId": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân"
+        },
+        {
+          "trainingGoal": "Chạy 10K dưới 60 phút",
+          "gender": "Female",
+          "dob": "2002-05-09T00:00:00Z",
+          "memberId": "2f7dc95c-dc2a-4a95-a6f9-d7a26f7ac758",
+          "fullName": "Võ Thanh Trúc",
+          "phone": "0368100006",
+          "email": "truc.vt@sportcenter.test",
+          "classId": "5a565e4f-2c3e-4307-913c-6860ea750ed4",
+          "className": "Đạp Xe Cardio Giảm Cân"
+        },
+        {
+          "trainingGoal": "Giữ dáng với Zumba và Kickboxing",
+          "gender": "Female",
+          "dob": "2004-02-27T00:00:00Z",
+          "memberId": "6f8c6acd-c6ef-475e-89ba-735259abc4f2",
+          "fullName": "Bùi Khánh Linh",
+          "phone": "0368100008",
+          "email": "linh.bk@sportcenter.test",
+          "classId": "ffbc7d88-54ad-4816-bb8b-d2ba11034780",
+          "className": "Kickboxing Căn Bản Nữ"
+        },
+        {
+          "trainingGoal": "Giữ dáng với Zumba và Kickboxing",
+          "gender": "Female",
+          "dob": "2004-02-27T00:00:00Z",
+          "memberId": "6f8c6acd-c6ef-475e-89ba-735259abc4f2",
+          "fullName": "Bùi Khánh Linh",
+          "phone": "0368100008",
+          "email": "linh.bk@sportcenter.test",
+          "classId": "a6b6a5cf-243b-4c65-bb1f-6b84c00c1e9b",
+          "className": "Pilates Trị Liệu Cột Sống"
+        },
+        {
+          "trainingGoal": "Tập yoga giảm stress",
+          "gender": "Female",
+          "dob": "1997-04-03T00:00:00Z",
+          "memberId": "ef607d2b-e5fb-4d5f-8cb4-a31ffacdd14b",
+          "fullName": "Ngô Phương Thảo",
+          "phone": "0368100010",
+          "email": "thao.np@sportcenter.test",
+          "classId": "a6b6a5cf-243b-4c65-bb1f-6b84c00c1e9b",
+          "className": "Pilates Trị Liệu Cột Sống"
+        },
+        {
+          "trainingGoal": "Dẻo dai, giảm đau lưng",
+          "gender": "Female",
+          "dob": "2000-01-30T00:00:00Z",
+          "memberId": "83cea852-de58-434d-a061-9a52925a6f60",
+          "fullName": "Phạm Ngọc Mai",
+          "phone": "0368100004",
+          "email": "mai.pn@sportcenter.test",
+          "classId": "a6b6a5cf-243b-4c65-bb1f-6b84c00c1e9b",
+          "className": "Pilates Trị Liệu Cột Sống"
+        },
+        {
+          "trainingGoal": "Giữ dáng với Zumba và Kickboxing",
+          "gender": "Female",
+          "dob": "2004-02-27T00:00:00Z",
+          "memberId": "6f8c6acd-c6ef-475e-89ba-735259abc4f2",
+          "fullName": "Bùi Khánh Linh",
+          "phone": "0368100008",
+          "email": "linh.bk@sportcenter.test",
+          "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần"
+        },
+        {
+          "trainingGoal": "Chơi pickleball cuối tuần",
+          "gender": "Female",
+          "dob": "2003-12-12T00:00:00Z",
+          "memberId": "62aa8932-2853-4fd6-9ad9-752cbea57783",
+          "fullName": "Mai Anh Thư",
+          "phone": "0368100014",
+          "email": "thu.ma@sportcenter.test",
+          "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần"
+        },
+        {
+          "trainingGoal": "Giảm 5kg trước Tết",
+          "gender": "Female",
+          "dob": "1998-07-22T00:00:00Z",
+          "memberId": "0238e5e4-6861-42ed-9c45-bf10177651e6",
+          "fullName": "Nguyễn Thị Thu Hà",
+          "phone": "0368100002",
+          "email": "ha.ntt@sportcenter.test",
+          "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần"
+        },
+        {
+          "trainingGoal": "Cải thiện sức khỏe cơ thể",
+          "gender": "Male",
+          "dob": "2003-06-12T00:00:00Z",
+          "memberId": "94f3065a-27fc-4a3e-bb81-3b249f0d8521",
+          "fullName": "Nguyễn Văn A",
+          "phone": "0902966889",
+          "email": "nguyenvana@gmail.com",
+          "classId": "eaf20162-febb-4a21-90d6-cc7ff8a3fd68",
+          "className": "Zumba Sôi Động Cuối Tuần"
+        }
+      ],
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/exercise-suggestions",
+      "role": "Coach",
+      "status": 503,
+      "ms": 302,
+      "body": {
+        "title": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "status": 503,
+        "detail": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "message": "AI chưa cấu hình. Cần Ai__Enabled, Ai__ApiKey và Ai__Model ở backend.",
+        "traceId": "0HNPNEMF0BRFA:00000013"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "goal": "Tăng sức bền với bài tập nhẹ cho người mới",
+        "durationMinutes": 20,
+        "equipment": "bodyweight",
+        "level": "beginner",
+        "memberId": "30636352-c38d-4a2b-b332-06aa330a24d2"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/payments/options",
+      "role": "Member",
+      "status": 200,
+      "ms": 186,
+      "body": {
+        "provider": "SePay",
+        "methods": [
+          2
+        ],
+        "holdMinutes": 15,
+        "upgrade": true
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/payments/8d0d7c03-1384-4457-8554-04f957796eeb",
+      "role": "Manager",
+      "status": 200,
+      "ms": 2913,
+      "body": {
+        "status": 5,
+        "provider": "SePay",
+        "paidAt": null,
+        "amount": 8000
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/payments/8d0d7c03-1384-4457-8554-04f957796eeb",
+      "role": "Manager",
+      "status": 200,
+      "ms": 212,
+      "body": {
+        "status": 5,
+        "provider": "SePay",
+        "paidAt": null,
+        "amount": 8000
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/payments/8d0d7c03-1384-4457-8554-04f957796eeb",
+      "role": "Manager",
+      "status": 200,
+      "ms": 285,
+      "body": {
+        "status": 5,
+        "provider": "SePay",
+        "paidAt": null,
+        "amount": 8000
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    }
+  ]
+}

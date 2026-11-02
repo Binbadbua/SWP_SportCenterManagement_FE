@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { api, isMissingRoute } from '../../api/endpoints.js';
-import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
-import { usePaymentOptions } from '../../hooks/usePricing.js';
+import { usePaymentOptionsState } from '../../hooks/usePricing.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import { addDaysToDateInput, daysUntil, formatDate, formatMoney, todayCenterDateString } from '../../lib/format.js';
 import { cardsOn, upgradeQuote, upgradeTargets } from '../../lib/membership.js';
@@ -22,8 +21,9 @@ export default function UpgradeCheckout() {
   const member = isMember(user);
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const opts = usePaymentOptions();
-  const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
+  const paymentOptions = usePaymentOptionsState();
+  const opts = paymentOptions.data;
+  const packages = useApi(() => api.packages.list(), []);
   const cards = useApi(() => api.memberships.mine(), [user?.accountId], { skip: !member });
   const invoices = useApi(() => api.invoices.mine(), [user?.accountId], { skip: !member });
 
@@ -35,6 +35,8 @@ export default function UpgradeCheckout() {
   const [paying, setPaying] = useState(false);
   const [failure, setFailure] = useState(null);
   const [unavailable, setUnavailable] = useState(false);
+  const requiredData = [packages, paymentOptions, cards, invoices];
+  const readinessBlocked = requiredData.some((state) => state.loading || state.error || state.usingSample);
 
   if (!member) {
     return (
@@ -48,7 +50,7 @@ export default function UpgradeCheckout() {
       </div>
     );
   }
-  if (packages.loading || cards.loading) {
+  if (requiredData.some((state) => state.loading)) {
     return (
       <div className="container page">
         <Loading />
@@ -56,6 +58,14 @@ export default function UpgradeCheckout() {
     );
   }
 
+  const loadErrors = requiredData.filter((state) => state.error);
+  if (loadErrors.length) return (
+    <div className="container page narrow">
+      <h1 className="panel-title">Chưa tải được thông tin nâng cấp</h1>
+      {loadErrors.map((state, index) => <ErrorNotice key={index} error={state.error} onRetry={state.reload} />)}
+      <Button variant="secondary" to="/account?tab=membership">Về thẻ thành viên</Button>
+    </div>
+  );
   const today = todayCenterDateString();
   const [card] = cardsOn(cards.data, today);
   const targets = upgradeTargets(card, packages.data);
@@ -85,7 +95,7 @@ export default function UpgradeCheckout() {
 
   const pay = async (e) => {
     e.preventDefault();
-    if (cards.loading || invoices.loading || pendingOrder.checking || pendingOrder.error) return;
+    if (paying || !member || readinessBlocked || pendingOrder.checking || pendingOrder.error || !opts || !canUpgrade) return;
     if (!agree) {
       setAgreeError('Bạn cần đồng ý với điều khoản trước khi thanh toán.');
       return;
@@ -216,7 +226,7 @@ export default function UpgradeCheckout() {
                 </Notice>
               )}
               {failure && <p className="field__error" role="alert">{failure}</p>}
-              <Button type="submit" form="upgrade-form" size="lg" block disabled={paying || cards.loading || invoices.loading || pendingOrder.checking || !!pendingOrder.error || !opts || !canUpgrade}>
+              <Button type="submit" form="upgrade-form" size="lg" block disabled={paying || readinessBlocked || pendingOrder.checking || !!pendingOrder.error || !opts || !canUpgrade}>
                 {paying ? 'Đang tạo giao dịch…' : `Nâng cấp và thanh toán ${formatMoney(quote.due)}`}
               </Button>
               <p className="checkout__safe muted">

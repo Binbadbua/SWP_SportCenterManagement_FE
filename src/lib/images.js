@@ -6,6 +6,7 @@
 // The first rule that matches wins, so specific sports come before the broad ones below
 // (the Gym rule's "t[ạa]" would otherwise catch "Taekwondo", the Boxing rule "võ"/"muay").
 const RULES = [
+  [/yoga thư giãn cuối ngày/i, "yoga-evening-demo"],
   [/b[óo]ng chuy[ềe]n|volley/i, "volleyball"],
   [/taekwondo|karate|vovinam/i, "taekwondo"],
   [/muay/i, "muay-thai"],

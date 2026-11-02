@@ -1,0 +1,307 @@
+{
+  "summary": {
+    "startedAt": "2026-11-02T03:07:10.901Z",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "scope": "No persisted QA accounts/entities, no real-user reset/mail request, no successful media upload intended. Uses a unique nonexistent @example.invalid address.",
+    "status": "completed",
+    "finishedAt": "2026-11-02T03:07:44.424Z",
+    "checks": 7,
+    "passed": 2,
+    "failed": 5,
+    "requests": 9
+  },
+  "results": [
+    {
+      "id": "auth-upload-recheck-001",
+      "name": "B63 forgot-password nonexistent address is controlled",
+      "passed": false,
+      "endpoint": "/api/auth/forgot-password",
+      "status": 500,
+      "ms": 693,
+      "response": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000002"
+      },
+      "error": null
+    },
+    {
+      "id": "auth-upload-recheck-002",
+      "name": "B63 reset-password invalid OTP/nonexistent address is controlled",
+      "passed": false,
+      "endpoint": "/api/auth/reset-password",
+      "status": 500,
+      "ms": 202,
+      "response": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000003"
+      },
+      "error": null
+    },
+    {
+      "id": "auth-upload-recheck-003",
+      "name": "Forgot-password missing email validates",
+      "passed": false,
+      "endpoint": "/api/auth/forgot-password",
+      "status": 500,
+      "ms": 94,
+      "response": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000004"
+      },
+      "error": null
+    },
+    {
+      "id": "auth-upload-recheck-004",
+      "name": "Forgot-password malformed email validates",
+      "passed": false,
+      "endpoint": "/api/auth/forgot-password",
+      "status": 500,
+      "ms": 53,
+      "response": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000005"
+      },
+      "error": null
+    },
+    {
+      "id": "auth-upload-recheck-005",
+      "name": "Reset-password empty request validates",
+      "passed": false,
+      "endpoint": "/api/auth/reset-password",
+      "status": 500,
+      "ms": 41,
+      "response": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000006"
+      },
+      "error": null
+    },
+    {
+      "id": "auth-upload-recheck-006",
+      "name": "B64 invalid upload type is controlled",
+      "passed": true,
+      "endpoint": "/api/media/images",
+      "status": 400,
+      "ms": 597,
+      "response": {
+        "title": "Chỉ chấp nhận ảnh JPEG, PNG, GIF hoặc WebP đúng định dạng.",
+        "status": 400,
+        "detail": "Chỉ chấp nhận ảnh JPEG, PNG, GIF hoặc WebP đúng định dạng.",
+        "message": "Chỉ chấp nhận ảnh JPEG, PNG, GIF hoặc WebP đúng định dạng.",
+        "traceId": "0HNPOHPODEBG2:00000008"
+      },
+      "error": null
+    },
+    {
+      "id": "auth-upload-recheck-007",
+      "name": "B64 6MiB upload is controlled JSON validation",
+      "passed": true,
+      "endpoint": "/api/media/images",
+      "status": 413,
+      "ms": 998,
+      "response": {
+        "message": "Ảnh không được vượt quá 5 MiB."
+      },
+      "error": null
+    }
+  ],
+  "calls": [
+    {
+      "method": "GET",
+      "endpoint": "/swagger/v1/swagger.json",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 27021,
+      "body": "[saved separately as swagger.json]",
+      "error": null,
+      "contentType": "application/json;charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/forgot-password",
+      "role": "anonymous",
+      "status": 500,
+      "ms": 693,
+      "body": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000002"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "email": "missing-2026-11-02t03-07-10-901z@example.invalid"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/reset-password",
+      "role": "anonymous",
+      "status": 500,
+      "ms": 202,
+      "body": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000003"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "email": "missing-2026-11-02t03-07-10-901z@example.invalid",
+        "otp": "000000"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/forgot-password",
+      "role": "anonymous",
+      "status": 500,
+      "ms": 94,
+      "body": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000004"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {}
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/forgot-password",
+      "role": "anonymous",
+      "status": 500,
+      "ms": 53,
+      "body": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000005"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "email": "not-an-email"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/reset-password",
+      "role": "anonymous",
+      "status": 500,
+      "ms": 41,
+      "body": {
+        "title": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "status": 500,
+        "detail": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "message": "Đã xảy ra lỗi hệ thống. Vui lòng thử lại sau.",
+        "traceId": "0HNPOHPODEBG2:00000006"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {}
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 3814,
+      "body": {
+        "userId": "44444444-4444-4444-4444-444444444444"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "demo_manager"
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/media/images",
+      "role": "Manager",
+      "status": 400,
+      "ms": 597,
+      "body": {
+        "title": "Chỉ chấp nhận ảnh JPEG, PNG, GIF hoặc WebP đúng định dạng.",
+        "status": 400,
+        "detail": "Chỉ chấp nhận ảnh JPEG, PNG, GIF hoặc WebP đúng định dạng.",
+        "message": "Chỉ chấp nhận ảnh JPEG, PNG, GIF hoặc WebP đúng định dạng.",
+        "traceId": "0HNPOHPODEBG2:00000008"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": "[multipart]"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/media/images",
+      "role": "Manager",
+      "status": 413,
+      "ms": 998,
+      "body": {
+        "message": "Ảnh không được vượt quá 5 MiB."
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": "[multipart]"
+    }
+  ],
+  "notes": [
+    {
+      "authRequestSchemas": {
+        "forgotPassword": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "resetPassword": {
+          "type": "object",
+          "properties": {
+            "email": {
+              "type": "string",
+              "nullable": true
+            },
+            "otp": {
+              "type": "string",
+              "nullable": true
+            },
+            "newPassword": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        }
+      }
+    },
+    "Controlled negative responses do not establish delivery of email/OTP or successful real-user password reset. No credentials/tokens retained in report."
+  ]
+}

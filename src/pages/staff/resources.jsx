@@ -109,9 +109,14 @@ function CardCell({ info }) {
 
 // "T3 21/10/2026 · 18:00–19:30"
 const sessionLabel = (s) => `${formatWeekday(s.date)} ${formatDate(s.date)} · ${formatTimeRange(s.startTime, s.endTime)}`;
-// A result has no session link (CHANGELOG Part B, B51): it belongs to the session of its plan's class held that day
-const sessionOfResult = (sessions, plan, evaluationDate) =>
-  plan && (sessions ?? []).find((s) => s.classId === plan.classId && String(s.date).slice(0, 10) === String(evaluationDate).slice(0, 10));
+// Prefer the API's session link; legacy results can only be inferred from an unambiguous day.
+const sessionOfResult = (sessions, plan, result) => {
+  if (result.sessionId) return (sessions ?? []).find((s) => s.id === result.sessionId);
+  if (!plan) return undefined;
+  const matches = (sessions ?? []).filter((s) =>
+    s.classId === plan.classId && String(s.date).slice(0, 10) === String(result.evaluationDate).slice(0, 10));
+  return matches.length === 1 ? matches[0] : undefined;
+};
 
 // Plans and results only carry IDs; add the names the table shows and searches
 async function coachNames() {
@@ -374,7 +379,7 @@ export const resources = {
     fields: [
       { name: 'classId', label: 'Lớp', type: 'select', required: true, full: true, optionsFrom: (l) => opt(l.classes, 'id', 'className') },
       { name: 'roomId', label: 'Phòng', type: 'select', required: true, optionsFrom: (l) => opt(l.rooms, 'id', (r) => `${r.roomName} · ${r.capacity} người${r.status === 2 ? ' (tạm ngưng)' : ''}`) },
-      { name: 'date', label: 'Ngày', type: 'date', required: true, defaultValue: todayCenterDateString },
+      { name: 'date', label: 'Ngày', type: 'date', required: true, defaultValue: () => todayCenterDateString() },
       { name: 'startTime', label: 'Bắt đầu', type: 'time', required: true },
       { name: 'endTime', label: 'Kết thúc', type: 'time', required: true },
     ],
@@ -836,7 +841,7 @@ export const resources = {
         },
       },
       {
-        name: 'startDate', label: 'Ngày bắt đầu', type: 'date', required: true, defaultValue: todayCenterDateString,
+        name: 'startDate', label: 'Ngày bắt đầu', type: 'date', required: true, defaultValue: () => todayCenterDateString(),
         onChange: (value, { lookups, setFormValues }) =>
           setFormValues((prev) => {
             const days = (lookups.packages ?? []).find((p) => p.id === prev.packageId)?.durationDays;
@@ -982,7 +987,7 @@ export const resources = {
       },
       { name: 'title', label: 'Tiêu đề', required: true, full: true },
       { name: 'contentDescription', label: 'Nội dung tập', type: 'textarea' },
-      { name: 'createdDate', label: 'Ngày', type: 'date', required: true, defaultValue: todayCenterDateString },
+      { name: 'createdDate', label: 'Ngày', type: 'date', required: true, defaultValue: () => todayCenterDateString() },
     ],
     toRequest: (b, { mode }) => ({
       memberId: b.memberId,
@@ -1006,12 +1011,12 @@ export const resources = {
         ]);
         return results.map((r) => {
           const plan = plans.find((p) => p.id === r.planId);
-          const session = sessionOfResult(sessions, plan, r.evaluationDate);
+          const session = sessionOfResult(sessions, plan, r);
           return {
             ...r,
             memberName: r.memberName || names.member(r.memberId),
             planTitle: r.planTitle || (plan?.title ?? '—'),
-            sessionId: session?.id ?? '',
+            sessionId: r.sessionId || session?.id || '',
             sessionText: session ? sessionLabel(session) : '',
           };
         });
@@ -1064,13 +1069,14 @@ export const resources = {
         help: 'Chọn kế hoạch trước; danh sách gồm các buổi của lớp đó đã diễn ra.',
       },
       { name: 'performanceScore', label: 'Điểm (0–10)', type: 'number', required: true, min: 0, max: 10, step: 0.5 },
-      { name: 'evaluationDate', label: 'Ngày', type: 'date', required: true, defaultValue: todayCenterDateString },
+      { name: 'evaluationDate', label: 'Ngày', type: 'date', required: true, defaultValue: () => todayCenterDateString() },
       { name: 'coachComment', label: 'Nhận xét', type: 'textarea', required: true },
     ],
     // The member must be the plan's member (the API checks it)
     toRequest: (b, { lookups }) => ({
       planId: b.planId,
       memberId: lookups.plans?.find((p) => p.id === b.planId)?.memberId,
+      sessionId: b.sessionId || null,
       performanceScore: b.performanceScore,
       coachComment: b.coachComment ?? '',
       evaluationDate: fromDateInput(b.evaluationDate),

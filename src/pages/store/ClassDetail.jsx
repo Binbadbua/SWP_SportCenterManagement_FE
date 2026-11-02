@@ -36,6 +36,11 @@ const SESSIONS_SHOWN = 12;
 
 export default function ClassDetail() {
   const { id } = useParams();
+  return <ClassDetailView key={id} />;
+}
+
+function ClassDetailView() {
+  const { id } = useParams();
   const { user, profile } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -109,8 +114,8 @@ export default function ClassDetail() {
   }
 
   const c = cls.data;
-  // Staff see the roster; everyone else gets the count the class itself carries (currentEnrolled)
-  const enrolled = roster.data ? roster.data.length : c.currentEnrolled;
+  // The server count includes pending holds, which are excluded from the coach roster.
+  const enrolled = Number.isFinite(c.currentEnrolled) ? c.currentEnrolled : roster.data?.length;
   const knownTaken = enrolled !== undefined && enrolled !== null;
   const taken = knownTaken ? enrolled : 0;
   const spotsLeft = Math.max(0, c.maxCapacity - taken);

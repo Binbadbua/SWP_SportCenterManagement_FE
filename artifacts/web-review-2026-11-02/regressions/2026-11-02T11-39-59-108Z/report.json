@@ -1,0 +1,87 @@
+{
+  "summary": {
+    "recordedAt": "2026-11-02T11:39:59.871Z",
+    "checks": 19,
+    "passed": 19,
+    "failed": 0,
+    "scope": "Real modules via ViteSSR; controlled fetch; no network/business writes."
+  },
+  "results": [
+    {
+      "name": "AI wrapper sends actual endpoint, JSON and bearer header",
+      "passed": true
+    },
+    {
+      "name": "JSON ProblemDetails503 preserves provider detail instead of offline sample mode",
+      "passed": true
+    },
+    {
+      "name": "JSON message503 remains a server error with exact status",
+      "passed": true
+    },
+    {
+      "name": "Gateway HTML503 is offline rather than a fake successful API result",
+      "passed": true
+    },
+    {
+      "name": "Caller cancellation stays AbortError and does not become offline",
+      "passed": true
+    },
+    {
+      "name": "Explicit deadline releases a stalled request as TimeoutError",
+      "passed": true
+    },
+    {
+      "name": "Deadline also covers a stalled response body",
+      "passed": true
+    },
+    {
+      "name": "Reads use45seconds; writes have no automatic retry or deadline",
+      "passed": true
+    },
+    {
+      "name": "Multipart keeps the browser Content-Type boundary",
+      "passed": true
+    },
+    {
+      "name": "204 is an empty success",
+      "passed": true
+    },
+    {
+      "name": "Blocked browser storage does not crash the fetch wrapper",
+      "passed": true
+    },
+    {
+      "name": "Network failure is explicit and is not retried",
+      "passed": true
+    },
+    {
+      "name": "Business calendar crosses Vietnam midnight regardless of visitor timezone",
+      "passed": true
+    },
+    {
+      "name": "Booking/refund cutoff uses the exact Vietnam session start",
+      "passed": true
+    },
+    {
+      "name": "Session completion uses the Vietnam end time",
+      "passed": true
+    },
+    {
+      "name": "Class date fallback and deletion guard share the center day",
+      "passed": true
+    },
+    {
+      "name": "All four staff date defaults accept CrudPage(user) invocation",
+      "passed": true
+    },
+    {
+      "name": "AI accepts real AiReply content and rejects generic HTTP200 error text",
+      "passed": true
+    },
+    {
+      "name": "AI context excludes pending/failed messages and retains only completed pairs",
+      "passed": true
+    }
+  ]
+}

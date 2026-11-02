@@ -1,17 +1,17 @@
 // When a class stops taking bookings (team rule, 28/10/2026): once it is marked "Đang diễn ra" or its first session
 // has begun, members can no longer book it, and cancelling a paid booking then gives no refund.
-import { formatMoney, isSessionStarted, todayLocalDateString } from './format.js';
+import { formatMoney, isSessionStarted, todayCenterDateString } from './format.js';
 
 const day = (v) => String(v ?? '').slice(0, 10);
 
 // `sessions` may hold every class's sessions; without any, the class's start date stands in for its first session
-export function classStarted(c, sessions) {
+export function classStarted(c, sessions, now = new Date()) {
   if (!c) return false;
   if (c.status === 2) return true;
   const id = c.id ?? c.classId;
   const own = (sessions ?? []).filter((s) => s.classId === id);
-  if (own.length) return own.some((s) => isSessionStarted(s));
-  return !!c.startDate && day(c.startDate) < todayLocalDateString();
+  if (own.length) return own.some((s) => isSessionStarted(s, now));
+  return !!c.startDate && day(c.startDate) < todayCenterDateString(now);
 }
 
 // What cancelling a member's booking means (CHANGELOG Part B, B55): a place waiting for payment is just freed; before
@@ -47,9 +47,9 @@ export function cancelTerms(booking, started) {
 // A manager may delete a class only before it starts, or once it has ended or been cancelled: deleting a running
 // class would leave its members to be refunded and told by hand. `c.started` (set by the staff class list from the
 // sessions) or `sessions` says whether it has begun, the same way as for bookings.
-export function classRunning(c, sessions) {
+export function classRunning(c, sessions, now = new Date()) {
   if (!c || c.status === 3 || c.status === 4) return false;
   if (c.status === 2) return true;
-  const started = c.started ?? classStarted(c, sessions);
-  return started && !(c.endDate && day(c.endDate) < todayLocalDateString());
+  const started = c.started ?? classStarted(c, sessions, now);
+  return started && !(c.endDate && day(c.endDate) < todayCenterDateString(now));
 }

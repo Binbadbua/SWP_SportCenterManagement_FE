@@ -66,11 +66,21 @@ function PaymentView({ paymentId }) {
   useEffect(() => {
     if (status !== 1 && !refundPending) return undefined;
     const stopAt = refundPending ? Date.now() + 600000 : expiresAt ? Date.parse(expiresAt) + 120000 : Date.now() + 2400000;
-    const timer = setInterval(() => {
-      if (Date.now() > stopAt) clearInterval(timer);
-      else check();
-    }, sepay && !refundPending ? 3000 : 15000);
-    return () => clearInterval(timer);
+    const poll = () => {
+      if (Date.now() > stopAt) { clearInterval(timer); return; }
+      // Mobile browsers throttle background timers while the bank app is open.
+      if (document.visibilityState === 'visible') check();
+    };
+    const timer = setInterval(poll, sepay && !refundPending ? 2000 : 15000);
+    document.addEventListener('visibilitychange', poll);
+    window.addEventListener('focus', poll);
+    window.addEventListener('online', poll);
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', poll);
+      window.removeEventListener('focus', poll);
+      window.removeEventListener('online', poll);
+    };
   }, [status, expiresAt, refundPending, sepay, check]);
 
   useEffect(() => {

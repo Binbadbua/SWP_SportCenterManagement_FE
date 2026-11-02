@@ -1,0 +1,92 @@
+{
+  "summary": {
+    "recordedAt": "2026-11-02T11:09:51.644Z",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "checks": 1,
+    "passed": 0,
+    "failed": 1,
+    "requests": 3,
+    "scope": "One short AI retry after the main run; no financial or QA entity operations."
+  },
+  "options": {
+    "provider": "Gemini",
+    "enabled": true,
+    "configured": true,
+    "configurationIssues": [],
+    "chatAccess": "Authenticated",
+    "exerciseAccess": "Coach",
+    "providerVerified": false
+  },
+  "results": [
+    {
+      "id": "ai-short-retry-001",
+      "name": "Short member chat retry has real provider answer",
+      "passed": false,
+      "status": 503,
+      "ms": 25277,
+      "response": {
+        "title": "AI phản hồi quá lâu. Vui lòng thử lại.",
+        "status": 503,
+        "detail": "AI phản hồi quá lâu. Vui lòng thử lại.",
+        "message": "AI phản hồi quá lâu. Vui lòng thử lại.",
+        "traceId": "0HNPOQ0CE830U:00000019"
+      },
+      "error": null
+    }
+  ],
+  "calls": [
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 773,
+      "body": {
+        "userId": "09bf34a7-fed7-4175-b7ed-b8e402f4ca32"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "quan.tm"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "role": "Member",
+      "status": 200,
+      "ms": 66,
+      "body": {
+        "provider": "Gemini",
+        "enabled": true,
+        "configured": true,
+        "configurationIssues": [],
+        "chatAccess": "Authenticated",
+        "exerciseAccess": "Coach",
+        "providerVerified": false
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "Member",
+      "status": 503,
+      "ms": 25277,
+      "body": {
+        "title": "AI phản hồi quá lâu. Vui lòng thử lại.",
+        "status": 503,
+        "detail": "AI phản hồi quá lâu. Vui lòng thử lại.",
+        "message": "AI phản hồi quá lâu. Vui lòng thử lại.",
+        "traceId": "0HNPOQ0CE830U:00000019"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "message": "Xin ch?o! B?n h? tr? g? t?i SportCenter?",
+        "history": []
+      }
+    }
+  ]
+}

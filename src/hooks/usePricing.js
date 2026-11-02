@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { api } from '../api/endpoints.js';
+import { api, isMissingRoute } from '../api/endpoints.js';
+import { useApi } from './useApi.js';
 import { hasClassPrices } from '../lib/pricing.js';
 
 // Capabilities the API gains with the new business rules, asked once per page load and shared by every page.
@@ -35,29 +36,33 @@ export const DESK_CONFIRMED = { online: false, provider: 'BankTransfer', methods
 let optionsKnown;
 let optionsAsking;
 
+async function loadPaymentOptions() {
+  if (optionsKnown !== undefined) return optionsKnown;
+  optionsAsking ??= api.payments.options().then(
+    (o) => {
+      if (!o?.provider || !Array.isArray(o.methods) || !o.methods.length) {
+        throw new Error('Máy chủ chưa trả đủ thông tin thanh toán. Vui lòng tải lại.');
+      }
+      optionsKnown = {
+        online: true, provider: o.provider, methods: o.methods,
+        holdMinutes: o.holdMinutes ?? 15, upgrade: !!o.upgrade,
+      };
+      return optionsKnown;
+    },
+    (error) => {
+      if (isMissingRoute(error)) return (optionsKnown = DESK_CONFIRMED);
+      throw error;
+    },
+  ).finally(() => { optionsAsking = undefined; });
+  return optionsAsking;
+}
+
+// Checkout needs the failure/retry state; an outage must not look like a legacy desk transfer.
+export function usePaymentOptionsState() {
+  return useApi(loadPaymentOptions, []);
+}
+
+// Existing informational pages only need the resolved capabilities.
 export function usePaymentOptions() {
-  const [options, setOptions] = useState(optionsKnown);
-  useEffect(() => {
-    if (optionsKnown !== undefined) return undefined;
-    let live = true;
-    optionsAsking ??= api.payments.options().then(
-      (o) => (optionsKnown = {
-        online: true,
-        provider: o?.provider ?? 'SePay',
-        methods: o?.methods?.length ? o.methods : [2],
-        holdMinutes: o?.holdMinutes ?? 15,
-        upgrade: !!o?.upgrade,
-      }),
-      (e) => {
-        if (e?.status === 404 || e?.status === 405) return (optionsKnown = DESK_CONFIRMED);
-        optionsAsking = undefined; // unreachable for now: ask again on the next page
-        return DESK_CONFIRMED;
-      },
-    );
-    optionsAsking.then((value) => live && setOptions(value));
-    return () => {
-      live = false;
-    };
-  }, []);
-  return options;
+  return usePaymentOptionsState().data ?? undefined;
 }

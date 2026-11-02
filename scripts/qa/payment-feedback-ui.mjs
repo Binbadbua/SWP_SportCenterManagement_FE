@@ -1,6 +1,5 @@
-// Live UI smoke audit. No mocks or third-party browser dependency.
-// Default: navigation + real form sign-in only. --payment adds one fixture package checkout/cancel.
-// --payment-only runs only that member payment flow after the API suite has finished.
+// Actual PaymentResult UI with fully simulated API responses and a synthetic payment ID.
+// No real login, bank/provider request or business write. Preserve reports with QA_PAYMENT_FEEDBACK_OUT.
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
@@ -8,7 +7,7 @@ import { setTimeout as sleep } from 'node:timers/promises';
 import { ROOT } from './api-audit.mjs';
 const PASSWORD='no-login-in-this-test';
 const MOCK_PAYMENT_ID='00000000-0000-4000-8000-000000000099';
-const OUT=path.join(ROOT,'artifacts/payment-investigation-2026-10-30');
+const OUT=path.join(ROOT,process.env.QA_PAYMENT_FEEDBACK_OUT || 'artifacts/payment-investigation-2026-10-30');
 
 const flags = new Set(process.argv.slice(2));
 const PAYMENT = flags.has('--payment') || flags.has('--payment-only');
@@ -260,6 +259,31 @@ async function run() {
  await page.clickText('Kiểm tra lại');
  check('Read failure is shown to the user',await page.waitFor("document.body.textContent.includes('QA: lỗi đọc trạng thái')",5000));
  check('Manual button recovers after failure',await page.waitFor("[...document.querySelectorAll('button')].some(b=>b.textContent.trim()==='Kiểm tra lại'&&!b.disabled)",3000));
+ // Simulate returning from a bank app; no real transfer or payment mutation occurs.
+ page.mockHttpStatus=200;page.mockPaymentStatus=1;page.mockDelay=0;
+ await page.visit(route);
+ await page.evaluate("Object.defineProperty(document,'visibilityState',{configurable:true,get:()=>window.__qaHidden?'hidden':'visible'});window.__qaHidden=true;document.dispatchEvent(new Event('visibilitychange'))");
+ await sleep(300);const hiddenReads=page.mockReads;await sleep(2600);
+ check('Hidden payment tab does not keep polling',page.mockReads===hiddenReads,{before:hiddenReads,after:page.mockReads});
+ // Measure only the resume burst; prior full reloads can briefly overlap StrictMode's initial GETs.
+ while(page.mockActive>0)await sleep(25);
+ page.mockMaxActive=0;
+ page.mockDelay=600;const resumeReads=page.mockReads,resumeStarted=Date.now();
+ await page.evaluate("window.__qaHidden=false;document.dispatchEvent(new Event('visibilitychange'));window.dispatchEvent(new Event('focus'));window.dispatchEvent(new Event('online'))");
+ while(page.mockReads===resumeReads&&Date.now()-resumeStarted<1500)await sleep(25);
+ check('Returning from the bank app checks immediately',page.mockReads>resumeReads&&Date.now()-resumeStarted<1000,{latencyMs:Date.now()-resumeStarted});
+ await sleep(800);
+ check('Focus, visibility and online share one pending read',page.mockMaxActive===1,{maxConcurrentReads:page.mockMaxActive});
+ await page.evaluate("window.__qaHidden=true;document.dispatchEvent(new Event('visibilitychange'))");
+ await sleep(800);
+ page.mockDelay=0;page.mockPaymentStatus=2;
+ const paidStarted=Date.now();
+ await page.evaluate("window.__qaHidden=false;document.dispatchEvent(new Event('visibilitychange'))");
+ check('Returning shows server Paid without waiting for the poll interval',await page.waitFor("document.querySelector('.pay-result__title')?.textContent==='Thanh toán thành công'",1500),{latencyMs:Date.now()-paidStarted});
+ await sleep(300);const paidReads=page.mockReads;
+ await page.evaluate("window.dispatchEvent(new Event('focus'));window.dispatchEvent(new Event('online'));document.dispatchEvent(new Event('visibilitychange'))");
+ await sleep(2400);
+ check('Paid removes polling and resume listeners',page.mockReads===paidReads,{before:paidReads,after:page.mockReads});
  check('No uncaught UI runtime exceptions',report.runtimeExceptions.length===0);
  check('No unexpected business write attempted',report.blockedWrites.length===0);
  check('All payment reads were intercepted for a synthetic ID',report.requests.filter(r=>r.endpoint.startsWith('/api/payments/')).every(r=>r.endpoint==='/api/payments/'+MOCK_PAYMENT_ID),{mockReads:page.mockReads});

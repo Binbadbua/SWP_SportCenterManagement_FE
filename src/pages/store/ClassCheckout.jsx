@@ -1,9 +1,8 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { api, isMissingRoute } from '../../api/endpoints.js';
-import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
-import { usePaymentOptions } from '../../hooks/usePricing.js';
+import { usePaymentOptionsState } from '../../hooks/usePricing.js';
 import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import {
   formatDate, formatMoney, formatTimeRange, formatWeekday, isSessionOver, realPhone,
@@ -27,10 +26,11 @@ export default function ClassCheckout() {
   const member = isMember(user);
   const navigate = useNavigate();
   const location = useLocation();
-  const opts = usePaymentOptions();
+  const paymentOptions = usePaymentOptionsState();
+  const opts = paymentOptions.data;
   const cls = useApi(() => api.classes.get(id), [id]);
   const sessions = useApi(() => api.schedules.byClass(id), [id]);
-  const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
+  const packages = useApi(() => api.packages.list(), []);
   const cards = useApi(() => api.memberships.mine(), [user?.accountId], { skip: !member });
   const me = useApi(() => api.members.me.get(), [user?.accountId], { skip: !member });
   const mine = useApi(() => api.bookings.mine(), [user?.accountId], { skip: !member });
@@ -41,14 +41,24 @@ export default function ClassCheckout() {
   const [paying, setPaying] = useState(false);
   const [failure, setFailure] = useState(null);
   const [unavailable, setUnavailable] = useState(false);
+  const requiredData = [cls, sessions, packages, paymentOptions, ...(member ? [cards, me, mine] : [])];
+  const readinessBlocked = requiredData.some((state) => state.loading || state.error || state.usingSample);
 
-  if (cls.loading || sessions.loading) {
+  if (requiredData.some((state) => state.loading)) {
     return (
       <div className="container page">
         <Loading />
       </div>
     );
   }
+  const loadErrors = requiredData.filter((state) => state.error && !(state === cls && state.error.status === 404));
+  if (loadErrors.length) return (
+    <div className="container page narrow">
+      <h1 className="panel-title">Chưa tải được thông tin đặt lớp</h1>
+      {loadErrors.map((state, index) => <ErrorNotice key={index} error={state.error} onRetry={state.reload} />)}
+      <Button variant="secondary" to="/classes">Về danh sách lớp</Button>
+    </div>
+  );
   const c = cls.data;
   const upcoming = (sessions.data ?? [])
     .filter((s) => !isSessionOver(s))
@@ -96,6 +106,7 @@ export default function ClassCheckout() {
 
   const pay = async (e) => {
     e.preventDefault();
+    if (paying || !member || readinessBlocked || !opts || already) return;
     if (!agree) {
       setAgreeError('Bạn cần đồng ý với điều khoản trước khi thanh toán.');
       return;
@@ -245,13 +256,13 @@ export default function ClassCheckout() {
                 </Notice>
               )}
               {failure && <p className="field__error" role="alert">{failure}</p>}
-              <Button type="submit" form="class-checkout-form" size="lg" block disabled={paying || !opts}>
+              <Button type="submit" form="class-checkout-form" size="lg" block disabled={paying || readinessBlocked || !opts}>
                 {paying ? 'Đang tạo giao dịch…' : `Đặt lớp và thanh toán ${formatMoney(total)}`}
               </Button>
               <p className="checkout__safe muted">
                 <Icon name="check" size={16} strokeWidth={2} />{' '}
                 {opts?.online
-                  ? `Bước này chưa trừ tiền: bạn quét mã QR hoặc nhập thẻ ở bước sau; quá ${hold} phút chưa thanh toán thì lượt đặt tự hủy và chỗ được trả lại.`
+                  ? `Bước này chưa trừ tiền: bạn quét mã QR bằng ứng dụng ngân hàng ở bước sau; quá ${hold} phút chưa thanh toán thì lượt đặt tự hủy và chỗ được trả lại.`
                   : `Bước này chưa trừ tiền: bạn chuyển khoản ở bước sau; quá ${hold} phút lễ tân chưa xác nhận thì lượt đặt tự hủy và chỗ được trả lại.`}
               </p>
             </>

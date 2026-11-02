@@ -8,12 +8,13 @@ const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 export const apiUrl = (path) => (/^https?:\/\//i.test(path) ? path : BASE_URL + path);
 
 export class ApiError extends Error {
-  constructor(message, { status = 0, offline = false, details = null } = {}) {
+  constructor(message, { status = 0, offline = false, details = null, timeout = false } = {}) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.offline = offline; // true when the back-end could not be reached at all
     this.details = details;
+    this.timeout = timeout;
   }
 }
 
@@ -94,54 +95,60 @@ function messageFrom(body, status, text) {
   return `Yêu cầu thất bại (HTTP ${status}).`;
 }
 
-export async function request(method, path, body) {
-  let res;
-  
-  // 1. Chuẩn bị Headers cơ bản
-  // A file upload goes as FormData: the browser writes the multipart Content-Type (with its boundary) itself
+export async function request(method, path, body, { signal, timeoutMs = method === 'GET' ? 45000 : 0 } = {}) {
   const form = body instanceof FormData;
   const headers = { Accept: 'application/json' };
-  if (body !== undefined && !form) {
-    headers['Content-Type'] = 'application/json';
-  }
-
-  // 2. Lấy Token từ localStorage và đính kèm vào Authorization Header
-  const token = localStorage.getItem('sportcenter.token');
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
-
+  if (body !== undefined && !form) headers['Content-Type'] = 'application/json';
   try {
-    res = await fetch(BASE_URL + path, {
-      method,
-      headers, // Sử dụng bộ headers đã được đính kèm Token
+    const token = localStorage.getItem('sportcenter.token');
+    if (token) headers.Authorization = `Bearer ${token}`;
+  } catch { /* Storage may be unavailable; let the API report whether sign-in is required. */ }
+
+  const controller = new AbortController();
+  const cancel = () => controller.abort(signal?.reason);
+  if (signal?.aborted) cancel();
+  else signal?.addEventListener('abort', cancel, { once: true });
+  let timedOut = false;
+  const timer = Number.isFinite(timeoutMs) && timeoutMs > 0
+    ? setTimeout(() => { timedOut = true; controller.abort(); }, timeoutMs)
+    : null;
+  try {
+    const res = await fetch(BASE_URL + path, {
+      method, headers, signal: controller.signal,
       body: body === undefined ? undefined : form ? body : JSON.stringify(body),
     });
-  } catch {
-    throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra máy chủ rồi thử lại.', { offline: true });
-  }
-
-  if (res.status === 204) return null;
-
-  const text = await res.text();
-  const data = text ? parse(text) : null;
-
-  if (!res.ok) {
-    // The Vite dev proxy answers 502 when the back-end is down; Render answers 502/503/504 while it starts.
-    // A 500 comes from the API itself (see messageFromText), so it is a real error, not "offline"; so is a
-    // 502 that carries the API's JSON message (the photo store could not be reached).
-    const offline = [502, 503, 504].includes(res.status) && !data?.message;
-    if (offline) {
-      throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra máy chủ rồi thử lại.', { status: res.status, offline: true });
+    if (res.status === 204) return null;
+    // Keep the deadline active while reading the response body too.
+    const text = await res.text();
+    const data = text ? parse(text) : null;
+    if (!res.ok) {
+      const apiMessage = data && typeof data === 'object'
+        && ['message', 'detail', 'title'].some((key) => typeof data[key] === 'string' && data[key].trim());
+      const offline = [502, 503, 504].includes(res.status) && !apiMessage;
+      if (offline) throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra máy chủ rồi thử lại.', { status: res.status, offline: true });
+      throw new ApiError(toVietnamese(messageFrom(data, res.status, text)), { status: res.status, details: data });
     }
-    throw new ApiError(toVietnamese(messageFrom(data, res.status, text)), { status: res.status, details: data });
+    return data;
+  } catch (error) {
+    if (controller.signal.aborted) {
+      if (timedOut || signal?.reason?.name === 'TimeoutError') {
+        const failure = new ApiError('Máy chủ phản hồi quá lâu. Vui lòng thử lại sau.', { timeout: true });
+        failure.name = 'TimeoutError';
+        throw failure;
+      }
+      throw new DOMException('Đã hủy yêu cầu.', 'AbortError');
+    }
+    if (error instanceof ApiError) throw error;
+    throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra kết nối rồi thử lại.', { offline: true });
+  } finally {
+    if (timer) clearTimeout(timer);
+    signal?.removeEventListener('abort', cancel);
   }
-  return data;
 }
 
 export const http = {
-  get: (path) => request('GET', path),
-  post: (path, body) => request('POST', path, body ?? {}),
-  put: (path, body) => request('PUT', path, body ?? {}),
-  del: (path) => request('DELETE', path),
+  get: (path, options) => request('GET', path, undefined, options),
+  post: (path, body, options) => request('POST', path, body ?? {}, options),
+  put: (path, body, options) => request('PUT', path, body ?? {}, options),
+  del: (path, options) => request('DELETE', path, undefined, options),
 };
