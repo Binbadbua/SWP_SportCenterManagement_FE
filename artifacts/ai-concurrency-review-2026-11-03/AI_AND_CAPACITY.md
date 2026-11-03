@@ -53,3 +53,7 @@ Không suy lỗi AI hiện tại là do quá nhiều người truy cập: lượ
 - Đánh giá cách giảm polling khi nhiều người dùng (backoff phù hợp hoặc đẩy sự kiện theo contract BE). Giữ polling2giây hiện tại vì trước đó người dùng yêu cầu phản hồi nhanh; chưa tự đổi hành vi FE trong lượt hỏi này.
 
 Không sửa application source, không cần build lại. Chỉ thêm script chẩn đoán và tài liệu. Không commit/push/deploy.
+
+## Cập nhật Đợt32 — 03/11/2026,09:50–09:51 Việt Nam
+
+AI vẫn chưa có reply200. Lượt mới Memberchat503 timeout25.078ms; Coach exercise503/801ms báo rõ hạn mức ngày của project, khác thông báo timeout khoảng37giây ở phần lịch sử trên. Xem `2026-11-03T02-50-39-340Z/AI_RECHECK.md` và report.json để lấy traceId và handoff mới. Không có load test hoặc inference bổ sung sau lỗi quota.

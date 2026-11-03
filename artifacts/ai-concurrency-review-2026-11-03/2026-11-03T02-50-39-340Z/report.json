@@ -1,0 +1,210 @@
+{
+  "summary": {
+    "startedAt": "2026-11-03T02:50:39.342Z",
+    "baseUrl": "https://sportcenter-deploy-latest-1.onrender.com",
+    "status": "completed",
+    "scope": "Maximum two sequential inference calls; existing accounts and GETs only. No load test, QA creation, financial mutation or BE edits.",
+    "options": {
+      "status": 200,
+      "ms": 789,
+      "body": {
+        "provider": "Gemini",
+        "enabled": true,
+        "configured": true,
+        "configurationIssues": [],
+        "chatAccess": "Authenticated",
+        "exerciseAccess": "Coach",
+        "providerVerified": false
+      }
+    },
+    "chat": {
+      "status": 503,
+      "ms": 25078,
+      "body": {
+        "title": "AI phản hồi quá lâu. Vui lòng thử lại sau, không gửi nhiều yêu cầu cùng lúc.",
+        "status": 503,
+        "detail": "AI phản hồi quá lâu. Vui lòng thử lại sau, không gửi nhiều yêu cầu cùng lúc.",
+        "message": "AI phản hồi quá lâu. Vui lòng thử lại sau, không gửi nhiều yêu cầu cùng lúc.",
+        "traceId": "0HNPPAL68VSIM:00000003"
+      },
+      "error": null,
+      "hasReply": false
+    },
+    "exercise": {
+      "status": 503,
+      "ms": 801,
+      "body": {
+        "title": "Gemini đã chạm hạn mức ngày của project. Quản trị viên cần kiểm tra quota.",
+        "status": 503,
+        "detail": "Gemini đã chạm hạn mức ngày của project. Quản trị viên cần kiểm tra quota.",
+        "message": "Gemini đã chạm hạn mức ngày của project. Quản trị viên cần kiểm tra quota.",
+        "traceId": "0HNPPAL68VSIM:00000006"
+      },
+      "error": null,
+      "hasReply": false
+    },
+    "finishedAt": "2026-11-03T02:51:44.111Z",
+    "requests": 6,
+    "checks": 3,
+    "passed": 1,
+    "failed": 2,
+    "inferenceRequests": 2
+  },
+  "checks": [
+    {
+      "id": "ai-timeout-001",
+      "name": "AI options available",
+      "passed": true,
+      "status": 200,
+      "ms": 789,
+      "body": {
+        "provider": "Gemini",
+        "enabled": true,
+        "configured": true,
+        "configurationIssues": [],
+        "chatAccess": "Authenticated",
+        "exerciseAccess": "Coach",
+        "providerVerified": false
+      }
+    },
+    {
+      "id": "ai-timeout-002",
+      "name": "Member chat returns a real reply",
+      "passed": false,
+      "status": 503,
+      "ms": 25078,
+      "body": {
+        "title": "AI phản hồi quá lâu. Vui lòng thử lại sau, không gửi nhiều yêu cầu cùng lúc.",
+        "status": 503,
+        "detail": "AI phản hồi quá lâu. Vui lòng thử lại sau, không gửi nhiều yêu cầu cùng lúc.",
+        "message": "AI phản hồi quá lâu. Vui lòng thử lại sau, không gửi nhiều yêu cầu cùng lúc.",
+        "traceId": "0HNPPAL68VSIM:00000003"
+      },
+      "error": null,
+      "hasReply": false
+    },
+    {
+      "id": "ai-timeout-003",
+      "name": "Coach exercise returns a real reply",
+      "passed": false,
+      "status": 503,
+      "ms": 801,
+      "body": {
+        "title": "Gemini đã chạm hạn mức ngày của project. Quản trị viên cần kiểm tra quota.",
+        "status": 503,
+        "detail": "Gemini đã chạm hạn mức ngày của project. Quản trị viên cần kiểm tra quota.",
+        "message": "Gemini đã chạm hạn mức ngày của project. Quản trị viên cần kiểm tra quota.",
+        "traceId": "0HNPPAL68VSIM:00000006"
+      },
+      "error": null,
+      "hasReply": false
+    }
+  ],
+  "calls": [
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 34633,
+      "body": {
+        "userId": "09bf34a7-fed7-4175-b7ed-b8e402f4ca32"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "quan.tm"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/ai/options",
+      "role": "Member",
+      "status": 200,
+      "ms": 789,
+      "body": {
+        "provider": "Gemini",
+        "enabled": true,
+        "configured": true,
+        "configurationIssues": [],
+        "chatAccess": "Authenticated",
+        "exerciseAccess": "Coach",
+        "providerVerified": false
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/chat",
+      "role": "Member",
+      "status": 503,
+      "ms": 25078,
+      "body": {
+        "title": "AI phản hồi quá lâu. Vui lòng thử lại sau, không gửi nhiều yêu cầu cùng lúc.",
+        "status": 503,
+        "detail": "AI phản hồi quá lâu. Vui lòng thử lại sau, không gửi nhiều yêu cầu cùng lúc.",
+        "message": "AI phản hồi quá lâu. Vui lòng thử lại sau, không gửi nhiều yêu cầu cùng lúc.",
+        "traceId": "0HNPPAL68VSIM:00000003"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "message": "Xin chào! Bạn hỗ trợ gì tại SportCenter?",
+        "history": []
+      }
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/auth/login",
+      "role": "anonymous",
+      "status": 200,
+      "ms": 2392,
+      "body": {
+        "userId": "66666666-6666-6666-6666-666666666666"
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8",
+      "request": {
+        "email": "nguyen.manh.hung"
+      }
+    },
+    {
+      "method": "GET",
+      "endpoint": "/api/coaches/me/members",
+      "role": "Coach",
+      "status": 200,
+      "ms": 1067,
+      "body": {
+        "status": 200,
+        "rowCount": 16,
+        "validPupilFound": true
+      },
+      "error": null,
+      "contentType": "application/json; charset=utf-8"
+    },
+    {
+      "method": "POST",
+      "endpoint": "/api/ai/exercise-suggestions",
+      "role": "Coach",
+      "status": 503,
+      "ms": 801,
+      "body": {
+        "title": "Gemini đã chạm hạn mức ngày của project. Quản trị viên cần kiểm tra quota.",
+        "status": 503,
+        "detail": "Gemini đã chạm hạn mức ngày của project. Quản trị viên cần kiểm tra quota.",
+        "message": "Gemini đã chạm hạn mức ngày của project. Quản trị viên cần kiểm tra quota.",
+        "traceId": "0HNPPAL68VSIM:00000006"
+      },
+      "error": null,
+      "contentType": "application/problem+json",
+      "request": {
+        "memberId": "30636352-c38d-4a2b-b332-06aa330a24d2",
+        "goal": "Tăng sức bền bằng bài tập nhẹ phù hợp cho người mới",
+        "durationMinutes": 20,
+        "equipment": "bodyweight",
+        "level": "beginner"
+      }
+    }
+  ]
+}

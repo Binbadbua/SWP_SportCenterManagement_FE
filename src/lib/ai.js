@@ -38,6 +38,9 @@ export function aiReply(body) {
 export function aiErrorMessage(error) {
   if (error?.status === 401) return 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại để tiếp tục.';
   if (error?.status === 403) return 'Tài khoản này chưa được cấp quyền sử dụng trợ lý AI.';
+  if ([429, 503].includes(error?.status) && /hạn mức ngày|quota.*(?:ngày|daily)|daily.*quota/i.test(error.message ?? '')) {
+    return 'Trợ lý AI đã hết hạn mức sử dụng trong ngày. Vui lòng liên hệ trung tâm hoặc quay lại sau khi hạn mức được khôi phục.';
+  }
   if (error?.status === 429) return 'Bạn đang gửi quá nhiều câu hỏi. Vui lòng chờ một lát rồi thử lại.';
   if (error?.status === 503) {
     if (/hạn mức|quota|quá tải/i.test(error.message ?? '')) return 'Trợ lý AI đang bận. Vui lòng thử lại sau ít phút.';
