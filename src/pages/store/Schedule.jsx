@@ -30,8 +30,9 @@ export default function Schedule() {
   }, [sessions.data, weekStart, weekEnd]);
 
   return (
-    <div className="container page">
+    <div className="container page schedule-page">
       <header className="page-head">
+        <p className="storefront-eyebrow">Dành thời gian cho chính mình</p>
         <h1 className="page-title display">Lịch học</h1>
         <p className="page-lead">Mọi buổi học trong tuần, theo từng ngày. Đặt lớp một lần là giữ chỗ cho tất cả các buổi của lớp đó.</p>
       </header>

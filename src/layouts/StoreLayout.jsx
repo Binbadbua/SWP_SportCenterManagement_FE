@@ -1,8 +1,10 @@
 import { Suspense, useEffect } from 'react';
 import { Loading } from '../components/ui.jsx';
 import { Outlet, useLocation } from 'react-router-dom';
-import Header, { PromoStrip } from '../components/Header.jsx';
+import Header from '../components/Header.jsx';
 import Footer from '../components/Footer.jsx';
+import '../styles/storefront-refresh.css';
+import '../styles/catalog-redesign.css';
 
 export default function StoreLayout() {
   const { pathname } = useLocation();
@@ -15,7 +17,6 @@ export default function StoreLayout() {
     <div className="store">
       <a href="#main" className="skip-link">Bỏ qua, tới nội dung chính</a>
       <Header />
-      <PromoStrip />
       <main id="main">
         <Suspense fallback={<Loading label="Đang mở trang" />}><Outlet /></Suspense>
       </main>

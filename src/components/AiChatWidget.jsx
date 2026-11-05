@@ -251,8 +251,7 @@ function ChatSession({ user, returnTo }) {
       )}
       <button ref={launcher} type="button" className={`ai-chat__launcher ${open ? 'is-open' : ''}`} onClick={() => open ? close() : setOpen(true)}
         aria-label={open ? 'Thu gọn trợ lý AI' : 'Mở trợ lý AI'} aria-expanded={open} aria-controls={open ? 'sportcenter-ai-panel' : undefined}>
-        {open ? <Icon name="chevronDown" size={20} /> : <span className="ai-chat__launcher-icon" aria-hidden="true"><LogoMark className="ai-chat__brand-mark" /></span>}
-        <span>Trợ lý AI</span>
+        <span className="ai-chat__launcher-icon" aria-hidden="true"><LogoMark className="ai-chat__brand-mark" /></span>
       </button>
     </div>
   );

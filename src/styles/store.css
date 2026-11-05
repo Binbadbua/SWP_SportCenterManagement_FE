@@ -211,22 +211,6 @@
   gap: 10px;
 }
 
-.promo-strip {
-  padding: 12px var(--gutter);
-  background: var(--mist);
-  text-align: center;
-  font-size: 15px;
-}
-.promo-strip__links {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 2px;
-  font-size: 12px;
-  font-weight: 650;
-}
-.promo-strip__links a { text-decoration: underline; }
-
 /* ---- Hero ---------------------------------------------------------------- */
 .hero {
   position: relative;

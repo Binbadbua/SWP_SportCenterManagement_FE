@@ -140,16 +140,3 @@ export default function Header() {
     </>
   );
 }
-
-export function PromoStrip() {
-  const { user } = useAuth();
-  return (
-    <div className="promo-strip">
-      <p>{user ? 'Lớp mới mở mỗi tuần' : 'Buổi tập đầu tiên miễn phí'}</p>
-      <p className="promo-strip__links">
-        {!user && <Link to="/register">Đăng ký ngay</Link>}
-        <Link to="/classes">Tìm lớp học</Link>
-      </p>
-    </div>
-  );
-}

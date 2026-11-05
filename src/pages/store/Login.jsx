@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
 import { useSlideshow } from '../../hooks/useSlideshow.js';
 import { LOGIN_SLIDES, LOGIN_TIMING } from '../../lib/images.js';
 import Logo from '../../components/Logo.jsx';
 import Icon from '../../components/Icon.jsx';
 import { Button, Field, ErrorNotice, Notice, SlowHint } from '../../components/ui.jsx';
+import '../../styles/login-redesign.css';
 
 const PERKS = [
   'Đặt lớp chỉ với vài thao tác',
@@ -28,7 +29,7 @@ export default function Login() {
   const next = params.get('next') || params.get('from');
   const step = useSlideshow(LOGIN_SLIDES.length, LOGIN_TIMING.interval);
   const active = step % LOGIN_SLIDES.length;
-  // The photo fading out keeps panning; photos load one step ahead instead of all at once
+  // Photos load one step ahead and cross-fade without moving the form.
   const leaving = step > 0 ? (step - 1) % LOGIN_SLIDES.length : -1;
   const requested = Math.min(LOGIN_SLIDES.length, step + 2);
 
@@ -67,14 +68,10 @@ export default function Login() {
 
   return (
     <div className="login">
-      {/* Photo side: the same bold, condensed voice as the home hero, over a panning slideshow */}
       <section
         className="login__media"
         aria-hidden="true"
-        style={{
-          '--login-fade': `${LOGIN_TIMING.fade}ms`,
-          '--login-pan': `${LOGIN_TIMING.interval + LOGIN_TIMING.fade}ms`,
-        }}
+        style={{ '--login-fade': `${LOGIN_TIMING.fade}ms` }}
       >
         {LOGIN_SLIDES.map((s, i) => (
           <img
@@ -87,30 +84,33 @@ export default function Login() {
           />
         ))}
         <div className="login__shade" />
+        <div className="login__media-tag"><span />Cùng bạn tiến bộ mỗi ngày</div>
         <div className="login__pitch">
-          <p className="label">Thành viên SportCenter</p>
-          <p className="login__headline display">
-            Trở lại<br />sân tập.
-          </p>
+          <p className="login__media-eyebrow">Một nơi cho nhịp sống năng động</p>
+          <p className="login__headline">Một chút vận động.<br />Một ngày tốt hơn.</p>
+          <p className="login__media-lead">Trở lại với lịch tập của bạn và những mục tiêu đang chờ phía trước.</p>
           <ul className="login__perks">
-            {PERKS.map((p) => (
-              <li key={p}>
-                <Icon name="check" size={18} strokeWidth={2.2} />
-                {p}
+            {PERKS.map((perk) => (
+              <li key={perk}>
+                <span className="login__perk-icon"><Icon name="check" size={16} strokeWidth={2.2} /></span>
+                <span>{perk}</span>
               </li>
             ))}
           </ul>
+          <div className="login__slide-dots">
+            {LOGIN_SLIDES.map((photo, index) => <span key={photo.src} className={index === active ? 'is-active' : ''} />)}
+          </div>
         </div>
       </section>
 
-      <section className="login__panel">
+      <section className="login__panel" aria-labelledby="login-title">
         <form className="login__form" onSubmit={submit} noValidate>
-          <Logo compact />
-          <div>
-            <p className="login__eyebrow label">Đăng nhập</p>
-            <h1 className="login__title">Chào mừng bạn trở lại</h1>
-            <p className="muted">
-              {next ? 'Đăng nhập để tiếp tục từ chỗ bạn đang dừng.' : 'Dùng email hoặc tên đăng nhập bạn đã đăng ký.'}
+          <div className="login__brand"><Logo /></div>
+          <div className="login__intro">
+            <p className="login__eyebrow">Tài khoản của bạn</p>
+            <h1 id="login-title" className="login__title">Chào mừng bạn trở lại</h1>
+            <p className="login__description">
+              {next ? 'Đăng nhập để tiếp tục từ chỗ bạn đang dừng.' : 'Đăng nhập để tiếp tục hành trình tập luyện cùng SportCenter.'}
             </p>
           </div>
 
@@ -119,7 +119,6 @@ export default function Login() {
               Đăng nhập bằng email và mật khẩu bạn vừa tạo.
             </Notice>
           )}
-          {/* Hiển thị lỗi nếu sai tài khoản/mật khẩu */}
           {errorMsg && <ErrorNotice error={{ message: errorMsg }} />}
 
           <Field
@@ -130,6 +129,7 @@ export default function Login() {
             value={values.username}
             onChange={set}
             autoComplete="username"
+            placeholder="Nhập email hoặc tên đăng nhập"
             autoFocus
           />
 
@@ -142,11 +142,12 @@ export default function Login() {
               value={values.password}
               onChange={set}
               autoComplete="current-password"
+              placeholder="Nhập mật khẩu của bạn"
             />
             <button
               type="button"
               className="login__reveal"
-              onClick={() => setShowPassword((s) => !s)}
+              onClick={() => setShowPassword((current) => !current)}
               aria-pressed={showPassword}
               aria-controls="f-password"
             >
@@ -159,13 +160,12 @@ export default function Login() {
           </Button>
           <SlowHint active={isSubmitting} />
 
-          <div className="login__divider"><span>Lần đầu đến SportCenter?</span></div>
-          <Button to="/register" variant="secondary" size="lg" block>
-            Tạo tài khoản
-          </Button>
-          <p className="login__foot muted small">
-            Huấn luyện viên, lễ tân và quản lý cũng đăng nhập ở đây và được chuyển thẳng vào khu vực nhân viên.
-          </p>
+          <div className="login__divider"><span>Bạn mới đến SportCenter?</span></div>
+          <Button to="/register" variant="secondary" size="lg" block>Tạo tài khoản</Button>
+          <div className="login__staff-note">
+            <Icon name="user" size={20} />
+            <p className="login__foot">Huấn luyện viên, lễ tân và quản lý cũng đăng nhập tại đây để vào khu vực nhân viên.</p>
+          </div>
         </form>
       </section>
     </div>

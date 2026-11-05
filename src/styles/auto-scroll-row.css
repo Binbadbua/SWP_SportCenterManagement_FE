@@ -1,0 +1,14 @@
+/* A bounded, slowly drifting row. Native scrolling remains available for touch and keyboard users. */
+.auto-row { width: 100%; min-width: 0; max-width: 100%; }
+.auto-row__controls { display: flex; justify-content: flex-end; gap: 7px; margin: -8px 0 11px; }
+.auto-row__controls button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 44px; min-height: 44px; padding: 8px; border: 1px solid #dfe6da; border-radius: 50%; color: #52634a; background: white; cursor: pointer; }
+.auto-row__controls button:hover { border-color: #e4b69f; color: #b63d17; background: #fff6ee; }
+.auto-row__controls .auto-row__pause { padding-inline: 13px; border-radius: 999px; font: 500 11px/1.5 var(--font-home); }
+.auto-row__track { position: relative; display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - (var(--row-columns) - 1) * 18px) / var(--row-columns)); align-items: stretch; gap: 18px; width: 100%; padding: 5px 4px 14px; overflow-x: auto; overflow-y: hidden; scroll-snap-type: none; scrollbar-width: none; overscroll-behavior-x: contain; }
+.auto-row__track::-webkit-scrollbar { display: none; }
+.auto-row__track > *, .auto-row__copy > * { min-width: 0; }
+.auto-row__copy { display: contents; }
+.auto-row__copy[hidden] { display: none; }
+@media (max-width: 1100px) { .auto-row__track { grid-auto-columns: calc((100% - 18px) / 2); } }
+@media (max-width: 600px) { .auto-row__track { grid-auto-columns: min(86%, 340px); gap: 14px; } .auto-row__controls { margin-top: -5px; } }
+@media (prefers-reduced-motion: reduce) { .auto-row__track { scroll-behavior: auto; } }

@@ -5,6 +5,7 @@ import { ClassStatus } from '../lib/enums.js';
 import { benefitsOf, summaryOf } from '../lib/pricing.js';
 import { Button } from './ui.jsx';
 import { sportsOf } from './CoachFacts.jsx';
+import Icon from './Icon.jsx';
 
 /* The most useful fact about the class right now, shown above its name. `started` (lib/classes.js) is known when
    the caller has the class's sessions; a class that has started takes no more bookings. */
@@ -23,30 +24,37 @@ export function classEyebrow(c, spotsLeft, started) {
   return { text: 'Đang nhận đăng ký', tone: 'ink' };
 }
 
-export function ClassCard({ item, spotsLeft, started }) {
-  // spotsLeft comes with each class from the API; the sample data carries _enrolled instead
-  const left = spotsLeft ?? item.spotsLeft ?? (item._enrolled !== undefined ? item.maxCapacity - item._enrolled : undefined);
-  const eyebrow = classEyebrow(item, left, started);
+export function ClassCard({ item, spotsLeft, started, scheduleKnown = true }) {
+  // currentEnrolled includes the API's pending holds; never infer free seats from a staff-only roster.
+  const knownCapacity = Number.isFinite(item.maxCapacity);
+  const serverLeft = knownCapacity && Number.isFinite(item.currentEnrolled)
+    ? Math.max(0, item.maxCapacity - item.currentEnrolled)
+    : item.spotsLeft ?? (knownCapacity && Number.isFinite(item._enrolled) ? Math.max(0, item.maxCapacity - item._enrolled) : undefined);
+  const left = spotsLeft ?? serverLeft;
+  const eyebrow = !scheduleKnown && item.status === 1
+    ? { text: 'Xem lịch để kiểm tra đăng ký', tone: 'muted' }
+    : classEyebrow(item, left, started);
   return (
     <Link to={`/classes/${item.id}`} className="class-card">
       <div className="class-card__media">
-        <img src={sportImage(item.categoryName, item.className)} alt="" loading="lazy" />
+        <img src={sportImage(item.categoryName, item.className)} alt="" loading="lazy" decoding="async" />
+        {item.categoryName && <span className="class-card__sport">{item.categoryName}</span>}
+        <span className="class-card__open" aria-hidden="true"><Icon name="arrowRight" size={19} /></span>
       </div>
       <div className="class-card__body">
-        <p className={`class-card__eyebrow eyebrow--${eyebrow.tone}`}>{eyebrow.text}</p>
+        <p className={`class-card__eyebrow eyebrow--${eyebrow.tone}`}><span />{eyebrow.text}</p>
         <h3 className="class-card__title">{item.className}</h3>
-        <p className="muted">{item.categoryName} · {item.coachName}</p>
-        <p className="muted num">{formatDateRange(item.startDate, item.endDate)}</p>
-        {/* The class fee, once the API carries it (CHANGELOG Part B, B53) */}
-        {typeof item.price === 'number' && (
-          <p className="class-card__fee num">{item.price > 0 ? `Học phí ${formatMoney(item.price)}` : 'Miễn phí'}</p>
-        )}
-        <p className="class-card__cap num">Tối đa {item.maxCapacity} người</p>
+        <p className="class-card__meta"><Icon name="user" size={16} /><span>{item.coachName || 'Huấn luyện viên sẽ được cập nhật'}</span></p>
+        <p className="class-card__meta num"><Icon name="calendar" size={16} /><span>{formatDateRange(item.startDate, item.endDate)}</span></p>
+        <div className="class-card__footer">
+          <div className="class-card__fee"><span>Học phí toàn khóa</span><strong className="num">{typeof item.price === 'number' ? item.price > 0 ? formatMoney(item.price) : 'Miễn phí' : 'Xem chi tiết'}</strong></div>
+          <span className="class-card__cap">{Number.isFinite(left) ? `${Math.max(0, left)} chỗ còn lại` : knownCapacity ? `Tối đa ${item.maxCapacity} người` : 'Xem sĩ số lớp'}</span>
+        </div>
+        <div className="class-card__link">Xem chi tiết lớp<Icon name="arrowRight" size={16} /></div>
       </div>
     </Link>
   );
 }
-
 /* Sport tile with a boxed label on the photo */
 export function CategoryTile({ category, count }) {
   return (
@@ -79,23 +87,23 @@ export function CoachPortrait({ coach, size = 'md' }) {
 /* Opens the coach's page. `classes` (the coach's own, optional) adds the sports they teach. */
 export function CoachCard({ coach, classes }) {
   const sports = sportsOf(classes).map(([, name]) => name);
+  const yearsKnown = Number.isFinite(coach.experienceYears) && coach.experienceYears >= 0;
   return (
     <Link to={`/coaches/${coach.id}`} className="coach-card">
       <div className="coach-card__media">
         <CoachPortrait coach={coach} />
+        {yearsKnown && <span className="coach-card__experience"><Icon name="user" size={14} />{coach.experienceYears} năm kinh nghiệm</span>}
       </div>
       <div className="coach-card__body">
+        <p className="coach-card__eyebrow">Huấn luyện viên</p>
         <h3 className="coach-card__name">{coach.fullName}</h3>
-        <p className="muted">{coach.specialization || 'Huấn luyện viên'}</p>
-        {sports.length > 0 && <p className="coach-card__sports">{sports.join(' · ')}</p>}
-        <p className="coach-card__years num">
-          <strong>{coach.experienceYears}</strong> năm kinh nghiệm
-        </p>
+        <p className="coach-card__specialization">{coach.specialization || 'Chuyên môn sẽ được cập nhật'}</p>
+        {sports.length > 0 && <div className="coach-card__sports">{sports.slice(0, 3).map(sport => <span key={sport}>{sport}</span>)}{sports.length > 3 && <span>+{sports.length - 3} môn</span>}</div>}
+        <div className="coach-card__link">Khám phá hồ sơ<Icon name="arrowRight" size={17} /></div>
       </div>
     </Link>
   );
 }
-
 export function PackageCard({ pkg, onChoose, featured = false }) {
   const months = Math.round(pkg.durationDays / 30);
   const perMonth = Math.round((months > 0 ? pkg.price / months : pkg.price) / 1000) * 1000;

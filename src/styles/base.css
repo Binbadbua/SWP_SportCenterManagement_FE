@@ -14,8 +14,9 @@
   --danger: #d30005;
   --warning: #9a6700;
 
-  --font-display: 'Anton', 'Impact', 'Arial Narrow', sans-serif;
-  --font-body: 'Archivo Variable', 'Helvetica Neue', Arial, sans-serif;
+  --font-display: var(--font-home);
+  --font-body: var(--font-home);
+  --font-home: 'Be Vietnam Pro', 'Helvetica Neue', Arial, sans-serif;
 
   --gutter: clamp(16px, 3.4vw, 48px);
   --max: 1440px;
@@ -42,7 +43,7 @@ body {
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.5;
-  font-variation-settings: 'wdth' 100;
+  font-variation-settings: normal;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -95,21 +96,20 @@ p {
 /* Vietnamese capitals carry stacked marks above (Ế, Ở) and below (Ạ, Ợ): the lines need room for them */
 .display {
   font-family: var(--font-display);
-  font-weight: 400;
-  text-transform: uppercase;
-  line-height: 1.1;
-  letter-spacing: -0.005em;
+  font-weight: 700;
+  text-transform: none;
+  line-height: 1.35;
+  letter-spacing: -0.035em;
 }
-/* Stacked marks (Ỗ, Ế, Ữ) rise about a quarter of the font size above the line box: a display heading right
-   under another element (an eyebrow, a label, a date) gets that room, or its marks run into the words above */
+/* The new line-height already leaves room for Vietnamese marks above and below each line. */
 * + .display:not(.num) {
-  padding-top: 0.25em;
+  padding-top: 0;
 }
 
-/* Condensed, spaced caps — used for eyebrows, tags and nav in the staff area */
+/* Compact labels share the same Vietnamese typeface throughout the website. */
 .label {
-  font-stretch: 75%;
-  font-variation-settings: 'wdth' 75;
+  font-stretch: normal;
+  font-variation-settings: normal;
   font-weight: 650;
   font-size: 13px;
   letter-spacing: 0.08em;

@@ -1,5 +1,9 @@
 # SWP SportCenter — how to run the project
 
+> **Cập nhật03/11/2026:** FE hiện dùng React19.3, React Router7.18 và Vite8.3. Xem [bản xác minh công nghệ và nguồn của banner](docs/XAC_MINH_CONG_NGHE_FE.md).
+>
+> **Tài liệu khởi tạo được giữ bên dưới làm lịch sử:** các mục nói chưa có login API, đăng nhập preview, nhập profile ID thủ công hoặc nhiều trang chưa có API không mô tả trạng thái hiện tại. Ứng dụng hiện dùng đăng nhập JWT và API thật; đối chiếu mã nguồn cùng lịch sử thay đổi mới khi vận hành.
+
 This repository has two parts:
 
 | Folder | What it is | Tech |
