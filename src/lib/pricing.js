@@ -14,7 +14,7 @@ export function discountFor(cards, packages, day = todayLocalDateString()) {
   for (const card of cardsOn(cards, day)) {
     const pkg = (packages ?? []).find((p) => p.id === card.packageId);
     const percent = Number(pkg?.discountPercent ?? 0);
-    if (percent > best.percent) best = { percent, card, pkg };
+    if (Number.isFinite(percent) && percent > best.percent && percent <= 100) best = { percent, card, pkg };
   }
   return best;
 }

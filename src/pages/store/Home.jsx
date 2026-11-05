@@ -3,10 +3,13 @@ import { Link } from 'react-router-dom';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
+import { useMemberDiscount } from '../../hooks/useMemberDiscount.js';
+import ClassPrice from '../../components/ClassPrice.jsx';
+import MemberDiscountNotice from '../../components/MemberDiscountNotice.jsx';
 import { useAuth, isStaff } from '../../context/AuthContext.jsx';
 import { HERO_SLIDES, HERO_TIMING, sportImage } from '../../lib/images.js';
 import { useSlideshow } from '../../hooks/useSlideshow.js';
-import { daysUntil, formatDateRange, formatMoney } from '../../lib/format.js';
+import { daysUntil, formatDateRange } from '../../lib/format.js';
 import { CoachPortrait, classEyebrow } from '../../components/cards.jsx';
 import Icon from '../../components/Icon.jsx';
 import AutoScrollRow from '../../components/AutoScrollRow.jsx';
@@ -26,7 +29,7 @@ function SectionHead({ id, eyebrow, title, description, action }) {
   );
 }
 
-function HomeClass({ item, tabIndex }) {
+function HomeClass({ item, tabIndex, pricing }) {
   const knownCapacity = Number.isFinite(item.maxCapacity) && Number.isFinite(item.currentEnrolled);
   const left = knownCapacity ? Math.max(0, item.maxCapacity - item.currentEnrolled) : item.spotsLeft;
   const eyebrow = classEyebrow(item, left);
@@ -43,7 +46,7 @@ function HomeClass({ item, tabIndex }) {
         <p className="home-class__detail"><Icon name="user" size={16} /><span>{item.coachName || 'Thông tin huấn luyện viên sẽ được cập nhật'}</span></p>
         <p className="home-class__detail"><Icon name="calendar" size={16} /><span>{formatDateRange(item.startDate, item.endDate)}</span></p>
         <div className="home-class__bottom">
-          <div><span className="home-class__fee-label">Học phí toàn khóa</span><strong>{typeof item.price === 'number' ? item.price > 0 ? formatMoney(item.price) : 'Miễn phí' : 'Xem chi tiết'}</strong></div>
+          <div><span className="home-class__fee-label">Học phí toàn khóa</span><ClassPrice price={item.price} pricing={pricing} /></div>
           <span className="home-class__capacity">{Number.isFinite(left) ? `${left} chỗ còn lại` : Number.isFinite(item.maxCapacity) ? `Tối đa ${item.maxCapacity} người` : 'Xem sĩ số lớp'}</span>
         </div>
       </div>
@@ -121,6 +124,7 @@ export default function Home() {
   const categories = useApi(() => api.categories.list(), [], { sample: mock.categories });
   const classes = useApi(() => api.classes.list(), [], { sample: mock.classes });
   const coaches = useApi(() => api.coaches.list(), [], { sample: mock.coaches });
+  const pricing = useMemberDiscount({ enabled: !classes.usingSample });
   const sources = [categories, classes, coaches];
   const usingSample = sources.some(source => source.usingSample);
   const classList = classes.data ?? [];
@@ -166,7 +170,8 @@ export default function Home() {
         <div className="container">
           <SectionHead id="home-classes-title" eyebrow="Lên lịch cho một khởi đầu mới" title="Sắp khai giảng" description="Xem ngày học, huấn luyện viên và học phí để tìm lớp phù hợp với bạn." action={<Link className="home-text-link" to="/classes?status=1">Xem các lớp sắp khai giảng<Icon name="arrowRight" size={18} /></Link>} />
           <ErrorNotice error={!classes.usingSample ? classes.error : null} onRetry={classes.reload} />
-          {classes.loading ? <Loading label="Đang tải các lớp sắp khai giảng" /> : visibleClasses.length ? <AutoScrollRow className="home-classes-row" label="các lớp sắp khai giảng" direction="right" speed={18}>{visibleClasses.map(item => <HomeClass key={item.id} item={item} />)}</AutoScrollRow> : !classes.error || classes.usingSample ? <div className="home-empty" role="status"><Icon name="calendar" size={28} /><h3>Chưa có lịch khai giảng phù hợp</h3><p>Bạn có thể xem lịch hiện tại hoặc quay lại khi trung tâm mở lớp mới.</p></div> : null}
+          <MemberDiscountNotice pricing={pricing} />
+          {classes.loading ? <Loading label="Đang tải các lớp sắp khai giảng" /> : visibleClasses.length ? <AutoScrollRow className="home-classes-row" label="các lớp sắp khai giảng" direction="right" speed={18}>{visibleClasses.map(item => <HomeClass key={item.id} item={item} pricing={pricing} />)}</AutoScrollRow> : !classes.error || classes.usingSample ? <div className="home-empty" role="status"><Icon name="calendar" size={28} /><h3>Chưa có lịch khai giảng phù hợp</h3><p>Bạn có thể xem lịch hiện tại hoặc quay lại khi trung tâm mở lớp mới.</p></div> : null}
           {visibleClasses.length > 0 && <p className="home-price-note">Học phí hiển thị cho toàn khóa. Ưu đãi theo thẻ thành viên được áp dụng khi đủ điều kiện.</p>}
         </div>
       </section>

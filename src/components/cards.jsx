@@ -6,6 +6,7 @@ import { benefitsOf, summaryOf } from '../lib/pricing.js';
 import { Button } from './ui.jsx';
 import { sportsOf } from './CoachFacts.jsx';
 import Icon from './Icon.jsx';
+import ClassPrice from './ClassPrice.jsx';
 
 /* The most useful fact about the class right now, shown above its name. `started` (lib/classes.js) is known when
    the caller has the class's sessions; a class that has started takes no more bookings. */
@@ -24,7 +25,7 @@ export function classEyebrow(c, spotsLeft, started) {
   return { text: 'Đang nhận đăng ký', tone: 'ink' };
 }
 
-export function ClassCard({ item, spotsLeft, started, scheduleKnown = true }) {
+export function ClassCard({ item, spotsLeft, started, scheduleKnown = true, pricing }) {
   // currentEnrolled includes the API's pending holds; never infer free seats from a staff-only roster.
   const knownCapacity = Number.isFinite(item.maxCapacity);
   const serverLeft = knownCapacity && Number.isFinite(item.currentEnrolled)
@@ -47,7 +48,7 @@ export function ClassCard({ item, spotsLeft, started, scheduleKnown = true }) {
         <p className="class-card__meta"><Icon name="user" size={16} /><span>{item.coachName || 'Huấn luyện viên sẽ được cập nhật'}</span></p>
         <p className="class-card__meta num"><Icon name="calendar" size={16} /><span>{formatDateRange(item.startDate, item.endDate)}</span></p>
         <div className="class-card__footer">
-          <div className="class-card__fee"><span>Học phí toàn khóa</span><strong className="num">{typeof item.price === 'number' ? item.price > 0 ? formatMoney(item.price) : 'Miễn phí' : 'Xem chi tiết'}</strong></div>
+          <div className="class-card__fee"><span>Học phí toàn khóa</span><ClassPrice price={item.price} pricing={pricing} /></div>
           <span className="class-card__cap">{Number.isFinite(left) ? `${Math.max(0, left)} chỗ còn lại` : knownCapacity ? `Tối đa ${item.maxCapacity} người` : 'Xem sĩ số lớp'}</span>
         </div>
         <div className="class-card__link">Xem chi tiết lớp<Icon name="arrowRight" size={16} /></div>

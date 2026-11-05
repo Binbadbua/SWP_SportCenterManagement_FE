@@ -2,6 +2,8 @@ import { Link, useParams } from 'react-router-dom';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
+import { useMemberDiscount } from '../../hooks/useMemberDiscount.js';
+import MemberDiscountNotice from '../../components/MemberDiscountNotice.jsx';
 import { formatShortDate, formatTimeRange, formatWeekday, todayLocalDateString } from '../../lib/format.js';
 import Icon from '../../components/Icon.jsx';
 import { classStarted } from '../../lib/classes.js';
@@ -22,6 +24,8 @@ export default function CoachDetail() {
   });
   const classes = useApi(() => api.classes.list(), [], { sample: mock.classes });
   const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
+
+  const pricing = useMemberDiscount({ enabled: !classes.usingSample });
 
   if (coach.loading) {
     return (
@@ -90,12 +94,13 @@ export default function CoachDetail() {
         <div className="block__head">
           <h2 className="section-title">Lớp đang phụ trách</h2>
         </div>
+        <MemberDiscountNotice pricing={pricing} />
         <ErrorNotice error={!classes.usingSample ? classes.error : null} onRetry={classes.reload} />
         {classes.loading ? (
           <Loading />
         ) : mine.length ? (
           <div className="product-grid product-grid--4">
-            {mine.map((k) => <ClassCard key={k.id} item={k} started={sessions.data ? classStarted(k, sessions.data) : undefined} />)}
+            {mine.map((k) => <ClassCard key={k.id} item={k} pricing={pricing} started={sessions.data ? classStarted(k, sessions.data) : undefined} />)}
           </div>
         ) : (
           !classes.error && <p className="muted">Hiện chưa phụ trách lớp nào.</p>

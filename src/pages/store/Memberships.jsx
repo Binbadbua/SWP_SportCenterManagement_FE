@@ -7,6 +7,7 @@ import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import { IMAGES } from '../../lib/images.js';
 import { formatDate, formatMoney, todayCenterDateString } from '../../lib/format.js';
 import { benefitsOf, hasPackageDiscounts, summaryOf } from '../../lib/pricing.js';
+import { cardsOn } from '../../lib/membership.js';
 import Icon from '../../components/Icon.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
 import '../../styles/membership-redesign.css';
@@ -65,7 +66,7 @@ export default function Memberships() {
   const monthPlans = active.filter(pkg => Number(pkg.durationDays) === 30);
   const bestSellerId = (monthPlans.find(pkg => /^gói\s*(1|một)\s*tháng$/i.test(String(pkg.packageName ?? '').trim())) ?? monthPlans[0])?.id;
   const today = todayCenterDateString();
-  const current = (mine.data ?? []).find(card => card.status === 1 && String(card.endDate).slice(0, 10) >= today);
+  const current = cardsOn(mine.data, today)[0];
   const discounts = hasPackageDiscounts(packages.data);
   const catalogueKnown = !!packages.data && !packages.usingSample && !packages.error;
   const steps = howItWorks({ online: opts?.online, fees: discounts, known: catalogueKnown });

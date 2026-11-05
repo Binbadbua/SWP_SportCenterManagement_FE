@@ -18,7 +18,8 @@ import {
 import { ClassStatus } from "../../lib/enums.js";
 import { classStarted } from "../../lib/classes.js";
 import { cardCheck } from "../../lib/membership.js";
-import { discountFor, maxDiscount, priceAfter } from "../../lib/pricing.js";
+import { discountFor, maxDiscount } from "../../lib/pricing.js";
+import ClassPrice from "../../components/ClassPrice.jsx";
 import Icon from "../../components/Icon.jsx";
 import CancelBooking from "../../components/CancelBooking.jsx";
 import { classEyebrow, CoachPortrait } from "../../components/cards.jsx";
@@ -145,8 +146,13 @@ function ClassDetailView() {
       : null;
   const needsCard = card?.ok === false;
   const checkingCard = !priced && member && (myCards.loading || !!myCards.error);
-  const deal = priced && member && myCards.data ? discountFor(myCards.data, packages.data) : { percent: 0 };
-  const toPay = priced ? priceAfter(c.price, deal.percent) : 0;
+  const pricing = {
+    member,
+    loading: member && (myCards.loading || packages.loading),
+    error: member && (myCards.error || packages.error || ((packages.usingSample || cls.usingSample) ? new Error("Chưa tải được ưu đãi thực tế.") : null)),
+  };
+  const deal = priced && member && !pricing.loading && !pricing.error ? discountFor(myCards.data, packages.data) : { percent: 0 };
+  pricing.deal = deal;
   const topDiscount = priced ? maxDiscount(packages.data) : 0;
   const withFee = priced && c.price > 0;
   const paidBooking = priced && myBooking?.status === 1 && Number(myBooking.price ?? 0) > 0;
@@ -424,16 +430,15 @@ function ClassDetailView() {
             <p className="pdp__price">Lớp miễn phí</p>
           ) : (
             <div className="pdp__fee">
-              <p className="pdp__price">
-                Học phí cả khóa <span className="num">{formatMoney(c.price)}</span>
-              </p>
+              <p className="pdp__price">Học phí cả khóa</p>
+              <ClassPrice price={c.price} pricing={pricing} />
+              {pricing.error && <ErrorNotice error={pricing.error} onRetry={() => { myCards.reload(); packages.reload(); }} />}
               {deal.percent > 0 ? (
                 <p className="pdp__deal">
-                  {deal.pkg.packageName} giảm {deal.percent}%: bạn trả{" "}
-                  <strong className="num">{formatMoney(toPay)}</strong>
+                  Ưu đãi từ {deal.pkg.packageName} còn hiệu lực hôm nay.
                 </p>
               ) : (
-                topDiscount > 0 && (
+                !pricing.loading && !pricing.error && topDiscount > 0 && (
                   <p className="muted small">
                     Thành viên có thẻ được giảm tới {topDiscount}% học phí mọi lớp.{" "}
                     <Link className="text-link" to="/memberships">Xem gói tập</Link>

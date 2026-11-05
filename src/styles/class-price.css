@@ -1,0 +1,20 @@
+.class-price { display: grid; align-content: start; justify-items: start; gap: 3px; min-width: 0; }
+.class-price__original { color: #7a8176; font-size: 12px; font-weight: 400; line-height: 1.6; text-decoration-thickness: 1px; }
+.class-price .class-price__amount { line-height: 1.5; overflow-wrap: anywhere; }
+.class-price--discounted .class-price__amount { color: #b33510; }
+.store .class-card__fee .class-price--discounted .class-price__amount, .home-class__bottom .class-price--discounted .class-price__amount { color: #b33510; }
+.class-price__saving { color: #9a3718; font-size: 10px; line-height: 1.6; font-weight: 600; }
+.class-price__hint { color: #777e71; font-size: 10px; line-height: 1.6; }
+.member-discount-status { margin: 0 0 16px; color: #68755e; font-size: 12px; }
+.member-discount-notice { padding: 14px 18px; margin-bottom: 20px; border: 1px solid #f0d4c2; border-radius: 13px; background: #fff8f1; color: #5c513f; font-size: 12px; line-height: 1.85; overflow-wrap: anywhere; }
+.member-discount-notice p { margin: 0; }
+.member-discount-notice p + p { margin-top: 5px; }
+.member-discount-notice strong { font-weight: 600; color: #9a3718; }
+.member-discount-notice .member-discount-notice__note { font-size: 11px; color: #777465; }
+.pdp__fee .class-price { margin: 8px 0 12px; }
+.pdp__fee .class-price__amount { font-size: 28px; font-weight: 700; }
+.pdp__fee .class-price__original { font-size: 15px; }
+@media (max-width: 680px) {
+  .member-discount-notice { padding: 12px 14px; }
+  .pdp__fee .class-price__amount { font-size: 25px; }
+}

@@ -3,6 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
+import { useMemberDiscount } from '../../hooks/useMemberDiscount.js';
+import MemberDiscountNotice from '../../components/MemberDiscountNotice.jsx';
 import { daysUntil } from '../../lib/format.js';
 import { classStarted } from '../../lib/classes.js';
 import Icon from '../../components/Icon.jsx';
@@ -32,6 +34,7 @@ export default function Classes() {
   const classes = useApi(() => api.classes.list(), [], { sample: mock.classes });
   const categories = useApi(() => api.categories.list(), [], { sample: mock.categories });
   const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
+  const pricing = useMemberDiscount({ enabled: !classes.usingSample });
   const sports = readList(params, 'sport');
   const statuses = readList(params, 'status').length ? readList(params, 'status') : ['1', '2'];
   const coachIds = readList(params, 'coach');
@@ -83,6 +86,7 @@ export default function Classes() {
         <SportPhotoSlideshow categories={categories.data} />
       </header>
 
+      <MemberDiscountNotice pricing={pricing} />
       <div className="plp__head catalog-toolbar">
         <label className="catalog-search"><Icon name="search" size={20} /><span className="visually-hidden">Tìm lớp theo tên, môn hoặc huấn luyện viên</span><input type="search" value={q} onChange={e => setParam('q', e.target.value)} placeholder="Tìm lớp, bộ môn, huấn luyện viên…" /></label>
         <div className="plp__tools">
@@ -110,7 +114,7 @@ export default function Classes() {
 
         <section className="catalog-results" aria-label="Danh sách lớp học" aria-live="polite" aria-busy={classes.loading}>
           <div className="catalog-result-head"><p>{classes.loading ? 'Đang tìm lớp dành cho bạn…' : classes.error && !classes.usingSample ? 'Danh sách lớp chưa sẵn sàng' : <><strong>{visible.length}</strong> lớp phù hợp</>}</p>{hasFilters && <button type="button" onClick={() => setParams({}, { replace: true })}>Xóa bộ lọc<Icon name="close" size={14} /></button>}</div>
-          {classes.loading ? <Loading label="Đang tải lớp học" /> : visible.length ? <div className={`product-grid ${showFilters ? 'product-grid--3' : 'product-grid--4'}`}>{visible.map(item => <ClassCard key={item.id} item={item} started={scheduleKnown ? classStarted(item, sessions.data) : undefined} scheduleKnown={scheduleKnown} />)}</div> : !classes.error || classes.usingSample ? <EmptyState title="Chưa tìm thấy lớp phù hợp" action={<Button variant="secondary" onClick={() => setParams({}, { replace: true })}>Xóa bộ lọc</Button>}>Thử một từ khóa khác hoặc chọn thêm bộ môn, huấn luyện viên và tình trạng lớp.</EmptyState> : null}
+          {classes.loading ? <Loading label="Đang tải lớp học" /> : visible.length ? <div className={`product-grid ${showFilters ? 'product-grid--3' : 'product-grid--4'}`}>{visible.map(item => <ClassCard key={item.id} item={item} started={scheduleKnown ? classStarted(item, sessions.data) : undefined} scheduleKnown={scheduleKnown} pricing={pricing} />)}</div> : !classes.error || classes.usingSample ? <EmptyState title="Chưa tìm thấy lớp phù hợp" action={<Button variant="secondary" onClick={() => setParams({}, { replace: true })}>Xóa bộ lọc</Button>}>Thử một từ khóa khác hoặc chọn thêm bộ môn, huấn luyện viên và tình trạng lớp.</EmptyState> : null}
         </section>
       </div>
     </div>
