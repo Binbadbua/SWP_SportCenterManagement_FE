@@ -44,11 +44,6 @@ export const STAFF_NAV = [
         roles: ["Receptionist"],
       },
       {
-        to: "/staff/attendance",
-        label: "Điểm danh",
-        roles: ["Coach"],
-      },
-      {
         to: "/staff/members",
         label: "Học viên",
         roles: ["CenterManager", "Receptionist"],
@@ -75,6 +70,11 @@ export const STAFF_NAV = [
     items: [
       { to: "/staff/my-classes", label: "Lớp của tôi", roles: ["Coach"] },
       { to: "/staff/my-members", label: "Học viên của tôi", roles: ["Coach"] },
+      {
+        to: "/staff/attendance",
+        label: "Điểm danh",
+        roles: ["Coach"],
+      },
       {
         to: "/staff/training-plans",
         label: "Kế hoạch tập luyện",
