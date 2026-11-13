@@ -2,19 +2,22 @@
 // - In development, leave VITE_API_BASE_URL empty: Vite proxies /api to the back-end (see vite.config.js).
 // - In production, set VITE_API_BASE_URL to the API origin, e.g. https://api.example.com
 
+import { mutationGuard, mutationScope, retryAfterMilliseconds } from '../lib/mutationGuard.js';
+
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 
 // A link the API hands back as a path ("/api/payments/…") points at the API, not at this site
 export const apiUrl = (path) => (/^https?:\/\//i.test(path) ? path : BASE_URL + path);
 
 export class ApiError extends Error {
-  constructor(message, { status = 0, offline = false, details = null, timeout = false } = {}) {
+  constructor(message, { status = 0, offline = false, details = null, timeout = false, retryAfterMs = 0 } = {}) {
     super(message);
     this.name = 'ApiError';
     this.status = status;
     this.offline = offline; // true when the back-end could not be reached at all
     this.details = details;
     this.timeout = timeout;
+    this.retryAfterMs = retryAfterMs;
   }
 }
 
@@ -89,6 +92,7 @@ function messageFrom(body, status, text) {
   if (body?.title) return body.title;
   const fromText = body === null ? messageFromText(text) : null;
   if (fromText) return fromText;
+  if (status === 429) return 'Bạn đang gửi quá nhiều yêu cầu. Vui lòng chờ rồi thử lại.';
   if (status === 401) return 'Vui lòng đăng nhập để xem nội dung này.';
   if (status === 403) return 'Tài khoản của bạn không có quyền thực hiện thao tác này (HTTP 403).';
   if (status === 404) return 'Không tìm thấy dữ liệu.';
@@ -99,11 +103,14 @@ export async function request(method, path, body, { signal, timeoutMs = method =
   const form = body instanceof FormData;
   const headers = { Accept: 'application/json' };
   if (body !== undefined && !form) headers['Content-Type'] = 'application/json';
+  let token;
   try {
-    const token = localStorage.getItem('sportcenter.token');
+    token = localStorage.getItem('sportcenter.token');
     if (token) headers.Authorization = `Bearer ${token}`;
   } catch { /* Storage may be unavailable; let the API report whether sign-in is required. */ }
 
+  const scope = mutationScope(token);
+  const admission = mutationGuard.begin(method, path, body, scope);
   const controller = new AbortController();
   const cancel = () => controller.abort(signal?.reason);
   if (signal?.aborted) cancel();
@@ -117,7 +124,7 @@ export async function request(method, path, body, { signal, timeoutMs = method =
       method, headers, signal: controller.signal,
       body: body === undefined ? undefined : form ? body : JSON.stringify(body),
     });
-    if (res.status === 204) return null;
+    if (res.status === 204) { admission.success(); return null; }
     // Keep the deadline active while reading the response body too.
     const text = await res.text();
     const data = text ? parse(text) : null;
@@ -126,8 +133,11 @@ export async function request(method, path, body, { signal, timeoutMs = method =
         && ['message', 'detail', 'title'].some((key) => typeof data[key] === 'string' && data[key].trim());
       const offline = [502, 503, 504].includes(res.status) && !apiMessage;
       if (offline) throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra máy chủ rồi thử lại.', { status: res.status, offline: true });
-      throw new ApiError(toVietnamese(messageFrom(data, res.status, text)), { status: res.status, details: data });
+      const retryAfterMs = res.status === 429 ? retryAfterMilliseconds(res.headers.get('Retry-After')) : 0;
+      if (retryAfterMs) mutationGuard.defer(method, path, scope, retryAfterMs);
+      throw new ApiError(toVietnamese(messageFrom(data, res.status, text)), { status: res.status, details: data, retryAfterMs });
     }
+    admission.success();
     return data;
   } catch (error) {
     if (controller.signal.aborted) {
@@ -141,6 +151,7 @@ export async function request(method, path, body, { signal, timeoutMs = method =
     if (error instanceof ApiError) throw error;
     throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra kết nối rồi thử lại.', { offline: true });
   } finally {
+    admission.release();
     if (timer) clearTimeout(timer);
     signal?.removeEventListener('abort', cancel);
   }

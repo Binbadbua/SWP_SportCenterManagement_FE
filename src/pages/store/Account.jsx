@@ -38,6 +38,9 @@ import { hasClassPrices, hasPackageDiscounts } from "../../lib/pricing.js";
 import CancelBooking from "../../components/CancelBooking.jsx";
 import { useToast } from "../../components/Toast.jsx";
 import NotificationInbox from "../../components/NotificationInbox.jsx";
+import MemberTraining from "../../components/MemberTraining.jsx";
+import RefundGuide from "../../components/RefundGuide.jsx";
+import { useMutationCooldown } from "../../hooks/useMutationCooldown.js";
 import {
   Button,
   EmptyState,
@@ -192,7 +195,10 @@ function BookingsTab({ memberId }) {
   const [busyId, setBusyId] = useState(null);
   const [asking, setAsking] = useState(null); // the booking the cancel dialog is about
 
+  const canReviewCancellation = b => !bookings.usingSample && (b?.status === 4 || (!classes.loading && !classes.error && !classes.usingSample && !sessions.loading && !sessions.error && !sessions.usingSample && (classes.data ?? []).some(item => item.id === b?.classId)));
+
   const cancel = async (b) => {
+    if (busyId || !b || !canReviewCancellation(b)) return;
     setBusyId(b.id);
     try {
       const cancellation = await api.bookings.cancel(b.id, b.memberId ?? memberId);
@@ -200,7 +206,7 @@ function BookingsTab({ memberId }) {
         cancellation?.refundPending
           ? "Đã hủy đặt lớp. Lễ tân sẽ xử lý và xác nhận hoàn tiền."
           : b.status === 1 && Number(b.price ?? 0) > 0 && !startedOf(b)
-          ? `Đã hủy đặt lớp ${b.className}. Yêu cầu hoàn học phí đã được ghi nhận.`
+          ? `Đã hủy đặt lớp ${b.className}. Hãy kiểm tra hóa đơn để xem kết quả hoàn tiền.`
           : `Đã hủy đặt lớp ${b.className}.`,
       );
       bookings.reload();
@@ -216,6 +222,9 @@ function BookingsTab({ memberId }) {
   if (bookings.error?.status === 403) return <StaffOnlyNotice what="lớp đã đặt" />;
   return (
     <>
+      <RefundGuide />
+      <ErrorNotice error={classes.error} onRetry={classes.reload} />
+      <ErrorNotice error={sessions.error} onRetry={sessions.reload} />
       {bookings.usingSample && <SampleDataNotice onRetry={bookings.reload} />}
       <ErrorNotice
         error={!bookings.usingSample ? bookings.error : null}
@@ -284,9 +293,9 @@ function BookingsTab({ memberId }) {
                     variant="ghost"
                     size="sm"
                     onClick={() => setAsking(b)}
-                    disabled={busyId === b.id}
+                    disabled={busyId === b.id || !canReviewCancellation(b)}
                   >
-                    {busyId === b.id ? "Đang hủy…" : "Hủy"}
+                    {busyId === b.id ? "Đang hủy…" : !canReviewCancellation(b) ? "Chờ kiểm tra điều kiện hủy" : "Hủy"}
                   </Button>
                 )}
               </div>
@@ -632,85 +641,21 @@ function CheckInHistory() {
 
 /* ---- Training (API) ----------------------------------------------------- */
 function TrainingTab() {
-  const plans = useApi(() => api.trainingPlans.mine(), []);
-  const results = useApi(() => api.trainingResults.mine(), []);
-  // Plans and results only carry IDs: class and coach names come from the class list
-  const classes = useApi(() => api.classes.list(), [], {
-    sample: mock.classes,
-  });
-  const classOf = (id) => (classes.data ?? []).find((c) => c.id === id);
-  const planOf = (id) => (plans.data ?? []).find((p) => p.id === id);
-  if (plans.loading || results.loading) return <Loading />;
-  return (
-    <>
-      <h2 className="panel-title">Kế hoạch từ huấn luyện viên</h2>
-      <ErrorNotice error={plans.error} onRetry={plans.reload} />
-      {plans.data?.length ? (
-        <div className="plan-list">
-          {plans.data.map((p) => {
-            const cls = classOf(p.classId);
-            return (
-              <article key={p.id} className="plan">
-                <p className="label muted">
-                  {cls?.className ?? "Lớp học"} · {formatDate(p.createdDate)}
-                </p>
-                <h3 className="plan__title">{p.title}</h3>
-                <p>{p.contentDescription}</p>
-                {cls?.coachName && <p className="muted">Từ {cls.coachName}</p>}
-              </article>
-            );
-          })}
-        </div>
-      ) : (
-        !plans.error && (
-          <p className="muted">
-            Chưa có kế hoạch. Huấn luyện viên sẽ lập kế hoạch cho bạn sau khi bạn vào lớp.
-          </p>
-        )
-      )}
-      <h2 className="panel-title">Kết quả</h2>
-      <ErrorNotice error={results.error} onRetry={results.reload} />
-      {results.data?.length ? (
-        <ul className="result-list">
-          {results.data.map((r) => {
-            const plan = planOf(r.planId);
-            const coachName = classOf(plan?.classId)?.coachName;
-            return (
-              <li key={r.id} className="result">
-                <div className="result__score">
-                  <span className="display">{r.performanceScore}</span>
-                  <span className="muted">/10</span>
-                </div>
-                <div>
-                  <p className="cell-strong">{plan?.title ?? "Kết quả tập luyện"}</p>
-                  <p>{r.coachComment}</p>
-                  <p className="muted">
-                    {coachName ? `${coachName} · ` : ""}
-                    {formatDate(r.evaluationDate)}
-                  </p>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
-      ) : (
-        !results.error && (
-          <p className="muted">Chưa có kết quả. Huấn luyện viên sẽ chấm tiến độ của bạn theo kế hoạch.</p>
-        )
-      )}
-    </>
-  );
+  return <MemberTraining />;
 }
 
 /* ---- Invoices (API) ----------------------------------------------------- */
 function InvoicesTab() {
   const rows = useApi(() => api.invoices.mine(), []);
+  const [refundFilter, setRefundFilter] = useState('all');
   if (rows.loading) return <Loading />;
-  const list = [...(rows.data ?? [])].sort((a, b) =>
+  const list = [...(rows.data ?? [])].filter(i => refundFilter === 'all' || (refundFilter === 'pending' ? i.refundPending : i.status === 4 && !i.refundPending)).sort((a, b) =>
     String(b.paymentDate).localeCompare(String(a.paymentDate)),
   );
   return (
     <>
+      <RefundGuide />
+      <Field label="Lọc hóa đơn" name="refundFilter" type="select" value={refundFilter} onChange={(_, value) => setRefundFilter(value)} options={[{ value: "all", label: "Tất cả hóa đơn" }, { value: "pending", label: "Chờ hoàn tiền" }, { value: "refunded", label: "Đã hoàn tiền" }]} />
       <ErrorNotice error={rows.error} onRetry={rows.reload} />
       {list.length ? (
         <div className="table-wrap">
@@ -735,11 +680,12 @@ function InvoicesTab() {
                   <td>{PaymentMethod.label(i.paymentMethod)}</td>
                   <td className="num">{formatMoney(i.amount)}</td>
                   <td>
-                    <StatusTag tone={InvoiceStatus.tone(i.status)}>
-                      {InvoiceStatus.label(i.status)}
+                    <StatusTag tone={i.refundPending ? "warning" : InvoiceStatus.tone(i.status)}>
+                      {i.refundPending ? "Chờ hoàn tiền" : InvoiceStatus.label(i.status)}
                     </StatusTag>
                   </td>
                   <td className="cell-actions">
+                    {(i.refundPending || i.status === 4) && <Button size="sm" variant="secondary" to={`/payment/result?paymentId=${i.id}`}>Theo dõi hoàn tiền</Button>}
                     <Button
                       variant="secondary"
                       size="sm"
@@ -774,6 +720,8 @@ function NotificationsTab() {
 /* ---- Support requests (API) --------------------------------------------- */
 // The member writes to reception; reception answers from Staff → Support requests
 function SupportTab() {
+  const cooldown = useMutationCooldown('POST', '/api/support-requests');
+  const submitLock = useRef(false);
   const toast = useToast();
   const requests = useApi(() => api.supportRequests.list(), []);
   const [content, setContent] = useState("");
@@ -782,10 +730,12 @@ function SupportTab() {
 
   const send = async (e) => {
     e.preventDefault();
+    if (submitLock.current || sending || cooldown > 0) return;
     const text = content.trim();
     if (!text) return setError("Hãy viết điều bạn cần hỗ trợ.");
     if (text.length > 2000) return setError("Nội dung tối đa 2000 ký tự.");
     setError(null);
+    submitLock.current = true;
     setSending(true);
     try {
       await api.supportRequests.create({ content: text });
@@ -795,6 +745,7 @@ function SupportTab() {
     } catch (err) {
       setError(err.message);
     } finally {
+      submitLock.current = false;
       setSending(false);
     }
   };
@@ -811,7 +762,8 @@ function SupportTab() {
           error={error}
           help="Câu hỏi về lớp học, thẻ thành viên, thanh toán hay bất cứ điều gì. Câu trả lời sẽ hiện bên dưới."
         />
-        <Button type="submit" disabled={sending}>{sending ? "Đang gửi…" : "Gửi yêu cầu"}</Button>
+        <Button type="submit" disabled={sending || cooldown > 0}>{sending ? "Đang gửi…" : cooldown > 0 ? `Gửi lại sau ${cooldown}s` : "Gửi yêu cầu"}</Button>
+        <p className="muted small" role="status">{cooldown > 0 ? `Vui lòng chờ ${cooldown} giây trước khi gửi yêu cầu tiếp theo.` : "Để lễ tân xử lý thuận tiện, mỗi lần gửi cách nhau ít nhất 30 giây. Bạn có thể theo dõi các yêu cầu đã gửi bên dưới."}</p>
       </form>
       <h2 className="panel-title">Yêu cầu của bạn</h2>
       {requests.loading ? (

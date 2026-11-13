@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { useApi } from "../../hooks/useApi.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { fromTimeInput, toDateInput, toTimeInput } from "../../lib/format.js";
@@ -78,6 +78,7 @@ function Pager({ page, pageCount, total, onPage }) {
  *   searchText?(row), sort?(a, b), validate?(values), toRequest?(values, ctx), canWrite?(user), canDelete?(user),
  *   canEditRow?(row, user)                      // false hides that row's edit button
  *   deleteLocked?(row, user)                    // a reason string = that row's delete button is shown disabled
+ *   deleteMessage?(row)                         // optional explanation in delete confirmation
  *   doneMessage?(mode, result)                  // toast after a save instead of "Đã thêm …" / "Đã lưu …"
  *   rowActions?: [{ label, icon?, to?(row), newTab?, modal?: { title(row), render(row, lookups, { close, reload }) },
  *                   run?(row), confirm?(row), done?(row), hidden?(row, user, lookups) }],
@@ -89,6 +90,7 @@ function Pager({ page, pageCount, total, onPage }) {
  */
 export default function CrudPage({ config }) {
   const { user } = useAuth();
+  const { search } = useLocation();
   const toast = useToast();
   const source =
     typeof config.source === "function" ? config.source(user) : config.source;
@@ -124,15 +126,26 @@ export default function CrudPage({ config }) {
   const lk = lookups.data ?? {};
 
   const [query, setQuery] = useState("");
-  const [filterValues, setFilterValues] = useState({});
+  const [filterValues, setFilterValues] = useState(() => config.initialFilters?.(search) ?? {});
   const [page, setPage] = useState(1);
   const [form, setForm] = useState(null); // { mode, row, values }
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const saveFlight = useRef(false);
+  const deleteFlight = useRef(false);
+  const actionFlight = useRef(false);
   const [uploading, setUploading] = useState(false); // an image field is still sending its file
   const [confirm, setConfirm] = useState(null);
   const [detail, setDetail] = useState(null); // { action, row }
+
+  useEffect(() => {
+    if (config.initialFilters) {
+      setFilterValues(config.initialFilters(search));
+      setPage(1);
+    }
+  }, [config.key, search]);
 
   const offline = list.usingSample;
   const canWrite =
@@ -223,6 +236,10 @@ export default function CrudPage({ config }) {
     }
   };
 
+  const fieldOption = (field, key, values, mode) => typeof field[key] === "function"
+    ? field[key](values, { mode, row: form?.row, lookups: lk, user })
+    : field[key];
+
   const validate = (mode, values) => {
     const e = {};
     for (const f of shownFields(mode, values)) {
@@ -231,14 +248,16 @@ export default function CrudPage({ config }) {
         e[f.name] = `${f.type === "select" ? "Vui lòng chọn" : "Vui lòng nhập"} ${f.label.charAt(0).toLowerCase()}${f.label.slice(1)}.`;
       else if (f.type === "number" && v !== "") {
         const n = Number(v);
-        if (Number.isNaN(n)) e[f.name] = `${f.label} phải là số.`;
-        else if (f.min !== undefined && n < f.min)
-          e[f.name] = `${f.label} tối thiểu là ${f.min}.`;
-        else if (f.max !== undefined && n > f.max)
-          e[f.name] = `${f.label} tối đa là ${f.max}.`;
+        const min = fieldOption(f, "min", values, mode);
+        const max = fieldOption(f, "max", values, mode);
+        if (!Number.isFinite(n)) e[f.name] = `${f.label} phải là số hợp lệ.`;
+        else if (min !== undefined && n < min)
+          e[f.name] = `${f.label} tối thiểu là ${min}.`;
+        else if (max !== undefined && n > max)
+          e[f.name] = `${f.label} tối đa là ${max}.`;
       }
     }
-    return { ...e, ...(config.validate ? config.validate(values, mode) : {}) };
+    return { ...e, ...(config.validate ? config.validate(values, mode, { row: form?.row, lookups: lk, user }) : {}) };
   };
 
   const toRequest = (mode, values) => {
@@ -257,9 +276,11 @@ export default function CrudPage({ config }) {
 
   const save = async (e) => {
     e.preventDefault();
+    if (!form || saveFlight.current || uploading) return;
     const found = validate(form.mode, form.values);
     setErrors(found);
     if (Object.keys(found).length) return;
+    saveFlight.current = true;
     setSaving(true);
     setFormError(null);
     try {
@@ -303,28 +324,38 @@ export default function CrudPage({ config }) {
       }
       setFormError(errorMsg);
     } finally {
+      saveFlight.current = false;
       setSaving(false);
     }
   };
 
   const remove = async () => {
+    if (!confirm || deleteFlight.current) return;
     const row = confirm;
-    setConfirm(null);
     const locked = config.deleteLocked?.(row, user);
     if (locked) return toast.error(locked);
+    deleteFlight.current = true;
+    setDeleting(true);
     try {
       await source.remove(row.id);
       toast.success(`Đã xóa ${config.singular.toLowerCase()} “${nameOf(row)}”.`);
+      setConfirm(null);
       list.reload();
     } catch (err) {
       toast.error(err.message);
+      list.reload();
+    } finally {
+      deleteFlight.current = false;
+      setDeleting(false);
     }
   };
 
   // Row action that calls the API directly (e.g. renew a membership)
   const runAction = async (action, row) => {
+    if (actionFlight.current) return;
     const question = action.confirm?.(row);
     if (question && !window.confirm(question)) return;
+    actionFlight.current = true;
     setRunningId(row.id);
     try {
       await action.run(row);
@@ -333,6 +364,7 @@ export default function CrudPage({ config }) {
     } catch (err) {
       toast.error(err.message);
     } finally {
+      actionFlight.current = false;
       setRunningId(null);
     }
   };
@@ -353,6 +385,7 @@ export default function CrudPage({ config }) {
         )}
       </header>
 
+      {config.intro && (typeof config.intro === "function" ? config.intro(user) : config.intro)}
       {source.preview && <PreviewNotice feature={config.title} />}
       {offline && <SampleDataNotice onRetry={list.reload} />}
       <ErrorNotice error={!offline ? list.error : null} onRetry={list.reload} />
@@ -443,7 +476,7 @@ export default function CrudPage({ config }) {
                               variant="secondary"
                               size="sm"
                               onClick={() => runAction(a, row)}
-                              disabled={offline || runningId === row.id}
+                              disabled={offline || runningId !== null}
                             >
                               {a.label}
                             </Button>
@@ -578,8 +611,8 @@ export default function CrudPage({ config }) {
                   name={f.name}
                   type={f.type ?? "text"}
                   required={f.required}
-                  min={f.min}
-                  max={f.max}
+                  min={fieldOption(f, "min", form.values, form.mode)}
+                  max={fieldOption(f, "max", form.values, form.mode)}
                   step={f.step}
                   help={f.help}
                   placeholder={f.placeholder}
@@ -598,22 +631,23 @@ export default function CrudPage({ config }) {
       <Modal
         open={!!confirm}
         title={`Xóa ${config.singular.toLowerCase()}?`}
-        onClose={() => setConfirm(null)}
+        onClose={() => !deleting && setConfirm(null)}
         footer={
           <>
-            <Button variant="secondary" onClick={() => setConfirm(null)}>
+            <Button variant="secondary" onClick={() => setConfirm(null)} disabled={deleting}>
               Giữ lại
             </Button>
-            <Button variant="danger" onClick={remove}>
-              Xóa
+            <Button variant="danger" onClick={remove} disabled={deleting}>
+              {deleting ? "Đang kiểm tra và xóa…" : "Xóa"}
             </Button>
           </>
         }
       >
         {confirm && (
           <p>
-            “{nameOf(confirm)}” sẽ bị xóa vĩnh viễn. Nếu dữ liệu khác vẫn đang dùng
-            mục này, máy chủ sẽ từ chối và cho biết lý do.
+            {config.deleteMessage
+              ? (typeof config.deleteMessage === "function" ? config.deleteMessage(confirm) : config.deleteMessage)
+              : <>Yêu cầu xóa “{nameOf(confirm)}” sẽ được gửi tới máy chủ. Nếu dữ liệu khác vẫn đang dùng mục này, máy chủ sẽ từ chối và cho biết lý do.</>}
           </p>
         )}
       </Modal>

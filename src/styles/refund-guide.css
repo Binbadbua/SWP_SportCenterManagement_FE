@@ -1,0 +1,7 @@
+.refund-guide { margin: 0 0 20px; padding: 14px 18px; border: 1px solid #ead6c7; border-radius: 12px; background: #fff9f3; font-size: 13px; line-height: 1.8; }
+.refund-guide summary { cursor: pointer; font-weight: 600; color: #923b1c; }
+.refund-guide p { margin-top: 12px; }
+.refund-guide ol { padding-left: 24px; margin: 12px 0; }
+.refund-guide li + li { margin-top: 8px; }
+.refund-confirm-check { display: flex; align-items: flex-start; gap: 9px; margin: 16px 0; font-size: 13px; line-height: 1.7; }
+.refund-confirm-check input { margin-top: 5px; accent-color: #c63b13; }

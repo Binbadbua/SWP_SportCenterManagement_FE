@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useMutationCooldown } from "../../hooks/useMutationCooldown.js";
 import { api } from "../../api/endpoints.js";
 import { useApi } from "../../hooks/useApi.js";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -115,6 +116,8 @@ function CoachSendPanel() {
 // HOMEWORK_PREFIX (lib/homework.js) and whose last line is the due date. Every message is signed with its sender
 // (lib/notifications.js), since the API keeps none.
 function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, homework = false }) {
+  const cooldown = useMutationCooldown('POST', '/api/notifications');
+  const submitLock = useRef(false);
   const toast = useToast();
   const { user } = useAuth();
   const [v, setV] = useState({ audience: audiences[0].value, accountId: "", kind: "notice", due: "", title: "", message: "" });
@@ -126,6 +129,7 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
 
   const send = async (e) => {
     e.preventDefault();
+    if (submitLock.current || sending || cooldown > 0) return;
     const found = {};
     if (v.audience === "one" && !v.accountId) found.accountId = "Vui lòng chọn người nhận.";
     else if (!recipients.length) found.audience = "Nhóm này không có tài khoản nào đang hoạt động.";
@@ -138,6 +142,7 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
     const message = isHomework && v.due
       ? `${v.message.trim()}\n\nHạn hoàn thành: ${formatDate(v.due)}`
       : v.message.trim();
+    submitLock.current = true;
     setSending(true);
     try {
       await api.notifications.send({ accountIds: recipients, title, message });
@@ -148,6 +153,7 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
     } catch (err) {
       toast.error(err.message);
     } finally {
+      submitLock.current = false;
       setSending(false);
     }
   };
@@ -222,8 +228,8 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
           help="Không bắt buộc. Ghi ở cuối nội dung tin."
         />
       )}
-      <Button type="submit" disabled={sending || loading}>
-        {sending ? "Đang gửi…" : isHomework ? "Giao bài tập" : "Gửi"}
+      <Button type="submit" disabled={sending || loading || cooldown > 0}>
+        {sending ? "Đang gửi…" : cooldown > 0 ? `Gửi lại sau ${cooldown}s` : isHomework ? "Giao bài tập" : "Gửi"}
       </Button>
     </form>
   );

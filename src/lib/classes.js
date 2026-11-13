@@ -44,9 +44,9 @@ export function cancelTerms(booking, started) {
     : { tone: 'info', title: null, text: 'Lớp chưa bắt đầu nên bạn có thể đặt lại sau nếu lớp còn chỗ.' };
 }
 
-// A manager may delete a class only before it starts, or once it has ended or been cancelled: deleting a running
-// class would leave its members to be refunded and told by hand. `c.started` (set by the staff class list from the
-// sessions) or `sessions` says whether it has begun, the same way as for bookings.
+// Whether a class is running. Deletion is a separate decision in classDeletion.js: a running class may be
+// deleted only when it is explicitly empty and fresh roster/financial checks pass. The backend must also
+// protect historical registrations atomically. `c.started` or `sessions` uses the same start rule as bookings.
 export function classRunning(c, sessions, now = new Date()) {
   if (!c || c.status === 3 || c.status === 4) return false;
   if (c.status === 2) return true;

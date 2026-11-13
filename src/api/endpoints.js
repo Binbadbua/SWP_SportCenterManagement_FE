@@ -2,6 +2,7 @@
 // Pages that use a newer route (auth.changePassword, payments — BE PR #30; media — PR #32) still explain the
 // gap when isMissingRoute() says an older API answers without it.
 import { http } from "./client.js";
+import { readAllPages } from "./pagination.js";
 
 // A route the API does not have answers 404/405 with an empty body; a real "not found" carries a message
 export const isMissingRoute = (e) => (e?.status === 404 || e?.status === 405) && !e.details;
@@ -15,6 +16,11 @@ const itemsOf = (response) =>
 const withId = (key) => (row) => ({ ...row, id: row[key] ?? row.id });
 const listOf = (path, key) => async () => {
   const rows = itemsOf(await http.get(path));
+  return key ? rows.map(withId(key)) : rows;
+};
+
+const listAllOf = (path, key) => async () => {
+  const rows = await readAllPages(path, http.get);
   return key ? rows.map(withId(key)) : rows;
 };
 
@@ -145,7 +151,7 @@ export const api = {
     create: (body) => http.post("/api/training-plans", body),
     update: (id, body) => http.put(`/api/training-plans/${id}`, body),
     remove: (id) => http.del(`/api/training-plans/${id}`),
-    mine: listOf("/api/members/me/training-plans?pageSize=100", "trainingPlanId"),
+    mine: listAllOf("/api/members/me/training-plans", "trainingPlanId"),
     forCoach: listOf(`/api/coaches/me/training-plans?${ALL}`, "trainingPlanId"),
   },
 
@@ -154,7 +160,7 @@ export const api = {
     create: (body) => http.post("/api/training-results", body),
     update: (id, body) => http.put(`/api/training-results/${id}`, body),
     remove: (id) => http.del(`/api/training-results/${id}`),
-    mine: listOf("/api/members/me/training-results?pageSize=100", "trainingResultId"),
+    mine: listAllOf("/api/members/me/training-results", "trainingResultId"),
     forCoach: listOf(`/api/coaches/me/training-results?${ALL}`, "trainingResultId"),
     byMember: (memberId) =>
       listOf(`/api/coaches/me/members/${memberId}/training-results?${ALL}`, "trainingResultId")(),
@@ -162,7 +168,8 @@ export const api = {
 
   invoices: {
     ...crud("/api/invoices"),
-    mine: listOf("/api/members/me/invoices"),
+    reportList: listAllOf("/api/invoices"),
+    mine: listAllOf("/api/members/me/invoices"),
     // Reception / manager: the invoice to print (same fields as GET /api/invoices/{id})
     export: (id) => http.get(`/api/invoices/${id}/export`),
   },

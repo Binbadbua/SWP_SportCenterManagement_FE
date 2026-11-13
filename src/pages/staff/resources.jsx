@@ -15,10 +15,13 @@ import {
   realPhone, todayLocalDateString, todayCenterDateString,
 } from '../../lib/format.js';
 import { classRunning, classStarted } from '../../lib/classes.js';
+import { assertClassCanBeDeleted, assertClassDeletionSession, classDeletionLock, classDeletionSession, completeDeletionRows } from '../../lib/classDeletion.js';
+import { classDateMinimum, scheduleDateMinimum, sessionStartMinimum, validateClassDates, validateSessionSlot } from '../../lib/scheduling.js';
 import { cardsOn } from '../../lib/membership.js';
 import { hasClassPrices, hasPackageDiscounts } from '../../lib/pricing.js';
 import { CoachPortrait } from '../../components/cards.jsx';
 import ConfirmRefund from '../../components/ConfirmRefund.jsx';
+import RefundGuide from '../../components/RefundGuide.jsx';
 import { ErrorNotice, FillBar, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
 
 const tag = (E) => (v) => <StatusTag tone={E.tone(v)}>{E.label(v)}</StatusTag>;
@@ -37,9 +40,6 @@ const opt = (rows, value, label) => (rows ?? []).map((r) => ({ value: r[value], 
 // Class fees and package discounts (CHANGELOG Part B, B53): their columns and fields appear once the lists the
 // API sends carry them (set when the Classes / Packages pages load)
 const carries = { price: false, discount: false };
-
-const endAfterStart = (v) =>
-  v.startDate && v.endDate && v.endDate <= v.startDate ? { endDate: 'Ngày kết thúc phải sau ngày bắt đầu.' } : {};
 
 /* ---- Lookups shared by several pages ---------------------------------- */
 const L = {
@@ -311,13 +311,25 @@ export const resources = {
         // Whether each class has begun, as members see it (lib/classes.js): the delete lock below
         return sessions ? rows.map((c) => ({ ...c, started: classStarted(c, sessions) })) : rows;
       },
+      remove: async (id) => {
+        const session = classDeletionSession();
+        // Preflight is a user-facing safeguard. BE must recheck registrations/history atomically with DELETE.
+        const [fresh, rosterBody, invoiceBody, sessions] = await Promise.all([
+          api.classes.get(id), api.classes.members(id), api.invoices.reportList(), api.schedules.byClass(id),
+        ]);
+        assertClassDeletionSession(session);
+        const row = { ...fresh, started: classStarted(fresh, sessions) };
+        assertClassCanBeDeleted(row, completeDeletionRows(rosterBody, 'danh sách học viên'), completeDeletionRows(invoiceBody, 'hóa đơn'));
+        return api.classes.remove(id);
+      },
     },
     sample: mock.classes, lookups: () => ({ categories: L.categories, coaches: L.coaches }),
     canWrite: isManager, nameOf: (r) => r.className,
-    // Deleting a running class would leave its members to be refunded and told by hand (team rule, 28/10/2026)
-    deleteLocked: (r) => (classRunning(r)
-      ? 'Lớp đang diễn ra nên không xóa được. Chỉ xóa lớp chưa bắt đầu, đã kết thúc hoặc đã hủy.'
-      : null),
+    // Running classes are deletable only when explicitly empty; fresh roster/financial checks run before DELETE.
+    deleteLocked: classDeletionLock,
+    deleteMessage: (r) => (classRunning(r)
+      ? 'Lớp đang diễn ra nhưng chưa có học viên. Hệ thống sẽ kiểm tra lại chỗ đang giữ, danh sách và hóa đơn trước khi gửi yêu cầu xóa. Nếu có lịch sử liên quan thì phải giữ lớp.'
+      : 'Hệ thống sẽ kiểm tra lại học viên và hóa đơn trước khi gửi yêu cầu xóa lớp. Không tự xóa lịch sử thanh toán hoặc hoàn tiền.'),
     searchText: (r) => `${r.className} ${r.categoryName} ${r.coachName}`,
     sort: (a, b) => a.startDate.localeCompare(b.startDate),
     columns: [
@@ -346,10 +358,10 @@ export const resources = {
         shown: () => carries.price, help: '0 = lớp miễn phí. Thành viên có thẻ còn hiệu lực được giảm theo mức của gói.',
       },
       { name: 'status', label: 'Trạng thái', type: 'select', numeric: true, required: true, options: ClassStatus.options, defaultValue: () => '1' },
-      { name: 'startDate', label: 'Ngày bắt đầu', type: 'date', required: true },
-      { name: 'endDate', label: 'Ngày kết thúc', type: 'date', required: true },
+      { name: 'startDate', label: 'Ngày bắt đầu', type: 'date', required: true, min: (v, ctx) => classDateMinimum('startDate', v, ctx), help: 'Lớp mới không được bắt đầu trong quá khứ. Buổi học tạo sau đó phải còn ở tương lai.' },
+      { name: 'endDate', label: 'Ngày kết thúc', type: 'date', required: true, min: (v, ctx) => classDateMinimum('endDate', v, ctx) },
     ],
-    validate: endAfterStart,
+    validate: validateClassDates,
     rowActions: [{ label: 'Danh sách', modal: { title: (r) => `${r.className} — danh sách học viên`, render: (r) => <ClassRoster classId={r.id} /> } }],
     emptyHint: 'Hãy thêm môn thể thao và huấn luyện viên trước, rồi tạo lớp học.',
     toRequest: (data) => ({
@@ -379,11 +391,11 @@ export const resources = {
     fields: [
       { name: 'classId', label: 'Lớp', type: 'select', required: true, full: true, optionsFrom: (l) => opt(l.classes, 'id', 'className') },
       { name: 'roomId', label: 'Phòng', type: 'select', required: true, optionsFrom: (l) => opt(l.rooms, 'id', (r) => `${r.roomName} · ${r.capacity} người${r.status === 2 ? ' (tạm ngưng)' : ''}`) },
-      { name: 'date', label: 'Ngày', type: 'date', required: true, defaultValue: () => todayCenterDateString() },
-      { name: 'startTime', label: 'Bắt đầu', type: 'time', required: true },
+      { name: 'date', label: 'Ngày', type: 'date', required: true, min: scheduleDateMinimum, defaultValue: () => todayCenterDateString(), help: 'Dùng ngày và giờ Việt Nam; không tạo buổi đã bắt đầu.' },
+      { name: 'startTime', label: 'Bắt đầu', type: 'time', required: true, min: sessionStartMinimum },
       { name: 'endTime', label: 'Kết thúc', type: 'time', required: true },
     ],
-    validate: (v) => (v.startTime && v.endTime && v.endTime <= v.startTime ? { endTime: 'Giờ kết thúc phải sau giờ bắt đầu.' } : {}),
+    validate: validateSessionSlot,
     // Only the coach takes (and corrects) attendance; their list holds only their own classes
     rowActions: [{
       label: 'Điểm danh',
@@ -543,6 +555,22 @@ export const resources = {
 
   invoices: {
     key: 'invoices', title: 'Hóa đơn', singular: 'Hóa đơn',
+    intro: () => <RefundGuide staff />,
+    initialFilters: (search) => {
+      const value = new URLSearchParams(search).get('refund');
+      return ['pending', 'refunded', 'none'].includes(value) ? { refund: value } : {};
+    },
+    filters: [{
+      key: 'refund', label: 'Hoàn tiền', all: 'Tất cả trạng thái hoàn tiền',
+      options: () => [
+        { value: 'pending', label: 'Chờ hoàn tiền' },
+        { value: 'refunded', label: 'Đã hoàn tiền' },
+        { value: 'none', label: 'Không có yêu cầu hoàn tiền' },
+      ],
+      match: (row, value) => value === 'pending'
+        ? !!row.refundPending && row.status !== 4
+        : value === 'refunded' ? row.status === 4 : !row.refundPending && row.status !== 4,
+    }],
     description: 'Đơn chuyển khoản SePay được ngân hàng xác nhận tự động, giữ trong 15 phút. Hóa đơn có yêu cầu hoàn tiền chỉ chuyển sang Đã hoàn tiền sau khi lễ tân đã trả tiền và ghi mã xác nhận. Lễ tân lập và in hóa đơn tại quầy.',
     source: (u) => (isReception(u) ? api.invoices : { list: api.invoices.list }),
     sample: mock.invoices, canWrite: isReception, nameOf: (r) => `${r.memberName} · ${itemOf(r)}`,

@@ -201,7 +201,9 @@ function ClassDetailView() {
     }
   };
 
+  const cancellationKnown = !usingSample && !myBookings.usingSample && !sessions.loading && !sessions.error;
   const cancel = async () => {
+    if (busy || !myBooking || usingSample || myBookings.usingSample || (myBooking.status !== 4 && !cancellationKnown)) return;
     setBusy(true);
     setActionError(null);
     try {
@@ -210,7 +212,7 @@ function ClassDetailView() {
         cancellation?.refundPending
           ? "Đã hủy đặt lớp. Lễ tân sẽ xử lý và xác nhận hoàn tiền."
           : myBooking.status === 1 && Number(myBooking.price ?? 0) > 0 && !started
-          ? `Đã hủy đặt lớp ${c.className}. Yêu cầu hoàn học phí đã được ghi nhận.`
+          ? `Đã hủy đặt lớp ${c.className}. Hãy kiểm tra hóa đơn để xem kết quả hoàn tiền.`
           : `Đã hủy đặt lớp ${c.className}.`,
       );
       setAsking(false);
@@ -253,7 +255,7 @@ function ClassDetailView() {
             {selfRefund ? "Tiếp tục thanh toán" : "Xem đơn thanh toán"}
           </Button>
         )}
-        <Button variant="secondary" size="lg" block onClick={() => setAsking(true)} disabled={busy}>
+        <Button variant="secondary" size="lg" block onClick={() => setAsking(true)} disabled={busy || usingSample || myBookings.usingSample}>
           Hủy đặt lớp
         </Button>
       </>
@@ -286,7 +288,7 @@ function ClassDetailView() {
               size="lg"
               block
               onClick={() => setAsking(true)}
-              disabled={busy}
+              disabled={busy || !cancellationKnown}
             >
               Hủy đặt lớp
             </Button>
