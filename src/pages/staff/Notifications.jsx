@@ -3,16 +3,13 @@ import { useMutationCooldown } from "../../hooks/useMutationCooldown.js";
 import { api } from "../../api/endpoints.js";
 import { useApi } from "../../hooks/useApi.js";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { AccountRole } from "../../lib/enums.js";
+import RoleLabel from "../../components/RoleLabel.jsx";
 import { formatDate, todayCenterDateString } from "../../lib/format.js";
 import { HOMEWORK_PREFIX } from "../../lib/homework.js";
 import { useToast } from "../../components/Toast.jsx";
 import NotificationInbox from "../../components/NotificationInbox.jsx";
 import { Button, ErrorNotice, Field } from "../../components/ui.jsx";
 
-// Every staff member reads their own notifications here. The center manager can send to anyone;
-// a coach to the members booked into their classes, e.g. homework or a change of plan
-// (POST /api/notifications takes a list of account IDs and refuses a coach's send to anyone else).
 const MANAGER_AUDIENCES = [
   { value: "role:1", label: "Tất cả học viên" },
   { value: "role:2", label: "Tất cả huấn luyện viên" },
@@ -62,7 +59,7 @@ function ManagerSendPanel() {
       loading={accounts.loading}
       error={accounts.error}
       onRetry={accounts.reload}
-      people={active.map((a) => ({ value: a.id, label: `${a.fullName || a.username} · ${AccountRole.label(a.role)}` }))}
+      people={active.map((a) => ({ value: a.id, label: a.fullName && a.username ? `${a.fullName} (${a.username})` : a.fullName || a.username, role: a.role }))}
       recipientsFor={(audience, one) =>
         audience === "all"
           ? active.map((a) => a.id)
@@ -74,7 +71,6 @@ function ManagerSendPanel() {
   );
 }
 
-// The coach's members carry no account ID, so it is read from the member list (staff may read it)
 function CoachSendPanel() {
   const roster = useApi(async () => {
     const [booked, members] = await Promise.all([api.coaches.members(), api.members.list()]);
@@ -83,7 +79,7 @@ function CoachSendPanel() {
   const accountOf = new Map((roster.data?.members ?? [])
     .filter((m) => !m.accountStatus || m.accountStatus === 1)
     .map((m) => [m.id, m.accountId]));
-  // One row per member and class they booked; only active accounts can receive
+
   const booked = (roster.data?.booked ?? []).filter((b) => accountOf.has(b.memberId));
   const classes = [...new Map(booked.map((b) => [b.classId, b.className])).entries()];
   const people = [...new Map(booked.map((b) => [b.memberId, b])).values()]
@@ -112,9 +108,6 @@ function CoachSendPanel() {
   );
 }
 
-// `homework` (coaches): the message may be homework, sent as a notification whose title carries
-// HOMEWORK_PREFIX (lib/homework.js) and whose last line is the due date. Every message is signed with its sender
-// (lib/notifications.js), since the API keeps none.
 function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, homework = false }) {
   const cooldown = useMutationCooldown('POST', '/api/notifications');
   const submitLock = useRef(false);
@@ -126,6 +119,8 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
   const set = (n, val) => setV((s) => ({ ...s, [n]: val }));
   const recipients = recipientsFor(v.audience, v.accountId);
   const isHomework = homework && v.kind === "homework";
+  const selectedPerson = people.find(person => person.value === v.accountId);
+  const audienceRole = v.audience.startsWith('role:') ? v.audience.slice(5) : undefined;
 
   const send = async (e) => {
     e.preventDefault();
@@ -185,7 +180,7 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
         onChange={set}
         options={audiences}
         error={errors.audience}
-        help={loading ? "Đang tải danh sách…" : `${recipients.length} tài khoản đang hoạt động`}
+        help={loading ? "Đang tải danh sách…" : <>{recipients.length} tài khoản đang hoạt động{audienceRole && <> · Vai trò: <RoleLabel role={audienceRole} /></>}</>}
       />
       {v.audience === "one" && (
         <Field
@@ -196,6 +191,7 @@ function SendForm({ audiences, people, recipientsFor, loading, error, onRetry, h
           onChange={set}
           error={errors.accountId}
           options={people}
+          help={selectedPerson?.role != null ? <>Vai trò người nhận: <RoleLabel role={selectedPerson.role} /></> : undefined}
         />
       )}
       <Field

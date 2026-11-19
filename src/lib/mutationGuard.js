@@ -1,4 +1,4 @@
-// Client-side abuse/duplicate guard. Server authorization, rate limits and idempotency remain mandatory.
+
 const PREFIX = 'sportcenter.write-guard.v1:';
 const noop = () => {};
 const policies = {
@@ -38,11 +38,11 @@ export function mutationScope(token) {
     const claims = JSON.parse(atob(part));
     const id = claims['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'] ?? claims.sub;
     if (id) return 'account-' + digest(String(id));
-  } catch { /* Opaque session tokens still get isolated budgets. */ }
+  } catch {   }
   return 'session-' + digest(token);
 }
 const signature = (method, path, body) => {
-  // Never retain a credential-derived fingerprint. Only anonymous action rate is needed for auth.
+
   if (path.startsWith('/api/auth/')) return method + ':' + path;
   if (typeof FormData !== 'undefined' && body instanceof FormData) {
     return method + ':' + path + ':' + digest([...body.entries()].map(([k,v]) => k + ':' + (typeof v === 'string' ? v : [v.name,v.size,v.lastModified].join(':'))).join('|'));
@@ -64,13 +64,13 @@ export function createMutationGuard({ now = Date.now, storage = () => { try { re
   const read = (scope, policy) => {
     const key = keyOf(scope, policy.group);
     let value = memory.get(key);
-    try { const raw = storage()?.getItem(key); if (raw) value = JSON.parse(raw); } catch { /* Best effort across tabs. */ }
+    try { const raw = storage()?.getItem(key); if (raw) value = JSON.parse(raw); } catch {   }
     const attempts = Array.isArray(value?.attempts) ? value.attempts.filter(t => Number.isFinite(t) && t > now() - policy.windowMs && t <= now()) : [];
     return { attempts, until: Number.isFinite(value?.until) ? value.until : 0 };
   };
   const save = (scope, policy, value) => {
     const key = keyOf(scope, policy.group); memory.set(key, value);
-    try { storage()?.setItem(key, JSON.stringify(value)); } catch { /* Private mode/full storage keeps in-memory guard. */ }
+    try { storage()?.setItem(key, JSON.stringify(value)); } catch {   }
   };
   const wait = (method, path, scope = 'anonymous', body) => {
     const policy = mutationPolicy(method, path); if (!policy) return 0;

@@ -1,4 +1,4 @@
-/* Sign-in refresh. Kept inside .login so the member and staff forms retain their own layout. */
+
 .login.login {
   --login-accent: #c63b13;
   --login-accent-hover: #a92f0c;

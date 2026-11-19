@@ -2,8 +2,6 @@ import { Children, cloneElement, useEffect, useRef, useState } from 'react';
 import Icon from './Icon.jsx';
 import '../styles/auto-scroll-row.css';
 
-// Cards stay inside this scrollport. Copies remain clickable but are excluded from keyboard/SR navigation.
-// A custom card child must forward tabIndex to its root link.
 export default function AutoScrollRow({ children, label, direction = 'left', speed = 20, className = '' }) {
   const items = Children.toArray(children);
   const track = useRef(null);

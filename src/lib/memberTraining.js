@@ -1,4 +1,4 @@
-// Pure view helpers for a member's own plans/results. No API writes or sample data.
+
 export const UNKNOWN_CLASS = '__unknown_class__';
 export const UNKNOWN_PLAN = '__unknown_plan__';
 const dayOf = value => {
@@ -34,7 +34,7 @@ export function buildMemberTraining(plans = [], results = [], classes = [], sess
     const sameClass = session => !!session && (!classId || session.classId === classId);
     let session = sameClass(explicit) ? explicit : null;
     let sessionIssue = row.sessionId && explicit && !sameClass(explicit) ? 'Buổi học chưa khớp với lớp của kế hoạch.' : '';
-    // Legacy results can be matched by date only when exactly one session belongs to that class/day.
+
     if (!row.sessionId && classId && dayOf(row.evaluationDate)) {
       const candidates = sessions.filter(item => item.classId === classId && dayOf(item.date) === dayOf(row.evaluationDate));
       if (candidates.length === 1) session = candidates[0];

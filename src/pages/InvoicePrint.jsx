@@ -7,10 +7,6 @@ import { InvoiceStatus, PaymentMethod } from '../lib/enums.js';
 import { formatDate, formatDateTime, formatMoney, moneyInWords, realPhone } from '../lib/format.js';
 import { Button, EmptyState, ErrorNotice, Loading } from '../components/ui.jsx';
 
-// A printable invoice ("in/xuất hóa đơn"): the browser's print dialog prints it or saves it as a PDF.
-// Reception and managers read it from GET /api/invoices/{id}/export, a member from their own invoices; the
-// card's (or class's) dates and the member's contact details come from the card, the class and the profile.
-// A class's invoice (classId, CHANGELOG Part B, B53) shows the full fee and the card's discount.
 const classOf = (invoice) => (invoice.classId ? api.classes.get(invoice.classId).catch(() => null) : null);
 
 async function loadForStaff(id) {
@@ -36,7 +32,6 @@ async function loadForMember(id) {
   return { invoice, card, member: me, cls: await classOf(invoice) };
 }
 
-// Days from the first to the last day of a card, both included
 const daysOf = (card) =>
   Math.round((Date.parse(String(card.endDate).slice(0, 10)) - Date.parse(String(card.startDate).slice(0, 10))) / 86400000) + 1;
 
@@ -48,7 +43,6 @@ export default function InvoicePrint() {
   const code = `HD-${String(id).slice(0, 8).toUpperCase()}`;
   const back = staff ? '/staff/invoices' : '/account?tab=invoices';
 
-  // The title names the PDF a "save as PDF" creates
   useEffect(() => {
     const before = document.title;
     document.title = `SportCenter invoice ${code}`;

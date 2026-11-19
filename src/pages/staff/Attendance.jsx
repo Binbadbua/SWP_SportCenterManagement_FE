@@ -28,7 +28,6 @@ import {
 
 const day = (v) => String(v).slice(0, 10);
 
-// The session a coach most likely wants: today's, else the latest one already held, else the next
 function defaultSession(sessions, today) {
   return (
     sessions.find((s) => day(s.date) === today) ??
@@ -37,7 +36,6 @@ function defaultSession(sessions, today) {
   );
 }
 
-// Only coaches take attendance — for the classes they teach. Managers and reception read it elsewhere.
 export default function Attendance() {
   const { user } = useAuth();
   if (user?.role !== "Coach") {
@@ -56,9 +54,6 @@ export default function Attendance() {
   return <CoachAttendance user={user} />;
 }
 
-// Step by step: a sport the coach teaches → one of their classes in it → a session → mark members.
-// The choice lives in the URL (?sport=…&class=…&session=…); links from the dashboard and the
-// schedule only carry ?session=, and the sport and class are worked out from it.
 function CoachAttendance({ user }) {
   const toast = useToast();
   const [params, setParams] = useSearchParams();
@@ -117,8 +112,7 @@ function CoachAttendance({ user }) {
   const notYet = !!session && day(session.date) > today;
 
   const byMember = Object.fromEntries((records.data ?? []).map((r) => [r.memberId, r]));
-  // Coaches mark only present or absent. Older "late" records (status 3) still show their own tag
-  // and count as present: the member did attend.
+
   const counts = (roster.data ?? []).reduce((acc, m) => {
     const s = byMember[m.memberId]?.status;
     const key = s === 3 ? 1 : s ?? 0;

@@ -20,7 +20,6 @@ export default function Header() {
   const [hidden, setHidden] = useState(false);
   const lastY = useRef(0);
 
-  // Hide the main bar when scrolling down, bring it back when scrolling up
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY;

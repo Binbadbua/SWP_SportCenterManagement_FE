@@ -1,5 +1,4 @@
-// Mirrors SWP_SportCenter.Repository/Enum/*.cs — the API sends enums as numbers.
-// `tone` drives the colour of the status tag in the UI.
+
 
 const enumOf = (entries) => {
   const byValue = Object.fromEntries(entries.map((e) => [e.value, e]));
@@ -11,7 +10,7 @@ const enumOf = (entries) => {
 };
 
 export const AccountRole = enumOf([
-  // name = the C# enum name the JWT carries as the role
+
   { value: 1, key: 'member', name: 'Member', label: 'Học viên' },
   { value: 2, key: 'coach', name: 'Coach', label: 'Huấn luyện viên' },
   { value: 3, key: 'receptionist', name: 'Receptionist', label: 'Lễ tân' },
@@ -34,7 +33,7 @@ export const BookingStatus = enumOf([
   { value: 1, label: 'Đã đặt', tone: 'info' },
   { value: 2, label: 'Đã tham gia', tone: 'success' },
   { value: 3, label: 'Đã hủy', tone: 'neutral' },
-  // Class fees (CHANGELOG Part B, B53): a web booking holds its place while reception waits for the money
+
   { value: 4, label: 'Chờ thanh toán', tone: 'warning' },
 ]);
 
@@ -49,7 +48,7 @@ export const InvoiceStatus = enumOf([
   { value: 1, label: 'Chờ thanh toán', tone: 'warning' },
   { value: 2, label: 'Đã thanh toán', tone: 'success' },
   { value: 3, label: 'Đã hủy', tone: 'neutral' },
-  // A paid class cancelled before its first session (B53)
+
   { value: 4, label: 'Đã hoàn tiền', tone: 'neutral' },
 ]);
 
@@ -64,9 +63,9 @@ export const PaymentMethod = enumOf([
   { value: 1, label: 'Tiền mặt' },
   { value: 2, label: 'Chuyển khoản' },
   { value: 3, label: 'Thẻ' },
-  // Online through SePay (CHANGELOG Part B, B54): VietQR bank transfer (method 2)
+
 ]);
-// What reception take at the desk (SePay is only paid online, by the member)
+
 export const DESK_METHODS = PaymentMethod.options.filter((o) => o.value <= 3);
 
 export const RoomStatus = enumOf([
@@ -74,25 +73,22 @@ export const RoomStatus = enumOf([
   { value: 2, label: 'Tạm ngưng', tone: 'danger' },
 ]);
 
-// Members' gender is stored as the English word; the website shows it in Vietnamese
 export const Gender = enumOf([
   { value: 'Male', label: 'Nam' },
   { value: 'Female', label: 'Nữ' },
   { value: 'Other', label: 'Khác' },
 ]);
 
-// Online payment of a package (GET /api/payments/{id}), from the invoice behind it
 export const PaymentStatus = enumOf([
   { value: 1, label: 'Chờ thanh toán', tone: 'warning' },
   { value: 2, label: 'Thành công', tone: 'success' },
   { value: 3, label: 'Thất bại', tone: 'danger' },
   { value: 4, label: 'Đã hủy', tone: 'neutral' },
-  // SePay (CHANGELOG Part B, B54): not paid within the hold time; a paid class cancelled before its first session
+
   { value: 5, label: 'Hết hạn', tone: 'neutral' },
   { value: 6, label: 'Đã hoàn tiền', tone: 'neutral' },
 ]);
 
-// SWP_SportCenter.Repository/Entity/SupportRequest.cs
 export const SupportRequestStatus = enumOf([
   { value: 1, label: 'Mới gửi', tone: 'warning' },
   { value: 2, label: 'Đang xử lý', tone: 'info' },

@@ -46,7 +46,6 @@ export default function Register() {
   });
   const [errors, setErrors] = useState({});
 
-  // Thêm trạng thái Loading và Báo lỗi từ Server
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [apiError, setApiError] = useState(null);
 
@@ -62,7 +61,7 @@ export default function Register() {
     setApiError(null);
 
     try {
-      // 1. Gọi API Đăng ký gửi cho Backend
+
       await api.auth.register({
         username: v.username.trim(),
         fullName: v.fullName.trim(),
@@ -74,12 +73,10 @@ export default function Register() {
         password: v.password,
       });
 
-      // 2. Nếu đăng ký thành công, tự động gọi API Login để lấy Token luôn
       const loginResult = await signIn(v.email.trim(), v.password);
 
       if (loginResult.success) {
-        // 3. POST /api/auth/register only stores username, email, password (and full name), so the
-        //    rest of the form is saved on the new member profile with PUT /api/members/me.
+
         let profileSaved = true;
         try {
           await api.members.me.update({
@@ -95,14 +92,14 @@ export default function Register() {
           console.error("Could not save the member profile:", profileError);
           profileSaved = false;
         }
-        // Đưa thẳng vào trang cá nhân của Member
+
         navigate(profileSaved ? "/account?welcome=1" : "/account?welcome=1&profile=incomplete");
       } else {
-        // Nếu lỗi quá trình auto-login thì đẩy ra trang đăng nhập
+
         navigate("/login?registered=1");
       }
     } catch (err) {
-      // Bắt lỗi từ Backend (VD: Trùng email, lỗi validation server...)
+
       setApiError(err.message || "Đăng ký không thành công. Vui lòng thử lại.");
     } finally {
       setIsSubmitting(false);
@@ -111,7 +108,7 @@ export default function Register() {
 
   return (
     <div className="auth">
-      {/* noValidate đã được thêm sẵn từ trước để React tự bắt lỗi thay trình duyệt */}
+
       <form
         className="auth__card auth__card--wide"
         onSubmit={submit}
@@ -120,7 +117,6 @@ export default function Register() {
         <Logo compact />
         <h1 className="auth__title">Cùng trở thành thành viên nhé.</h1>
 
-        {/* Khung báo lỗi từ Backend (nếu có) */}
         {apiError && <ErrorNotice error={{ message: apiError }} />}
 
         <div className="form-grid">

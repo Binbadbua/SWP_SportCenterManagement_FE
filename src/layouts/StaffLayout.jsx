@@ -2,17 +2,18 @@ import { Suspense, useEffect, useState } from "react";
 import {
   Link,
   NavLink,
+  Navigate,
   Outlet,
   useLocation,
   useNavigate,
 } from "react-router-dom";
 import { isStaff, useAuth } from "../context/AuthContext.jsx";
-import { AccountRole } from "../lib/enums.js";
+import RoleLabel from '../components/RoleLabel.jsx';
+import { canAccessStaffPath } from '../lib/access.js';
 import Icon from "../components/Icon.jsx";
 import Logo from "../components/Logo.jsx";
 import { Button, EmptyState, Loading } from "../components/ui.jsx";
 
-// Sidebar navigation by role. `preview: true` = UI only, no back-end API yet.
 export const STAFF_NAV = [
   {
     group: "Hôm nay",
@@ -121,25 +122,24 @@ export const STAFF_NAV = [
   },
 ];
 
-// The token carries the C# enum name ("CenterManager"); show its label ("Quản lý trung tâm")
-const roleLabel = (role) => AccountRole.options.find((o) => o.name === role)?.label ?? role;
-
 export default function StaffLayout() {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const [navOpen, setNavOpen] = useState(false);
   useEffect(() => {
     setNavOpen(false);
   }, [pathname]);
+
+  if (!user) return <Navigate to={`/login?next=${encodeURIComponent(pathname + search)}`} replace />;
 
   if (!isStaff(user)) {
     return (
       <div className="staff-gate">
         <Logo />
         <EmptyState
-          title="Cần đăng nhập tài khoản nhân viên"
-          action={<Button to="/login?next=/staff">Đăng nhập nhân viên</Button>}
+          title="Tài khoản không có quyền vào khu vực nhân viên"
+          action={<Button to="/account">Về tài khoản của tôi</Button>}
         >
           Đăng nhập bằng tài khoản quản lý, lễ tân hoặc huấn luyện viên để vào khu vực nhân viên.
         </EmptyState>
@@ -150,6 +150,7 @@ export default function StaffLayout() {
     );
   }
 
+  const allowed = canAccessStaffPath(user.role, pathname);
   const groups = STAFF_NAV.map((g) => ({
     ...g,
     items: g.items.filter((i) => i.roles.includes(user.role)),
@@ -178,7 +179,7 @@ export default function StaffLayout() {
               {user?.username || "NHÂN VIÊN"}
             </span>
             <span className="staff-top__role">
-              {roleLabel(user?.role || user?.Role)}
+              <RoleLabel role={user.role} />
             </span>
           </span>
           <button
@@ -226,7 +227,7 @@ export default function StaffLayout() {
           ))}
         </nav>
         <main className="staff__main" id="main">
-          <Suspense fallback={<Loading label="Đang mở trang" />}><Outlet /></Suspense>
+          {allowed ? <Suspense fallback={<Loading label="Đang mở trang" />}><Outlet /></Suspense> : <EmptyState title="Không có quyền truy cập" action={<Button to="/staff">Về trang Tổng quan</Button>}>Tài khoản hiện tại không có quyền sử dụng chức năng này.</EmptyState>}
         </main>
       </div>
     </div>

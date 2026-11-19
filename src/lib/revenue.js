@@ -9,7 +9,7 @@ export function revenueDay(value) {
   if (!value) return null;
   const text = String(value);
   if (isoDay.test(text)) return validDay(text) ? text : null;
-  // API timestamps are UTC/offset instants. Never use the visitor's timezone for reporting.
+
   if (!/(Z|[+-]\d{2}:\d{2})$/i.test(text)) return null;
   const instant = new Date(text);
   return Number.isFinite(instant.getTime()) ? todayCenterDateString(instant) : null;
@@ -57,11 +57,6 @@ const add = (target, item) => {
   if (!Number.isSafeInteger(target.net)) target.unsafe = true;
 };
 
-/**
- * cohort: confirmed refunds reduce the original receipt cohort, not an invented refund date.
- * cash: receipt/refund events belong to their actual dates; unavailable when dates are absent.
- * Invoice status4 currently means a FULL confirmed refund. Explicit refundAmount supports a future partial-refund API.
- */
 export function buildRevenueReport(invoices, classes, options) {
   const { from, to, grain = 'day', basis = 'cohort', dimension = 'time', kind = 'all', categoryId = '', classId = '' } = options;
   const error = validateRevenueRange(from, to, grain);
@@ -81,7 +76,7 @@ export function buildRevenueReport(invoices, classes, options) {
     if (categoryId && (item.kind !== 'class' || (categoryId === '__unknown' ? !!item.categoryId : item.categoryId !== categoryId))) continue;
     if (classId && (item.kind !== 'class' || item.classId !== classId)) continue;
     const status = Number(invoice.status);
-    if (status !== 2 && status !== 4) continue; // Pending/cancelled money was never received.
+    if (status !== 2 && status !== 4) continue;
     const amount = money(invoice.amount);
     if (amount === null) { issues.push({ code: 'invalidAmount', invoiceId: id }); continue; }
     const paidDay = revenueDay(invoice.paidAt ?? invoice.paymentDate);
@@ -144,7 +139,7 @@ export function revenueCsv(report, { from, to, basis, dimension }) {
   const cell = value => {
     if (typeof value === 'number') return String(value);
     let text = String(value ?? '');
-    if (/^\s*[=+@-]/.test(text)) text = "'" + text; // User-entered names must not become spreadsheet formulas.
+    if (/^\s*[=+@-]/.test(text)) text = "'" + text;
     return '"' + text.replaceAll('"', '""') + '"';
   };
   const rows = [

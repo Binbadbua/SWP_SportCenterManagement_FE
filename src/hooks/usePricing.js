@@ -3,10 +3,6 @@ import { api, isMissingRoute } from '../api/endpoints.js';
 import { useApi } from './useApi.js';
 import { hasClassPrices } from '../lib/pricing.js';
 
-// Capabilities the API gains with the new business rules, asked once per page load and shared by every page.
-
-// Whether the API bills classes yet (CHANGELOG Part B, B53), for pages that show no class themselves (help, terms,
-// packages); undefined while unknown, false if it can't tell.
 let billedKnown;
 let billedAsking;
 
@@ -18,7 +14,7 @@ export function useClassPricing() {
     billedAsking ??= api.classes.list().then(
       (rows) => (billedKnown = hasClassPrices(rows)),
       () => {
-        billedAsking = undefined; // ask again on the next page
+        billedAsking = undefined;
         return false;
       },
     );
@@ -30,8 +26,6 @@ export function useClassPricing() {
   return billed;
 }
 
-// How members pay online (B54). Before the API takes SePay it answers 404 and orders made on the website wait 30
-// minutes for reception to confirm a bank transfer (no paying at the desk for a web order).
 export const DESK_CONFIRMED = { online: false, provider: 'BankTransfer', methods: [2], holdMinutes: 30, upgrade: false };
 let optionsKnown;
 let optionsAsking;
@@ -57,12 +51,10 @@ async function loadPaymentOptions() {
   return optionsAsking;
 }
 
-// Checkout needs the failure/retry state; an outage must not look like a legacy desk transfer.
 export function usePaymentOptionsState() {
   return useApi(loadPaymentOptions, []);
 }
 
-// Existing informational pages only need the resolved capabilities.
 export function usePaymentOptions() {
   return usePaymentOptionsState().data ?? undefined;
 }

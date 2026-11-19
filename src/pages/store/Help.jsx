@@ -2,8 +2,6 @@ import { useClassPricing, usePaymentOptions } from '../../hooks/usePricing.js';
 import { Button } from '../../components/ui.jsx';
 import RefundGuide from '../../components/RefundGuide.jsx';
 
-// The answers follow what the API does today: class fees once it bills classes (CHANGELOG Part B, B53), SePay once it
-// takes online payments (B54); before them a booking needs a card and a web order waits for reception.
 function faq({ fees, online, hold }) {
   return [
     [

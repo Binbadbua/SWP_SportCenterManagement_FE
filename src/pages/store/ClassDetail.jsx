@@ -16,7 +16,8 @@ import {
   isSessionOver,
 } from "../../lib/format.js";
 import { ClassStatus } from "../../lib/enums.js";
-import { classStarted } from "../../lib/classes.js";
+import { classDisplayStatus, classStarted } from "../../lib/classes.js";
+import { useCenterNow } from "../../hooks/useCenterNow.js";
 import { cardCheck } from "../../lib/membership.js";
 import { discountFor, maxDiscount } from "../../lib/pricing.js";
 import ClassPrice from "../../components/ClassPrice.jsx";
@@ -54,7 +55,7 @@ function ClassDetailView() {
   const sessions = useApi(() => api.schedules.byClass(id), [id], {
     sample: () => mock.sessions.filter((s) => s.classId === id),
   });
-  // The roster is staff-only on the API, so other users don't request it.
+
   const roster = useApi(() => api.classes.members(id), [id], {
     skip: !["CenterManager", "Coach"].includes(role),
     sample: () =>
@@ -75,8 +76,7 @@ function ClassDetailView() {
     skip: !member,
     sample: () => mock.bookings.filter((b) => b.memberId === memberId),
   });
-  // With class fees (B53) the member's card gives a discount; before them a booking needs a card valid on the
-  // class's next session (lib/membership.js)
+
   const myCards = useApi(() => api.memberships.mine(), [user?.accountId], {
     skip: !member,
   });
@@ -87,9 +87,10 @@ function ClassDetailView() {
   const [showAll, setShowAll] = useState(false);
   const [busy, setBusy] = useState(false);
   const [actionError, setActionError] = useState(null);
-  const [booked, setBooked] = useState(null); // confirmation panel
-  const [newBooking, setNewBooking] = useState(null); // booking made on this page
-  const [asking, setAsking] = useState(false); // the cancel dialog
+  const [booked, setBooked] = useState(null);
+  const [newBooking, setNewBooking] = useState(null);
+  const [asking, setAsking] = useState(false);
+  const now = useCenterNow();
 
   if (cls.loading)
     return (
@@ -115,16 +116,18 @@ function ClassDetailView() {
   }
 
   const c = cls.data;
-  // The server count includes pending holds, which are excluded from the coach roster.
+
   const enrolled = Number.isFinite(c.currentEnrolled) ? c.currentEnrolled : roster.data?.length;
   const knownTaken = enrolled !== undefined && enrolled !== null;
   const taken = knownTaken ? enrolled : 0;
   const spotsLeft = Math.max(0, c.maxCapacity - taken);
   const category = (categories.data ?? []).find((x) => x.id === c.categoryId);
   const allSessions = sessions.data ?? [];
-  // Only a class that has not started takes bookings (team rule, 28/10/2026)
+
   const started = classStarted(c, allSessions);
-  const eyebrow = classEyebrow(c, knownTaken ? spotsLeft : undefined, started);
+  const displaySessions = !sessions.loading && !sessions.error && (!sessions.usingSample || cls.usingSample) ? allSessions : undefined;
+  const displayStatus = classDisplayStatus(c, displaySessions, now);
+  const eyebrow = classEyebrow(c, knownTaken ? spotsLeft : undefined, started, displayStatus);
   const shownSessions = showAll
     ? allSessions
     : allSessions.slice(0, SESSIONS_SHOWN);
@@ -133,12 +136,11 @@ function ClassDetailView() {
     (myBookings.data ?? []).find((b) => b.classId === c.id && b.status !== 3) ??
     (newBooking?.classId === c.id ? newBooking : undefined);
   const closed = c.status === 3 || c.status === 4;
-  // A booking covers the class's remaining sessions, so a class with none left can't be booked
+
   const upcoming = allSessions.filter((s) => !isSessionOver(s));
   const noSessionsLeft = !sessions.loading && upcoming.length === 0;
   const usingSample = cls.usingSample || sessions.usingSample;
-  // Class fees (B53): the API carries `price` once it bills classes, and a card then gives a discount. Until then
-  // the 27/10 rule applies: booking needs a card valid on the next session (null until cards and sessions are known).
+
   const priced = typeof c.price === "number";
   const card =
     !priced && member && myCards.data && !sessions.loading && !sessions.usingSample
@@ -156,19 +158,19 @@ function ClassDetailView() {
   const topDiscount = priced ? maxDiscount(packages.data) : 0;
   const withFee = priced && c.price > 0;
   const paidBooking = priced && myBooking?.status === 1 && Number(myBooking.price ?? 0) > 0;
-  // With SePay (B54–B55) members cancel a paid class themselves and request a full refund before the class starts; reception confirms the actual refund.
-  // before that reception cancel and refund paid classes at the desk
+
   const selfRefund = !!opts?.online;
   const hold = opts?.holdMinutes ?? 30;
 
-  // A class with a fee is booked through its checkout page, like a package
   const startBooking = () => {
+    if (busy || classDisplayStatus(c, displaySessions) !== 1 || sessions.loading || sessions.error || usingSample || started || noSessionsLeft || spotsLeft <= 0) return;
     if (!withFee) return book();
     if (!user) navigate(`/login?next=${encodeURIComponent(location.pathname)}`);
     else navigate(`/classes/${c.id}/checkout`);
   };
 
   const book = async () => {
+    if (busy || classDisplayStatus(c, displaySessions) !== 1 || sessions.loading || sessions.error || usingSample || started || noSessionsLeft || spotsLeft <= 0) return;
     if (!user) {
       navigate(`/login?next=${encodeURIComponent(location.pathname)}`);
       return;
@@ -239,7 +241,7 @@ function ClassDetailView() {
       </p>
     );
   } else if (myBooking?.status === 4) {
-    // Booked on the web, the money not taken yet: the place is held until the order expires
+
     cta = (
       <>
         <div className="pdp__booked pdp__booked--waiting">
@@ -267,7 +269,7 @@ function ClassDetailView() {
           <Icon name="check" size={20} strokeWidth={2} /> Bạn đã đặt lớp
           này
         </div>
-        {/* Before SePay a paid class is cancelled and refunded by reception, before its first session (B53) */}
+
         {paidBooking && !selfRefund ? (
           <p className="muted small">
             Đã thanh toán {formatMoney(myBooking.price)}. Muốn hủy và nhận lại tiền, hãy báo lễ tân trước buổi học
@@ -297,7 +299,7 @@ function ClassDetailView() {
       </>
     );
   } else {
-    const open = !closed && !started && !noSessionsLeft && spotsLeft > 0;
+    const open = displayStatus === 1 && !closed && !started && !noSessionsLeft && spotsLeft > 0 && !sessions.error && !usingSample;
     cta = (
       <>
         <Button
@@ -306,11 +308,13 @@ function ClassDetailView() {
           onClick={startBooking}
           disabled={busy || !open || sessions.loading || checkingCard || needsCard}
         >
-          {closed
+          {closed || displayStatus === 3 || displayStatus === 4
             ? "Đã đóng đăng ký"
+            : displayStatus === null
+              ? "Chờ cập nhật lịch"
             : noSessionsLeft
               ? "Không còn buổi học sắp tới"
-              : started
+              : started || displayStatus === 2
                 ? "Lớp đã bắt đầu"
                 : spotsLeft === 0
                   ? "Lớp đã đủ chỗ"
@@ -324,7 +328,7 @@ function ClassDetailView() {
                           ? "Đặt lớp và thanh toán"
                           : "Đặt lớp này"}
         </Button>
-        {!closed && !noSessionsLeft && started && (
+        {!closed && !noSessionsLeft && (started || displayStatus === 2) && (
           <p className="muted small">
             Lớp đã bắt đầu nên không nhận đặt thêm: mỗi lớp chỉ nhận học viên trước buổi học đầu tiên.{" "}
             <Link className="text-link" to={`/classes?sport=${c.categoryId}`}>
@@ -453,7 +457,6 @@ function ClassDetailView() {
             {eyebrow.text}
           </p>
 
-          {/* Spots meter */}
           <div className="spots">
             <div className="spots__row">
               <span className="spots__label">Số chỗ</span>
@@ -472,7 +475,6 @@ function ClassDetailView() {
             </div>
           </div>
 
-          {/* Session grid, styled like a size chart */}
           <div className="sessions">
             <div className="sessions__head">
               <h2 className="sessions__title">Các buổi học</h2>
@@ -547,7 +549,7 @@ function ClassDetailView() {
               <ul className="facts">
                 <li>
                   <span>Trạng thái</span>
-                  {ClassStatus.label(c.status)}
+                  {displayStatus === null ? "Chờ cập nhật lịch" : ClassStatus.label(displayStatus)}
                 </li>
                 <li>
                   <span>Thời gian</span>
@@ -566,7 +568,7 @@ function ClassDetailView() {
             </details>
             <details open>
               <summary>Huấn luyện viên của bạn</summary>
-              {/* A short card only: the full profile (sports, contact, schedule) is on the coach's page */}
+
               <div className="class-coach">
                 <Link to={`/coaches/${c.coachId}`} className="mini-coach mini-coach--link">
                   <CoachPortrait coach={coach.data ?? { fullName: c.coachName }} size="sm" />
@@ -586,7 +588,7 @@ function ClassDetailView() {
             </details>
             <details>
               <summary>Hủy đặt lớp</summary>
-              {/* The cancel rules of 28/10/2026 (lib/classes.js → cancelTerms) */}
+
               <ul className="facts facts--plain">
                 <li>Lượt đặt đang chờ thanh toán: hủy lúc nào cũng được, chưa có khoản tiền nào bị trừ.</li>
                 {withFee && !selfRefund ? (

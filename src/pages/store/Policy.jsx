@@ -3,8 +3,6 @@ import { POLICIES, POLICY_UPDATED, TERMS_WITH_CLASS_FEES } from '../../component
 import { useClassPricing } from '../../hooks/usePricing.js';
 import { FRONT_DESK_PHONE } from '../../lib/contact.js';
 
-// /terms and /privacy: the policies linked from the agree boxes on Register and Checkout. Once classes have
-// fees (CHANGELOG Part B, B53) the terms about cards, bookings and refunds read as TERMS_WITH_CLASS_FEES.
 export default function Policy({ kind }) {
   const billed = useClassPricing();
   const policy = POLICIES[kind];

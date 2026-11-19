@@ -1,7 +1,5 @@
-// Configuration for every list/edit page in the staff area (rendered by CrudPage.jsx).
-//
-//   source: api.xxx (or (user) => ({ list, create?, update?, remove? })) -> the back-end endpoints;
-//   edit and delete buttons only appear when the source has update / remove.
+
+
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
 import { useApi } from '../../hooks/useApi.js';
@@ -16,32 +14,28 @@ import {
 } from '../../lib/format.js';
 import { classRunning, classStarted } from '../../lib/classes.js';
 import { assertClassCanBeDeleted, assertClassDeletionSession, classDeletionLock, classDeletionSession, completeDeletionRows } from '../../lib/classDeletion.js';
-import { classDateMinimum, scheduleDateMinimum, sessionStartMinimum, validateClassDates, validateSessionSlot } from '../../lib/scheduling.js';
+import { classDateMinimum, scheduleDateMinimum, sessionStartMinimum, validateClassDates, validateSessionSlot, validateSessionConflicts } from '../../lib/scheduling.js';
 import { cardsOn } from '../../lib/membership.js';
 import { hasClassPrices, hasPackageDiscounts } from '../../lib/pricing.js';
 import { CoachPortrait } from '../../components/cards.jsx';
 import ConfirmRefund from '../../components/ConfirmRefund.jsx';
 import RefundGuide from '../../components/RefundGuide.jsx';
+import RoleLabel from '../../components/RoleLabel.jsx';
 import { ErrorNotice, FillBar, Loading, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
 
 const tag = (E) => (v) => <StatusTag tone={E.tone(v)}>{E.label(v)}</StatusTag>;
 const isManager = (u) => u?.role === 'CenterManager';
 const isFrontDesk = (u) => u?.role === 'CenterManager' || u?.role === 'Receptionist';
-// Selling at the desk (new members, cards, renewals, invoices, printing) is reception's job alone (team rule,
-// 28/10/2026): a manager sees and corrects those lists but does not take money
+
 const isReception = (u) => u?.role === 'Receptionist';
-// A package bought on the website: unpaid and no receptionist yet. Staff confirm it within 30 minutes
-// (api.payments.confirm); editing it to Paid instead would leave the card inactive (CHANGELOG Part B, B43).
+
 const awaitingOnline = (r) => r.status === 1 && !r.receptionistId;
-// What an invoice pays for: a package, or a class with a fee (B53)
+
 const itemOf = (r) => (r.className ? `Lớp ${r.className}` : r.packageName);
 const opt = (rows, value, label) => (rows ?? []).map((r) => ({ value: r[value], label: typeof label === 'function' ? label(r) : r[label] }));
 
-// Class fees and package discounts (CHANGELOG Part B, B53): their columns and fields appear once the lists the
-// API sends carry them (set when the Classes / Packages pages load)
 const carries = { price: false, discount: false };
 
-/* ---- Lookups shared by several pages ---------------------------------- */
 const L = {
   categories: { load: () => api.categories.list(), sample: mock.categories },
   coaches: { load: () => api.coaches.list(), sample: mock.coaches },
@@ -58,11 +52,8 @@ const L = {
   coachPlans: { load: () => api.trainingPlans.forCoach(), sample: mock.trainingPlans },
 };
 
-// Training plans/results must carry the signed-in coach's ID (the API checks it)
 const coachIdOf = async (u) => u?.coachId ?? (await api.coaches.me()).id;
 
-// The card reception sees beside a member: the active one valid today, else a web order waiting for
-// payment, else the latest one. state: active | expiring (7 days or less left) | pending | none
 function cardOf(cards, memberId) {
   const mine = cards.filter((m) => m.memberId === memberId);
   const [active] = cardsOn(mine, todayCenterDateString());
@@ -107,9 +98,8 @@ function CardCell({ info }) {
   );
 }
 
-// "T3 21/10/2026 · 18:00–19:30"
 const sessionLabel = (s) => `${formatWeekday(s.date)} ${formatDate(s.date)} · ${formatTimeRange(s.startTime, s.endTime)}`;
-// Prefer the API's session link; legacy results can only be inferred from an unambiguous day.
+
 const sessionOfResult = (sessions, plan, result) => {
   if (result.sessionId) return (sessions ?? []).find((s) => s.id === result.sessionId);
   if (!plan) return undefined;
@@ -118,7 +108,6 @@ const sessionOfResult = (sessions, plan, result) => {
   return matches.length === 1 ? matches[0] : undefined;
 };
 
-// Plans and results only carry IDs; add the names the table shows and searches
 async function coachNames() {
   const [members, classes] = await Promise.all([
     api.coaches.members().catch(() => []),
@@ -130,7 +119,6 @@ async function coachNames() {
   };
 }
 
-/* ---- Class roster shown in a modal ------------------------------------ */
 function ClassRoster({ classId }) {
   const roster = useApi(() => api.classes.members(classId), [classId], { sample: mock.classMembers });
   if (roster.loading) return <Loading />;
@@ -162,22 +150,18 @@ function ClassRoster({ classId }) {
   );
 }
 
-/* ---- Audit log cells and detail ---------------------------------------- */
-// An entry carries the username; the account list adds the person's name and role
 const accountOfLog = (accounts, row) => (accounts ?? []).find((a) => a.id === row.accountId);
-const personOf = (a) => [a.fullName, AccountRole.label(a.role)].filter(Boolean).join(' · ');
 
 function AuditWho({ row, accounts }) {
   const a = accountOfLog(accounts, row);
   return (
     <>
       <span className="cell-strong">{row.username || a?.username || '—'}</span>
-      {a && <span className="cell-sub">{personOf(a)}</span>}
+      {a && <span className="cell-sub">{a.fullName && <>{a.fullName} · </>}<RoleLabel role={a.role} /></span>}
     </>
   );
 }
 
-// The server logs only an entity ID; the lists the page already loads give most of them a name
 const RECORD_NAMES = {
   Account: (l, id) => l.accounts?.find((x) => x.id === id)?.username,
   Member: (l, id) => l.members?.find((x) => x.id === id)?.fullName,
@@ -189,13 +173,12 @@ const RECORD_NAMES = {
   SportCategory: (l, id) => l.categories?.find((x) => x.id === id)?.categoryName,
   MembershipPackage: (l, id) => l.packages?.find((x) => x.id === id)?.packageName,
 };
-// A deleted record is gone from the lists; its name then comes from the values the log kept
+
 const recordNames = (row, l) => {
   const names = row.entityIds.map((id) => RECORD_NAMES[row.entry.type]?.(l, id)).filter(Boolean);
   return names.length || row.entityIds.length > 1 || !row.entry.recordName ? names : [row.entry.recordName];
 };
 
-// A logged value as people read it: names for IDs, enum labels for numbers, dates the Vietnamese way
 const REFERENCES = {
   CategoryId: (l, id) => l.categories?.find((x) => x.id === id)?.categoryName,
   CoachId: (l, id) => l.coaches?.find((x) => x.id === id)?.fullName,
@@ -227,20 +210,36 @@ function showValue(type, field, v, l) {
 const changeText = (row, c, l) =>
   `${c.label} ${showValue(row.entry.type, c.field, c.old, l)} → ${showValue(row.entry.type, c.field, c.new, l)}`;
 
-// "Phòng A · đổi sức chứa 20 → 25" / "Dương Tuấn Kiệt · đổi số điện thoại" / "21 thông báo" / old FE text
 function auditDetails(row, l) {
   const e = row.entry;
   if (e.source === 'client') return [e.summary, ...e.lines].filter(Boolean).join(' · ');
   const names = recordNames(row, l);
-  // A deleted record (or a kind with no list here) has no name left: show the start of its ID
+
   const what = row.entityIds.length > 1
     ? `${row.entityIds.length} ${e.entity}`
     : names[0] ?? (row.entityIds[0] ? `#${String(row.entityIds[0]).slice(0, 8)}` : '');
-  // A save that changed nothing still logs a row whose only change is UpdatedAt (CHANGELOG Part B, B40)
+
   const changed = e.changes.length && e.changes.length <= 2 && row.entityIds.length <= 1 && e.verb === 'UPDATE'
     ? `đổi ${e.changes.map((c) => changeText(row, c, l)).join(', ')}`
     : e.fields.length ? `đổi ${e.fields.join(', ')}` : e.verb === 'UPDATE' ? 'lưu lại, không đổi gì' : '';
   return [what, changed].filter(Boolean).join(' · ');
+}
+
+function AuditChange({ row, change, lookups }) {
+  const value = v => change.field === 'Role' && v !== null && v !== undefined && v !== ''
+    ? <RoleLabel role={v} /> : showValue(row.entry.type, change.field, v, lookups);
+  return row.entry.verb === 'UPDATE'
+    ? <>{change.label} {value(change.old)} → {value(change.new)}</>
+    : <>{change.label}: {value(row.entry.verb === 'CREATE' ? change.new : change.old)}</>;
+}
+
+function AuditSummary({ row, lookups }) {
+  const e = row.entry;
+  if (e.source !== 'server' || e.verb !== 'UPDATE' || row.entityIds.length > 1 || !e.changes.length || e.changes.length > 2 || !e.changes.some(c => c.field === 'Role')) {
+    return auditDetails(row, lookups) || '—';
+  }
+  const what = recordNames(row, lookups)[0] ?? (row.entityIds[0] ? '#' + String(row.entityIds[0]).slice(0, 8) : '');
+  return <>{what && <>{what} · </>}đổi {e.changes.map((change, index) => <span key={change.field}>{index > 0 && ', '}<AuditChange row={row} change={change} lookups={lookups} /></span>)}</>;
 }
 
 function AuditDetail({ row, lookups }) {
@@ -250,7 +249,7 @@ function AuditDetail({ row, lookups }) {
   return (
     <dl className="detail-list">
       <div><dt>Thời điểm</dt><dd className="num">{formatDateTime(row.timestamp)}</dd></div>
-      <div><dt>Người thực hiện</dt><dd>{row.username}{a && ` · ${personOf(a)}`}</dd></div>
+      <div><dt>Người thực hiện</dt><dd>{row.username}{a && <> · {a.fullName && <>{a.fullName} · </>}<RoleLabel role={a.role} /></>}</dd></div>
       <div><dt>Thao tác</dt><dd><StatusTag tone={e.tone}>{e.label}</StatusTag></dd></div>
       {e.source === 'server' ? (
         <>
@@ -265,9 +264,7 @@ function AuditDetail({ row, lookups }) {
                 <ul>
                   {e.changes.map((c) => (
                     <li key={c.field}>
-                      {e.verb === 'UPDATE'
-                        ? changeText(row, c, lookups)
-                        : `${c.label}: ${showValue(e.type, c.field, e.verb === 'CREATE' ? c.new : c.old, lookups)}`}
+                      <AuditChange row={row} change={c} lookups={lookups} />
                     </li>
                   ))}
                 </ul>
@@ -294,9 +291,6 @@ function AuditDetail({ row, lookups }) {
   );
 }
 
-/* ======================================================================
-   API-backed pages
-   ====================================================================== */
 export const resources = {
   classes: {
     key: 'classes', title: 'Lớp học', singular: 'Lớp học',
@@ -308,12 +302,12 @@ export const resources = {
       list: async () => {
         const [rows, sessions] = await Promise.all([api.classes.list(), api.schedules.list().catch(() => null)]);
         carries.price = hasClassPrices(rows);
-        // Whether each class has begun, as members see it (lib/classes.js): the delete lock below
+
         return sessions ? rows.map((c) => ({ ...c, started: classStarted(c, sessions) })) : rows;
       },
       remove: async (id) => {
         const session = classDeletionSession();
-        // Preflight is a user-facing safeguard. BE must recheck registrations/history atomically with DELETE.
+
         const [fresh, rosterBody, invoiceBody, sessions] = await Promise.all([
           api.classes.get(id), api.classes.members(id), api.invoices.reportList(), api.schedules.byClass(id),
         ]);
@@ -325,7 +319,7 @@ export const resources = {
     },
     sample: mock.classes, lookups: () => ({ categories: L.categories, coaches: L.coaches }),
     canWrite: isManager, nameOf: (r) => r.className,
-    // Running classes are deletable only when explicitly empty; fresh roster/financial checks run before DELETE.
+
     deleteLocked: classDeletionLock,
     deleteMessage: (r) => (classRunning(r)
       ? 'Lớp đang diễn ra nhưng chưa có học viên. Hệ thống sẽ kiểm tra lại chỗ đang giữ, danh sách và hóa đơn trước khi gửi yêu cầu xóa. Nếu có lịch sử liên quan thì phải giữ lớp.'
@@ -336,7 +330,7 @@ export const resources = {
       { key: 'className', label: 'Lớp', className: 'cell-strong' },
       { key: 'categoryName', label: 'Môn' },
       { key: 'coachName', label: 'Huấn luyện viên' },
-      // The class list carries currentEnrolled (bookings that hold a place) next to the capacity
+
       {
         key: 'maxCapacity', label: 'Đã đặt / sĩ số',
         render: (r) => (r.currentEnrolled == null ? <span className="num">{r.maxCapacity}</span> : <FillBar value={r.currentEnrolled} max={r.maxCapacity} />),
@@ -375,8 +369,8 @@ export const resources = {
     key: 'schedule', title: 'Lịch học', singular: 'Buổi học',
     description: (u) => (u?.role === 'Coach'
       ? 'Các buổi học của những lớp bạn dạy. Mở một buổi để điểm danh.'
-      : 'Các buổi học của từng lớp. Máy chủ chặn xếp trùng phòng và ngày nằm ngoài thời gian của lớp.'),
-    // A coach sees only the sessions of the classes they teach
+      : 'Các buổi học của từng lớp. Kiểm tra trùng phòng, lớp và huấn luyện viên trước khi lưu; lịch phải nằm trong thời gian của lớp.'),
+
     source: (u) => (u?.role === 'Coach' ? { list: api.schedules.forCoach } : api.schedules), sample: mock.sessions,
     lookups: (u) => (isManager(u) ? { classes: L.classes, rooms: L.rooms } : {}),
     canWrite: isManager, nameOf: (r) => `${r.className} ngày ${formatDate(r.date)}`,
@@ -395,8 +389,11 @@ export const resources = {
       { name: 'startTime', label: 'Bắt đầu', type: 'time', required: true, min: sessionStartMinimum },
       { name: 'endTime', label: 'Kết thúc', type: 'time', required: true },
     ],
-    validate: validateSessionSlot,
-    // Only the coach takes (and corrects) attendance; their list holds only their own classes
+    validate: (values, mode, context) => {
+      const errors = validateSessionSlot(values, mode, context);
+      return Object.keys(errors).length ? errors : validateSessionConflicts(values, mode, context);
+    },
+
     rowActions: [{
       label: 'Điểm danh',
       to: (r) => `/staff/attendance?session=${r.id}`,
@@ -450,7 +447,7 @@ export const resources = {
     sort: (a, b) => a.fullName.localeCompare(b.fullName),
     validate: (values, mode) => {
       const errors = {};
-      const phoneRegex = /^0\d{9}$/; 
+      const phoneRegex = /^0\d{9}$/;
       if (values.phone && !phoneRegex.test(values.phone)) {
         errors.phone = "Số điện thoại phải có đúng 10 chữ số và bắt đầu bằng số 0.";
       }
@@ -499,10 +496,10 @@ export const resources = {
       { name: 'experienceYears', label: 'Số năm kinh nghiệm', type: 'number', min: 0, max: 50, defaultValue: () => '0' },
       { name: 'dob', label: 'Ngày sinh', type: 'date', help: 'Hiện trên trang huấn luyện viên.' },
       { name: 'gender', label: 'Giới tính', type: 'select', options: Gender.options },
-      // The photo is uploaded as soon as it is picked (api.media); the coach keeps only its link
+
       { name: 'avatar', label: 'Ảnh đại diện', type: 'image', help: 'Chọn ảnh JPG, PNG, WebP hoặc GIF trong máy, tối đa 5 MB; ảnh hiện trên thẻ và trang huấn luyện viên. Không có ảnh thì hiện chữ viết tắt của tên.' },
     ],
-    // Date columns are timestamptz: send midnight UTC, never a bare day
+
     toRequest: (b) => (b.dob ? { ...b, dob: fromDateInput(b.dob) } : b),
   },
 
@@ -514,7 +511,7 @@ export const resources = {
     searchText: (r) => `${r.fullName} ${r.email} ${r.phone}`,
     validate: (values, mode) => {
       const errors = {};
-      const phoneRegex = /^0\d{9}$/; 
+      const phoneRegex = /^0\d{9}$/;
       if (values.phone && !phoneRegex.test(values.phone)) {
         errors.phone = "Số điện thoại phải có đúng 10 chữ số và bắt đầu bằng số 0.";
       }
@@ -574,8 +571,7 @@ export const resources = {
     description: 'Đơn chuyển khoản SePay được ngân hàng xác nhận tự động, giữ trong 15 phút. Hóa đơn có yêu cầu hoàn tiền chỉ chuyển sang Đã hoàn tiền sau khi lễ tân đã trả tiền và ghi mã xác nhận. Lễ tân lập và in hóa đơn tại quầy.',
     source: (u) => (isReception(u) ? api.invoices : { list: api.invoices.list }),
     sample: mock.invoices, canWrite: isReception, nameOf: (r) => `${r.memberName} · ${itemOf(r)}`,
-    // A class's invoice follows its booking (B53) and a SePay invoice follows SePay (B54): they change through confirm,
-    // cancel and refund, not by hand
+
     canEditRow: (r) => !!r.receptionistId && !r.classBookingId && !r.refundPending,
     deleteLocked: (r) => r.status !== 1 || r.refundPending ? 'Chỉ xóa được hóa đơn chờ thanh toán và không có yêu cầu hoàn tiền.' : null,
     rowActions: [
@@ -588,7 +584,7 @@ export const resources = {
         },
       },
       {
-        // Kept for older APIs only. New SePay invoices always carry kind and settle through the webhook.
+
         label: 'Xác nhận đã nhận tiền',
         hidden: (r, u) => !isReception(u) || !awaitingOnline(r) || !!r.kind,
         confirm: (r) => 'Xác nhận đã nhận ' + formatMoney(r.amount) + ' của ' + r.memberName + '?',
@@ -600,13 +596,13 @@ export const resources = {
     lookups: (u) => ({
       memberships: L.memberships,
       packages: L.packages,
-      // Only managers may list receptionists; a receptionist takes payments as themself
+
       receptionists: u?.role === 'Receptionist'
         ? { load: async () => [await api.receptionists.me()], sample: mock.receptionists.slice(0, 1) }
         : L.receptionists,
     }),
     searchText: (r) => `${r.memberName} ${r.packageName ?? ''} ${r.className ?? ''} ${r.receptionistName}`,
-    // Unpaid invoices have no payment date (null) and come first, then the newest payments
+
     sort: (a, b) =>
       !a.paymentDate || !b.paymentDate
         ? (a.paymentDate ? 1 : 0) - (b.paymentDate ? 1 : 0)
@@ -627,7 +623,7 @@ export const resources = {
       {
         name: 'memberMembershipId', label: 'Thẻ thành viên', type: 'select', required: true, full: true, createOnly: true,
         optionsFrom: (l) => opt(l.memberships, 'id', (m) => `${m.memberName} · ${m.packageName} · từ ${formatDate(m.startDate)}`),
-        // Fill the amount in from the package price
+
         onChange: (value, { lookups, setFormValues }) => {
           const membership = (lookups.memberships ?? []).find((m) => m.id === value);
           const price = (lookups.packages ?? []).find((p) => p.id === membership?.packageId)?.price;
@@ -677,20 +673,13 @@ export const resources = {
     ],
   },
 
-  /* ====================================================================
-     Members, packages, memberships, accounts, training
-     (these used to be UI-only previews; all of them call the API now)
-     ==================================================================== */
-  // MemberResponse carries the account's join date and status. A new member is registered like on the
-  // website (POST /api/auth/register creates the account and the profile; POST /api/members would need
-  // an existing account). Reception and managers edit a member; only a manager may delete one.
   members: {
     key: 'members', title: 'Học viên', singular: 'Học viên',
     description: (u) => (isReception(u)
       ? 'Tìm kiếm, đăng ký và cập nhật thông tin học viên tại quầy. Cột Thẻ thành viên cho biết học viên có đặt lớp được không.'
       : 'Tìm kiếm và cập nhật thông tin học viên; lễ tân đăng ký học viên mới tại quầy. Cột Thẻ thành viên cho biết học viên có đặt lớp được không.'),
     source: (u) => ({
-      // Each member gets their card from the card list (reception and managers may read it)
+
       list: async () => {
         const [members, cards] = await Promise.all([api.members.list(), api.memberships.list().catch(() => null)]);
         return cards ? members.map((m) => ({ ...m, card: cardOf(cards, m.id) })) : members;
@@ -733,7 +722,7 @@ export const resources = {
       if (mode === 'create' && v.password && v.password.length < 8) e.password = 'Mật khẩu cần ít nhất 8 ký tự.';
       return e;
     },
-    // Edit keeps the account and photo the API would otherwise overwrite
+
     toRequest: (b, { mode, row }) => ({
       ...b,
       dob: fromDateInput(b.dob),
@@ -750,7 +739,7 @@ export const resources = {
     searchText: (r) => `${r.fullName} ${r.phone} ${r.email}`,
     validate: (values, mode) => {
       const errors = {};
-      const phoneRegex = /^0\d{9}$/; 
+      const phoneRegex = /^0\d{9}$/;
       if (values.phone && !phoneRegex.test(values.phone)) {
         errors.phone = "Số điện thoại phải có đúng 10 chữ số và bắt đầu bằng số 0.";
       }
@@ -827,7 +816,7 @@ export const resources = {
         name: 'discountPercent', label: 'Giảm học phí mọi lớp (%)', type: 'number', required: true, min: 0, max: 100,
         defaultValue: () => '0', shown: () => carries.discount,
       },
-      // "Cancelled" only applies to a member's membership, not to a package on sale
+
       { name: 'status', label: 'Trạng thái', type: 'select', numeric: true, required: true, options: MembershipStatus.options.filter((o) => o.value !== 4), defaultValue: () => '1' },
       { name: 'description', label: 'Mô tả', type: 'textarea' },
       {
@@ -837,8 +826,6 @@ export const resources = {
     ],
   },
 
-  // Editing changes only the dates and status (PUT /api/memberships/{id}); member and package are
-  // fixed once sold. Renew and Cancel have their own endpoints.
   memberships: {
     key: 'memberships', title: 'Thẻ thành viên', singular: 'Thẻ thành viên',
     description: (u) => (isReception(u)
@@ -862,7 +849,7 @@ export const resources = {
       {
         name: 'packageId', label: 'Gói tập', type: 'select', required: true, createOnly: true,
         optionsFrom: (l) => opt((l.packages ?? []).filter((p) => p.status === 1), 'id', (p) => `${p.packageName} · ${p.durationDays} ngày · ${formatMoney(p.price)}`),
-        // A package of N days that starts on day 1 ends on day N
+
         onChange: (value, { lookups, setFormValues }) => {
           const days = (lookups.packages ?? []).find((p) => p.id === value)?.durationDays;
           if (days) setFormValues((prev) => ({ ...prev, endDate: addDaysToDateInput(prev.startDate, days - 1) || prev.endDate }));
@@ -890,7 +877,7 @@ export const resources = {
       {
         label: 'Gia hạn',
         run: (r) => api.memberships.renew(r.id),
-        // Package names already start with "Thẻ …", so the messages name the package alone
+
         confirm: (r) => `Gia hạn ${r.packageName} của ${r.memberName} thêm một chu kỳ? Hệ thống tạo kỳ mới và một hóa đơn chờ thanh toán.`,
         done: (r) => `Đã gia hạn thẻ của ${r.memberName}; hóa đơn chờ thanh toán đã được tạo.`,
         hidden: (r, u) => !isReception(u),
@@ -913,18 +900,18 @@ export const resources = {
     searchText: (r) => `${r.username} ${AccountRole.label(r.role)}`,
     validate: (values, mode) => {
       const errors = {};
-      const phoneRegex = /^0\d{9}$/; 
+      const phoneRegex = /^0\d{9}$/;
       if (values.phone && !phoneRegex.test(values.phone)) {
         errors.phone = "Số điện thoại phải có đúng 10 chữ số và bắt đầu bằng số 0.";
       }
       return errors;
     },
     columns: [
-      { key: 'fullName', label: 'Họ và tên' }, 
+      { key: 'fullName', label: 'Họ và tên' },
       { key: 'username', label: 'Tên đăng nhập', className: 'cell-strong' },
       { key: 'email', label: 'Email' },
       { key: 'phone', label: 'Số điện thoại', className: 'num', render: (r) => r.phone || '—' },
-      { key: 'role', label: 'Vai trò', render: (r) => AccountRole.label(r.role) },
+      { key: 'role', label: 'Vai trò', render: (r) => <RoleLabel role={r.role} /> },
       { key: 'status', label: 'Trạng thái', render: (r) => tag(AccountStatus)(r.status) },
       { key: 'createdAt', label: 'Ngày tạo', className: 'num', render: (r) => formatDate(r.createdAt) },
     ],
@@ -934,14 +921,12 @@ export const resources = {
       { name: 'email', label: 'Email', type: 'email', required: true },
       { name: 'phone', label: 'Số điện thoại', type: 'tel', required: true },
       { name: 'password', label: 'Mật khẩu tạm', type: 'password', required: true, createOnly: true, full: true, help: 'Người dùng sẽ đổi mật khẩu ở lần đăng nhập đầu tiên.' },
-      { name: 'role', label: 'Vai trò', type: 'select', numeric: true, required: true, options: AccountRole.options, createOnly: true },
+      { name: 'role', label: 'Vai trò', type: 'select', roleOptions: true, numeric: true, required: true, options: AccountRole.options, createOnly: true },
       { name: 'status', label: 'Trạng thái', type: 'select', numeric: true, required: true, options: AccountStatus.options, defaultValue: () => '1' },
     ],
     toRequest: (data) => data,
   },
 
-  // A plan belongs to one member (the API takes one memberId), so a plan "for the whole class" is one copy
-  // for each member booked into the class (CHANGELOG Part B, B49).
   trainingPlans: {
     key: 'trainingPlans', title: 'Kế hoạch tập luyện', singular: 'Kế hoạch',
     description: 'Kế hoạch bạn lập cho học viên trong lớp của mình. Chọn “Cả lớp” để lập cùng một kế hoạch cho mọi học viên đã đặt lớp.',
@@ -988,7 +973,7 @@ export const resources = {
     fields: [
       {
         name: 'classId', label: 'Lớp', type: 'select', required: true, optionsFrom: (l) => opt(l.classes, 'classId', 'className'),
-        // A member picked for another class does not carry over
+
         onChange: (value, { lookups, setFormValues }) =>
           setFormValues((prev) => ((lookups.members ?? []).some((m) => m.classId === value && m.memberId === prev.memberId)
             ? prev
@@ -1004,7 +989,7 @@ export const resources = {
         optionsFrom: (l, _u, v) => {
           const inClass = (l.members ?? []).filter((m) => !v?.classId || m.classId === v.classId);
           const options = opt(uniqueBy(inClass, 'memberId'), 'memberId', 'fullName');
-          // A plan kept for someone who has since left the class still shows its member
+
           if (v?.memberId && !options.some((o) => o.value === v.memberId)) {
             const m = (l.members ?? []).find((x) => x.memberId === v.memberId);
             options.push({ value: v.memberId, label: m?.fullName ?? 'Học viên của kế hoạch này' });
@@ -1081,7 +1066,7 @@ export const resources = {
         onChange: (_, { setFormValues }) => setFormValues((prev) => ({ ...prev, sessionId: '' })),
       },
       {
-        // Sessions of the plan's class that have taken place, newest first; picking one sets the date
+
         name: 'sessionId', label: 'Buổi học', type: 'select', full: true, placeholder: 'Không chọn buổi (tự nhập ngày)',
         optionsFrom: (l, _u, v) => {
           const plan = (l.plans ?? []).find((p) => p.id === v?.planId);
@@ -1100,7 +1085,7 @@ export const resources = {
       { name: 'evaluationDate', label: 'Ngày', type: 'date', required: true, defaultValue: () => todayCenterDateString() },
       { name: 'coachComment', label: 'Nhận xét', type: 'textarea', required: true },
     ],
-    // The member must be the plan's member (the API checks it)
+
     toRequest: (b, { lookups }) => ({
       planId: b.planId,
       memberId: lookups.plans?.find((p) => p.id === b.planId)?.memberId,
@@ -1112,8 +1097,6 @@ export const resources = {
     emptyHint: 'Hãy lập kế hoạch tập luyện trước, rồi chấm điểm học viên theo kế hoạch ở đây.',
   },
 
-  // Requests members send from My account → Support. Reception and managers answer them here; the API
-  // records who handled each one. There is no create here (only a member may open a request).
   supportRequests: {
     key: 'supportRequests', title: 'Yêu cầu hỗ trợ', singular: 'Yêu cầu',
     description: 'Câu hỏi và vấn đề học viên gửi từ tài khoản của họ. Cập nhật trạng thái và ghi lại cách bạn đã xử lý.',
@@ -1156,7 +1139,6 @@ export const resources = {
     emptyHint: 'Khi học viên gửi yêu cầu ở Tài khoản của tôi → Hỗ trợ, yêu cầu sẽ hiện ở đây.',
   },
 
-  // Read-only history the API keeps of every change staff save (lib/audit.js reads its entries)
   auditLog: {
     key: 'auditLog', title: 'Nhật ký hoạt động', singular: 'Mục nhật ký',
     description: 'Mọi thay đổi do nhân viên lưu, mới nhất ở trên: ai đã làm gì, vào lúc nào.',
@@ -1195,7 +1177,7 @@ export const resources = {
       { key: 'timestamp', label: 'Thời điểm', className: 'num', render: (r) => formatDateTime(r.timestamp) },
       { key: 'username', label: 'Người thực hiện', render: (r, l) => <AuditWho row={r} accounts={l.accounts} /> },
       { key: 'actionType', label: 'Thao tác', render: (r) => <StatusTag tone={r.entry.tone}>{r.entry.label}</StatusTag> },
-      { key: 'description', label: 'Chi tiết', render: (r, l) => <span className="clamp">{auditDetails(r, l) || '—'}</span> },
+      { key: 'description', label: 'Chi tiết', render: (r, l) => <span className="clamp"><AuditSummary row={r} lookups={l} /></span> },
     ],
     rowActions: [{
       label: 'Xem',

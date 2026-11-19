@@ -1,11 +1,9 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from './Icon.jsx';
+import { roleClassName } from '../lib/roles.js';
+import '../styles/role-label.css';
 
-/* ---------------------------------------------------------------------------
-   SlowHint — shows once an action has waited a few seconds. Sign-in, sign-up and password
-   changes take 10–30 s on the hosted API (CHANGELOG Part B, B41), long enough to look frozen.
---------------------------------------------------------------------------- */
 export function SlowHint({ active, after = 3000, children = 'Máy chủ đang xử lý, có thể mất vài chục giây. Bạn chờ một chút nhé.' }) {
   const [shown, setShown] = useState(false);
   useEffect(() => {
@@ -19,12 +17,6 @@ export function SlowHint({ active, after = 3000, children = 'Máy chủ đang x�
   return shown ? <p className="slow-hint muted small" role="status">{children}</p> : null;
 }
 
-/* ---------------------------------------------------------------------------
-   Button
-   variant: primary (black pill) | secondary (outlined pill) | inverse (white pill)
-            | offset (square, offset outline — hero CTA) | ghost | danger
-   Pass `to` for a router link, `href` for an external link, otherwise a <button>.
---------------------------------------------------------------------------- */
 export function Button({ variant = 'primary', size, to, href, icon, iconAfter, block, className = '', children, ...rest }) {
   const cls = ['btn', `btn--${variant}`, size && `btn--${size}`, block && 'btn--block', className].filter(Boolean).join(' ');
   const content = (
@@ -47,12 +39,10 @@ export function IconButton({ icon, label, className = '', ...rest }) {
   );
 }
 
-/* Status tag coloured by tone (see lib/enums.js) */
 export function StatusTag({ tone = 'neutral', children }) {
   return <span className={`tag tag--${tone}`}>{children}</span>;
 }
 
-/* "12/20" with a short bar: places taken in a class */
 export function FillBar({ value, max }) {
   const pct = max ? Math.min(100, Math.round((value / max) * 100)) : 0;
   return (
@@ -63,7 +53,6 @@ export function FillBar({ value, max }) {
   );
 }
 
-/* "Preview" marker for UI that has no API behind it yet */
 export function PreviewTag({ children = 'Bản xem trước' }) {
   return (
     <span className="preview-tag" title="Chỉ có giao diện — chức năng này chưa có API">
@@ -72,7 +61,6 @@ export function PreviewTag({ children = 'Bản xem trước' }) {
   );
 }
 
-/* Inline notices ---------------------------------------------------------- */
 export function Notice({ tone = 'info', title, children, action }) {
   return (
     <div className={`notice notice--${tone}`} role={tone === 'danger' ? 'alert' : 'status'}>
@@ -120,7 +108,6 @@ export function ErrorNotice({ error, onRetry }) {
   );
 }
 
-/* Loading & empty ---------------------------------------------------------- */
 export function Loading({ label = 'Đang tải' }) {
   return (
     <div className="loading-state" role="status">
@@ -141,10 +128,7 @@ export function EmptyState({ title, children, action }) {
   );
 }
 
-/* Form field ----------------------------------------------------------------
-   type: text | email | number | date | time | password | tel | url | textarea | select */
-// options = [{ value, label, disabled? }]; for a select, placeholder is the text of its empty choice
-export function Field({ label, name, type = 'text', value, onChange, options = [], error, help, required, className = '', placeholder, ...rest }) {
+export function Field({ label, name, type = 'text', value, onChange, options = [], roleOptions = false, error, help, required, className = '', placeholder, ...rest }) {
   const id = `f-${name}`;
   const describedBy = [help && `${id}-help`, error && `${id}-err`].filter(Boolean).join(' ') || undefined;
   const common = {
@@ -156,10 +140,10 @@ export function Field({ label, name, type = 'text', value, onChange, options = [
   else if (type === 'select') {
     control = (
       <div className="select-wrap">
-        <select className="input" {...common}>
+        <select className={roleOptions ? 'input role-select ' + roleClassName(value) : 'input'} {...common}>
           <option value="">{placeholder ?? 'Chọn…'}</option>
           {options.map((o) => (
-            <option key={o.value} value={o.value} disabled={o.disabled}>{o.label}</option>
+            <option key={o.value} value={o.value} disabled={o.disabled} className={roleOptions ? roleClassName(o.value) : undefined}>{o.label}</option>
           ))}
         </select>
         <Icon name="chevronDown" size={18} className="select-wrap__icon" />
@@ -169,14 +153,13 @@ export function Field({ label, name, type = 'text', value, onChange, options = [
   else if (type === 'file') {
     control = (
       <div className="flex items-center gap-3 p-2 border border-gray-200 rounded-xl bg-white">
-        {/* Nút bấm gọi hộp thoại chọn file độc lập */}
+
         <button
           type="button"
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
 
-            // Tạo input file trực tiếp bằng JS ngoài cây DOM của Modal
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = 'image/*';
@@ -195,7 +178,6 @@ export function Field({ label, name, type = 'text', value, onChange, options = [
           📁 Chọn ảnh...
         </button>
 
-        {/* Hiển thị tên file đã chọn */}
         <span className="text-xs text-gray-500 truncate max-w-[220px]">
           {value instanceof File ? value.name : (value ? String(value) : "Chưa có file nào được chọn")}
         </span>

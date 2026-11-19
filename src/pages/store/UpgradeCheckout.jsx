@@ -13,9 +13,6 @@ import PayMethods from '../../components/PayMethods.jsx';
 import { AgreeToPolicies } from '../../components/Policies.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice } from '../../components/ui.jsx';
 
-// /memberships/upgrade?to=<packageId>: the member moves the card in use today to a longer package (CHANGELOG Part B,
-// B54). POST /api/payments/upgrade-checkout takes what is left of the old card off the new price; once paid the new
-// card runs from today and the old one ends today. An API without upgrades shows the same figures but cannot take them.
 export default function UpgradeCheckout() {
   const { user } = useAuth();
   const member = isMember(user);
@@ -85,7 +82,7 @@ export default function UpgradeCheckout() {
   }
 
   const own = (packages.data ?? []).find((p) => p.id === card.packageId);
-  // What was paid for the card: its paid invoice, else the package's price
+
   const paid = (invoices.data ?? []).find((i) => i.memberMembershipId === card.id && i.status === 2)?.amount ?? own?.price ?? 0;
   const target = targets.find((p) => p.id === chosen) ?? targets[0];
   const quote = upgradeQuote(card, paid, target.price, today);
@@ -112,7 +109,7 @@ export default function UpgradeCheckout() {
         paymentMethod: method,
         returnUrl: `${window.location.origin}/payment/result`,
       });
-      // Nothing left to pay: the API moved the card at once
+
       if (afterCheckout(res, method, navigate) === null) navigate('/account?tab=membership');
     } catch (err) {
       if (isMissingRoute(err)) setUnavailable(true);

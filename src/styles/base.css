@@ -1,6 +1,4 @@
-/* ==========================================================================
-   Design tokens — storefront look (white canvas, black ink, one signal colour)
-   ========================================================================== */
+
 :root {
   --ink: #111111;
   --paper: #ffffff;
@@ -8,8 +6,8 @@
   --mist-2: #e9e9e9;
   --stone: #707072;
   --hairline: #e5e5e5;
-  --signal: #e0481b;       /* court orange: badges, "spots left", focus accents */
-  --signal-text: #b3370f;  /* orange for small text on white (AA contrast) */
+  --signal: #e0481b;
+  --signal-text: #b3370f;
   --success: #007d48;
   --danger: #d30005;
   --warning: #9a6700;
@@ -92,8 +90,6 @@ p {
   white-space: nowrap;
 }
 
-/* ---- Type roles ---------------------------------------------------------- */
-/* Vietnamese capitals carry stacked marks above (Ế, Ở) and below (Ạ, Ợ): the lines need room for them */
 .display {
   font-family: var(--font-display);
   font-weight: 700;
@@ -101,12 +97,11 @@ p {
   line-height: 1.35;
   letter-spacing: -0.035em;
 }
-/* The new line-height already leaves room for Vietnamese marks above and below each line. */
+
 * + .display:not(.num) {
   padding-top: 0;
 }
 
-/* Compact labels share the same Vietnamese typeface throughout the website. */
 .label {
   font-stretch: normal;
   font-variation-settings: normal;

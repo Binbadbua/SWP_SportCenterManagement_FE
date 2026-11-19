@@ -7,9 +7,6 @@ import { cardsOn } from '../../lib/membership.js';
 import { useToast } from '../../components/Toast.jsx';
 import { Button, EmptyState, ErrorNotice, Field, Loading, Notice } from '../../components/ui.jsx';
 
-// The door (CHANGELOG Part B, B47): a member comes in to train on their own with a card valid today. Reception pick the
-// member, see their card and log the visit; the API refuses a member without a valid card. A manager reads the log.
-// Not the coach's attendance: coming into the center and being present in a class session are two different things.
 export default function CheckIns() {
   const { user } = useAuth();
   const toast = useToast();

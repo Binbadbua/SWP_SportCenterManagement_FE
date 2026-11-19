@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext.jsx';
+import { loginDestination } from '../../lib/access.js';
 import { useSlideshow } from '../../hooks/useSlideshow.js';
 import { LOGIN_SLIDES, LOGIN_TIMING } from '../../lib/images.js';
 import Logo from '../../components/Logo.jsx';
@@ -15,50 +16,43 @@ const PERKS = [
 ];
 
 export default function Login() {
-  const { signIn } = useAuth();
+  const { signIn, acknowledgeExpiry } = useAuth();
+  const submitting = useRef(false);
+  useEffect(() => { acknowledgeExpiry(); }, [acknowledgeExpiry]);
   const navigate = useNavigate();
   const [params] = useSearchParams();
 
-  // Chỉ cần quản lý Username (Email) và Password
   const [values, setValues] = useState({ username: '', password: '' });
   const [showPassword, setShowPassword] = useState(false);
 
-  // Trạng thái chờ xử lý (loading) và hiển thị lỗi
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
   const next = params.get('next') || params.get('from');
   const step = useSlideshow(LOGIN_SLIDES.length, LOGIN_TIMING.interval);
   const active = step % LOGIN_SLIDES.length;
-  // Photos load one step ahead and cross-fade without moving the form.
+
   const leaving = step > 0 ? (step - 1) % LOGIN_SLIDES.length : -1;
   const requested = Math.min(LOGIN_SLIDES.length, step + 2);
 
   const submit = async (e) => {
     e.preventDefault();
+    if (submitting.current) return;
     if (!values.username || !values.password) {
       setErrorMsg('Vui lòng nhập đầy đủ tài khoản và mật khẩu.');
       return;
     }
 
+    submitting.current = true;
     setIsSubmitting(true);
     setErrorMsg(null);
 
     const result = await signIn(values.username, values.password);
 
+    submitting.current = false;
     setIsSubmitting(false);
 
     if (result.success) {
-      const staffRoles = [2, 3, 4, 'Coach', 'Receptionist', 'CenterManager'];
-      const isStaffUser = staffRoles.includes(result.role);
-      if (next && !(next.startsWith('/staff') && !isStaffUser)) {
-        navigate(next);
-      }
-      else if (isStaffUser) {
-        navigate('/staff');
-      }
-      else {
-        navigate('/');
-      }
+      navigate(loginDestination(next, result.role), { replace: true });
     } else {
       setErrorMsg(result.error);
     }
@@ -114,6 +108,7 @@ export default function Login() {
             </p>
           </div>
 
+          {params.get('expired') && <Notice tone="warning" title="Phiên đăng nhập đã hết hạn">Đăng nhập lại để tiếp tục. Trang tiếp theo sẽ được kiểm tra theo quyền của tài khoản mới.</Notice>}
           {params.get('registered') && (
             <Notice tone="success" title="Tài khoản đã sẵn sàng">
               Đăng nhập bằng email và mật khẩu bạn vừa tạo.

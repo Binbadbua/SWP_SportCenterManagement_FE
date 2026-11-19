@@ -21,7 +21,6 @@ import {
 
 const PAGE_SIZE = 10;
 
-// Page numbers to show: first, last and the two around the current page; null = a gap ("…")
 const pageNumbers = (page, count) => {
   const keep = [...new Set([1, page - 1, page, page + 1, count])]
     .filter((n) => n >= 1 && n <= count)
@@ -61,33 +60,6 @@ function Pager({ page, pageCount, total, onPage }) {
   );
 }
 
-/**
- * Generic list + create/edit/delete page driven by a config object (see resources.jsx).
- *
- * config = {
- *   key, title, singular, description,          // description: string | (user) => string
- *   source: resource | (user) => resource      // { list, create, update, remove, preview? }
- *   sample?: array                              // shown when the API is offline
- *   lookups?: (user) => ({ name: { load, sample } })   // data for <select> options
- *   columns: [{ key, label, render?(row, lookups), className?, hidden?(user) }]
- *   filters?: [{ key, label, all, options(rows, lookups), match(row, value) }]   // selects beside the search
- *   fields?: [{ name, label, type, required, options?, optionsFrom?(lookups, user, values), createOnly?, editOnly?,
- *               shown?(values, mode), numeric?, min?, max?, step?, help?, full?, defaultValue?(user) }]
- *               type "image" = a photo picked from the computer, uploaded at once; the value is its link
- *               shown false = the field is not drawn, checked or sent (e.g. "member" when a plan is for the whole class)
- *   searchText?(row), sort?(a, b), validate?(values), toRequest?(values, ctx), canWrite?(user), canDelete?(user),
- *   canEditRow?(row, user)                      // false hides that row's edit button
- *   deleteLocked?(row, user)                    // a reason string = that row's delete button is shown disabled
- *   deleteMessage?(row)                         // optional explanation in delete confirmation
- *   doneMessage?(mode, result)                  // toast after a save instead of "Đã thêm …" / "Đã lưu …"
- *   rowActions?: [{ label, icon?, to?(row), newTab?, modal?: { title(row), render(row, lookups, { close, reload }) },
- *                   run?(row), confirm?(row), done?(row), hidden?(row, user, lookups) }],
- *   nameOf(row)                                 // used in confirm/toast messages
- * }
- * A save that fails after writing part of its rows throws an error with `partial: true`: the list reloads.
- * Edit and delete buttons only appear when the source has update / remove.
- * The API writes the audit log itself, so pages here never post to it.
- */
 export default function CrudPage({ config }) {
   const { user } = useAuth();
   const { search } = useLocation();
@@ -99,8 +71,7 @@ export default function CrudPage({ config }) {
   const list = useApi(() => source.list(), [config.key, user?.accountId], {
     sample: config.sample,
   });
-  // A lookup the user may not read (HTTP 403) leaves its <select> empty instead of breaking the
-  // whole form; "API offline" still falls back to the sample data.
+
   const lookups = useApi(
     async () =>
       Object.fromEntries(
@@ -128,7 +99,7 @@ export default function CrudPage({ config }) {
   const [query, setQuery] = useState("");
   const [filterValues, setFilterValues] = useState(() => config.initialFilters?.(search) ?? {});
   const [page, setPage] = useState(1);
-  const [form, setForm] = useState(null); // { mode, row, values }
+  const [form, setForm] = useState(null);
   const [errors, setErrors] = useState({});
   const [formError, setFormError] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -136,9 +107,9 @@ export default function CrudPage({ config }) {
   const saveFlight = useRef(false);
   const deleteFlight = useRef(false);
   const actionFlight = useRef(false);
-  const [uploading, setUploading] = useState(false); // an image field is still sending its file
+  const [uploading, setUploading] = useState(false);
   const [confirm, setConfirm] = useState(null);
-  const [detail, setDetail] = useState(null); // { action, row }
+  const [detail, setDetail] = useState(null);
 
   useEffect(() => {
     if (config.initialFilters) {
@@ -177,7 +148,6 @@ export default function CrudPage({ config }) {
     );
   }, [list.data, query, filterValues, config]);
 
-  // The whole list is loaded once; it is shown PAGE_SIZE rows at a time
   const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
   const pageRows = rows.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
@@ -186,7 +156,7 @@ export default function CrudPage({ config }) {
     (config.fields ?? []).filter((f) =>
       mode === "create" ? !f.editOnly : !f.createOnly,
     );
-  // The fields the form shows for the values typed so far
+
   const shownFields = (mode, values) =>
     fieldsFor(mode).filter((f) => !f.shown || f.shown(values, mode));
 
@@ -257,14 +227,19 @@ export default function CrudPage({ config }) {
           e[f.name] = `${f.label} tối đa là ${max}.`;
       }
     }
-    return { ...e, ...(config.validate ? config.validate(values, mode, { row: form?.row, lookups: lk, user }) : {}) };
+    const context = {
+      row: form?.row, lookups: lk, user, rows: list.data,
+      rowsReady: Array.isArray(list.data) && !list.loading && !list.error && !list.usingSample,
+      lookupsReady: !lookups.loading && !lookups.error && !lookups.usingSample,
+    };
+    return { ...e, ...(config.validate ? config.validate(values, mode, context) : {}) };
   };
 
   const toRequest = (mode, values) => {
     const body = {};
     for (const f of shownFields(mode, values)) {
       const v = values[f.name];
-      if (v === "" || v === undefined) continue; // let the API use its default
+      if (v === "" || v === undefined) continue;
       if (f.type === "number" || f.numeric) body[f.name] = Number(v);
       else if (f.type === "time") body[f.name] = fromTimeInput(v);
       else body[f.name] = v;
@@ -308,10 +283,10 @@ export default function CrudPage({ config }) {
             allErrors.push(...responseData.errors[fieldKey]);
           }
           errorMsg = allErrors.join(' — ');
-        } 
+        }
         else if (responseData.message) {
           errorMsg = responseData.message;
-        } 
+        }
         else if (typeof responseData === 'string') {
           errorMsg = responseData;
         }
@@ -350,7 +325,6 @@ export default function CrudPage({ config }) {
     }
   };
 
-  // Row action that calls the API directly (e.g. renew a membership)
   const runAction = async (action, row) => {
     if (actionFlight.current) return;
     const question = action.confirm?.(row);
@@ -552,7 +526,6 @@ export default function CrudPage({ config }) {
         )
       )}
 
-      {/* Create / edit */}
       <Modal
         open={!!form}
         wide={(config.fields?.length ?? 0) > 4}
@@ -617,6 +590,7 @@ export default function CrudPage({ config }) {
                   help={f.help}
                   placeholder={f.placeholder}
                   options={f.optionsFrom ? f.optionsFrom(lk, user, form.values) : f.options}
+                  roleOptions={f.roleOptions}
                   value={form.values[f.name]}
                   onChange={setValue}
                   error={errors[f.name]}
@@ -627,7 +601,6 @@ export default function CrudPage({ config }) {
         )}
       </Modal>
 
-      {/* Delete confirmation */}
       <Modal
         open={!!confirm}
         title={`Xóa ${config.singular.toLowerCase()}?`}
@@ -652,7 +625,6 @@ export default function CrudPage({ config }) {
         )}
       </Modal>
 
-      {/* Row detail (e.g. class roster) */}
       <Modal
         open={!!detail}
         wide

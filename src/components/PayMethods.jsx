@@ -1,4 +1,4 @@
-// SePay creates a VietQR bank transfer. The website never asks for a bank card number.
+
 export default function PayMethods({ value, onChange, methods = [2], provider = 'SePay', online = true }) {
   return (
     <div className="pay-methods" role="radiogroup" aria-label="Phương thức thanh toán">

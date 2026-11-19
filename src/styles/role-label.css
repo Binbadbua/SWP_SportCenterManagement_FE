@@ -1,0 +1,11 @@
+.role-label--manager { color: #916200; }
+.role-label--coach { color: #b63a12; }
+.role-label--receptionist { color: #1659bd; }
+.staff-top .role-label--manager { color: #f6cc55; }
+.staff-top .role-label--coach { color: #ffad78; }
+.staff-top .role-label--receptionist { color: #81bdff; }
+
+.role-select option { color: var(--ink); }
+.role-select.role-label--manager, .role-select option.role-label--manager { color: #916200; }
+.role-select.role-label--coach, .role-select option.role-label--coach { color: #b63a12; }
+.role-select.role-label--receptionist, .role-select option.role-label--receptionist { color: #1659bd; }

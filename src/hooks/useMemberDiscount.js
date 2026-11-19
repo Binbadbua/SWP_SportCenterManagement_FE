@@ -5,7 +5,6 @@ import { todayCenterDateString } from '../lib/format.js';
 import { discountFor } from '../lib/pricing.js';
 import { useApi } from './useApi.js';
 
-// One pair of reads per page, never one request per class card; no sample personal prices.
 export function useMemberDiscount({ enabled = true } = {}) {
   const { user } = useAuth();
   const member = isMember(user);

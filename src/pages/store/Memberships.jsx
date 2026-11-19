@@ -12,7 +12,6 @@ import Icon from '../../components/Icon.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
 import '../../styles/membership-redesign.css';
 
-// A membership grants access for its duration; coached classes retain their own booking and fee rules.
 const howItWorks = ({ online, fees, known }) => [
   [
     'Chọn gói và thanh toán',

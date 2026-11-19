@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 
-// Draws a QR code in the browser from raw QR payload text (image URLs must be displayed directly with an img element); the data is not sent to
-// any other service. The library loads only when a QR code is drawn (the payment page).
 export default function QrCode({ value, size = 232, label }) {
   const [src, setSrc] = useState(null);
   useEffect(() => {

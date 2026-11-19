@@ -2,7 +2,6 @@ import { api } from '../api/endpoints.js';
 import { useApi } from './useApi.js';
 import { waitingOrder } from '../lib/payments.js';
 
-// Invoice/card cancellation can lag behind an expired payment. The payment state decides whether checkout is blocked.
 export function usePendingOrder(cards, invoices) {
   const candidates = (cards ?? []).map((card) => waitingOrder([card], invoices)).filter(Boolean);
   const key = candidates.map((x) => x.invoice.id).join(',');

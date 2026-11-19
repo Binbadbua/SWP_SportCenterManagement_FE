@@ -12,9 +12,6 @@ import PayMethods from '../../components/PayMethods.jsx';
 import { AgreeToPolicies } from '../../components/Policies.jsx';
 import { Button, EmptyState, ErrorNotice, Field, Loading, Notice, SampleDataNotice } from '../../components/ui.jsx';
 
-// A member confirms a package: POST /api/payments/checkout creates the membership (inactive) + a pending invoice.
-// With SePay (CHANGELOG Part B, B54) the member pays online straight away (VietQR bank transfer) and the card is active
-// as soon as SePay tells the API; before that the order waits 30 minutes for reception to confirm a bank transfer.
 export default function Checkout() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -29,8 +26,8 @@ export default function Checkout() {
   const invoices = useApi(() => api.invoices.mine(), [user?.accountId], { skip: !member });
 
   const pendingOrder = usePendingOrder(mine.data, invoices.data);
-  const [startDate, setStartDate] = useState(null); // null = the suggested day
-  const [picked, setPicked] = useState(null); // null = the first method the API takes
+  const [startDate, setStartDate] = useState(null);
+  const [picked, setPicked] = useState(null);
   const [agree, setAgree] = useState(false);
   const [errors, setErrors] = useState({});
   const [paying, setPaying] = useState(false);
@@ -40,7 +37,7 @@ export default function Checkout() {
   const readinessBlocked = requiredData.some((state) => state.loading || state.error || state.usingSample);
 
   const today = todayCenterDateString();
-  // With a membership still running, the new one starts the day after it ends
+
   const current = (mine.data ?? [])
     .filter((m) => m.status === 1 && String(m.endDate).slice(0, 10) >= today)
     .sort((a, b) => String(b.endDate).localeCompare(String(a.endDate)))[0];

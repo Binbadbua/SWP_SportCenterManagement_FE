@@ -2,18 +2,13 @@ import { Link } from 'react-router-dom';
 import { Gender } from '../lib/enums.js';
 import { formatDate, realPhone } from '../lib/format.js';
 
-// The classes a coach runs, cancelled ones left out. Classes come from GET /api/classes (coachId on each).
 export const classesOf = (classes, coachId) =>
   (classes ?? []).filter((c) => c.coachId === coachId && c.status !== 4);
 
-// Sports a coach teaches, from their classes: [[categoryId, categoryName], …] in name order
 export const sportsOf = (classes) =>
   [...new Map((classes ?? []).map((c) => [c.categoryId, c.categoryName])).entries()]
     .sort((a, b) => a[1].localeCompare(b[1]));
 
-// Everything we know about a coach. GET /api/coaches/{id} gives visitors and members name, photo,
-// specialization, experience, birth date and gender; phone and email go to staff only. A value the
-// manager has not filled in shows a fallback.
 export function CoachFacts({ coach, classes = [] }) {
   const sports = sportsOf(classes);
   const phone = realPhone(coach.phone);

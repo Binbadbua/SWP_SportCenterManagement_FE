@@ -5,7 +5,6 @@ import { useToast } from './Toast.jsx';
 import { Button, Field, Notice } from './ui.jsx';
 import '../styles/refund-guide.css';
 
-// Recording an actual payout; this endpoint does not itself transfer money.
 export default function ConfirmRefund({ invoice, onDone, onClose }) {
   const toast = useToast();
   const [reference, setReference] = useState('');

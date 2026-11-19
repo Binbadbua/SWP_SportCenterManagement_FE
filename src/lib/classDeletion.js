@@ -2,14 +2,12 @@ import { classRunning } from './classes.js';
 
 const hasCount = value => typeof value === 'number' && Number.isFinite(value) && value >= 0;
 
-// Only an explicit zero can unlock the running-class exception; absence is not an empty roster.
 export function classDeletionLock(row) {
   if (!classRunning(row)) return null;
   if (!hasCount(row.currentEnrolled)) return 'Chưa xác định được số học viên và chỗ đang giữ; tải lại trước khi xóa lớp đang diễn ra.';
   return row.currentEnrolled > 0 ? 'Lớp đang diễn ra có học viên hoặc chỗ chờ thanh toán nên không được xóa.' : null;
 }
 
-// The deployed list endpoints currently return arrays. A paged response must prove that every row is present.
 export function completeDeletionRows(body, label) {
   if (Array.isArray(body)) return body;
   const rows = body?.data ?? body?.items;

@@ -1,4 +1,4 @@
-/* A bounded, slowly drifting row. Native scrolling remains available for touch and keyboard users. */
+
 .auto-row { width: 100%; min-width: 0; max-width: 100%; }
 .auto-row__controls { display: flex; justify-content: flex-end; gap: 7px; margin: -8px 0 11px; }
 .auto-row__controls button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-width: 44px; min-height: 44px; padding: 8px; border: 1px solid #dfe6da; border-radius: 50%; color: #52634a; background: white; cursor: pointer; }

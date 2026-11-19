@@ -1,4 +1,4 @@
-/* Storefront typography: shared across public routes, isolated from the staff workspace. */
+
 .store {
   --font-body: var(--font-home);
   --font-display: var(--font-home);
@@ -18,7 +18,6 @@
 .storefront-eyebrow { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; line-height: 1.7; letter-spacing: .08em; text-transform: uppercase; color: var(--store-accent); }
 .storefront-eyebrow::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
 
-/* Timetable: the existing seven-day navigation and routes keep their behavior. */
 .schedule-page { padding-top: 38px; padding-bottom: 12px; }
 .schedule-page .page-head { padding: 32px 36px; border: 1px solid #f0e4d7; border-radius: 24px; background: linear-gradient(115deg, #fff6ed, #f8faf5); }
 .schedule-page .page-title { margin-top: 9px; }
@@ -41,7 +40,6 @@
 .schedule-page .timetable__rest { padding: 12px 0; font-size: 13px; }
 .schedule-page :is(button, a):focus-visible { outline: 3px solid var(--store-accent); outline-offset: 3px; }
 
-/* Detail pages share the new type and card treatment; booking/payment logic is untouched. */
 .store .pdp { padding-top: 32px; }
 .store .pdp__gallery { gap: 14px; }
 .store .pdp__main-img { border-radius: 22px; }
@@ -94,7 +92,6 @@
   .store .coach-page .coach-facts { grid-template-columns: 1fr; }
 }
 
-/* A compact end to catalogue pages; Home keeps its own spacing. */
 .store main:has(> :is(.catalog-page, .membership-page, .schedule-page, .pdp, .coach-page)) + .site-footer { margin-top: 44px; }
 .store .catalog-page .catalog-search input { font-size: 14px; }
 @media (max-width: 680px) {
@@ -110,7 +107,6 @@
   .store .catalog-coaches__toolbar .sort-select select { width: 100%; }
 }
 
-/* Orange utility bar above the main navigation. */
 .store > .utility-bar { color: white; background: #c63b13; }
 .store > .utility-bar :is(a, button), .store > .utility-bar :is(a, button):hover { color: white; }
 .store > .utility-bar :is(a, button):hover { text-decoration: underline; text-underline-offset: 3px; }

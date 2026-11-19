@@ -1,4 +1,4 @@
-// Checkout stays on SportCenter. SePay returns a bank VietQR image and reports receipt through the backend.
+
 import { todayCenterDateString } from './format.js';
 
 export function afterCheckout(res, _method, navigate) {
@@ -6,8 +6,6 @@ export function afterCheckout(res, _method, navigate) {
   return null;
 }
 
-// A package order the member made on the website that still waits for its money (an inactive card whose invoice is
-// pending and has no receptionist): one order at a time, so it is paid or left to expire before the next
 export function waitingOrder(cards, invoices, today = todayCenterDateString()) {
   for (const card of cards ?? []) {
     if (card.status !== 2 || String(card.endDate).slice(0, 10) < today) continue;
@@ -17,7 +15,6 @@ export function waitingOrder(cards, invoices, today = todayCenterDateString()) {
   return null;
 }
 
-// mm:ss left until `until`, or null once it has passed
 export function timeLeft(until, now = Date.now()) {
   const ms = Date.parse(until) - now;
   if (!(ms > 0)) return null;

@@ -1,4 +1,4 @@
-// Only completed, real replies become context for a later question.
+
 export const AI_MESSAGE_LIMIT = 2000;
 export const AI_VISIBLE_TURNS = 20;
 export const AI_DEFAULT_DISCLAIMER = 'AI có thể nhầm. Hãy kiểm tra thông tin quan trọng với trung tâm; nội dung tập luyện cần được huấn luyện viên xem xét.';
@@ -20,7 +20,7 @@ export function aiHistory(turns) {
 
 export function aiReply(body) {
   const data = body?.data && typeof body.data === 'object' ? body.data : body;
-  // An HTTP 200 containing an error message is not an assistant answer.
+
   const text = typeof data?.reply === 'string' && data.reply.trim()
     ? data.reply.trim()
     : typeof data?.suggestions === 'string' ? data.suggestions.trim() : '';

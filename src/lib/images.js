@@ -1,10 +1,7 @@
-// The API has no image fields for classes or sports, so the UI picks a photo
-// from /public/images by matching the sport/class name (English or Vietnamese).
-// Each base name has <name>.jpg (the sport) and <name>-Room-1.jpg / -Room-2.jpg (its rooms).
+
+
 // Photos: Unsplash (https://unsplash.com/license) and Wikimedia Commons — see public/images/CREDITS.md.
 
-// The first rule that matches wins, so specific sports come before the broad ones below
-// (the Gym rule's "t[ạa]" would otherwise catch "Taekwondo", the Boxing rule "võ"/"muay").
 const RULES = [
   [/yoga thư giãn cuối ngày/i, "yoga-evening-demo"],
   [/b[óo]ng chuy[ềe]n|volley/i, "volleyball"],
@@ -48,17 +45,6 @@ export function sportImage(...names) {
   return `/images/${file}.jpg`;
 }
 
-// Home page hero background slideshow, shown in this order and then looped. The headline changes
-// with the photo; the rest of the hero text stays the same.
-// To add a photo: put the file in public/images/ and add one line here.
-//   src       path from public/ (always starts with /images/)
-//   alt       short description for screen readers
-//   position  which part of the photo stays in view when it is cropped (CSS object-position),
-//             e.g. "center", "60% 40%" (60% from the left, 40% from the top)
-//   title     the headline shown with this photo, one string per line (keep lines to ~9 letters:
-//             the headline is huge and must fit a phone screen)
-// Best results: landscape JPG/WebP, at least 1920×1080, under ~400 KB, subject away from the
-// bottom-left corner where the headline sits.
 export const HERO_SLIDES = [
   { src: "/images/tennis.jpg", alt: "Nhìn từ trên cao một người chơi tennis đang giao bóng trên sân đất nện", position: "60% 40%", title: ["Đến lượt", "bạn."] },
   { src: "/images/yoga.jpg", alt: "Lớp yoga lúc bình minh", position: "center 40%", title: ["Hít thở", "thật sâu."] },
@@ -67,12 +53,8 @@ export const HERO_SLIDES = [
   { src: "/images/basketball.jpg", alt: "Quả bóng rổ rơi qua vành rổ", position: "center 30%", title: ["Ghi điểm", "mỗi ngày."] },
 ];
 
-// Milliseconds. `interval` = how long each photo stays (fade included), `fade` = length of the
-// fade-out and of the fade-in that follows it. Keep interval at least 3 × fade.
 export const HERO_TIMING = { interval: 7000, fade: 1200 };
 
-// Sign-in page photo panel: each photo pans slowly from left to right, then the next one fades
-// in. Same fields as HERO_SLIDES; keep these different from the hero photos and use at least 3.
 export const LOGIN_SLIDES = [
   { src: "/images/deadlift.jpg", position: "55% 40%" },
   { src: "/images/climbing.jpg", position: "65% 40%" },
@@ -80,7 +62,6 @@ export const LOGIN_SLIDES = [
   { src: "/images/muay-thai.jpg", position: "50% 40%" },
 ];
 
-// Milliseconds: how long each photo stays, and the cross-fade to the next one.
 export const LOGIN_TIMING = { interval: 7000, fade: 1500 };
 
 export const IMAGES = {
@@ -112,9 +93,6 @@ export function classThumbnails(...names) {
   return [`/images/${baseName}-Room-1.jpg`, `/images/${baseName}-Room-2.jpg`];
 }
 
-// People's photos (coach avatars) are uploaded through the API and live on Cloudinary at full size, up to
-// 5 MB each. Ask Cloudinary for a copy cropped to the box the page draws instead: c_fill + g_auto keeps the
-// person in frame, q_auto/f_auto pick the quality and format. Other links are returned unchanged.
 export function photoUrl(url, width, height = width) {
   const m = /^(https:\/\/res\.cloudinary\.com\/[^/]+\/image\/upload\/)(.+)$/i.exec(url ?? "");
   return m ? `${m[1]}c_fill,g_auto,w_${width},h_${height},q_auto,f_auto/${m[2]}` : url;

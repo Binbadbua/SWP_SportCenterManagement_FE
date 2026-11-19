@@ -1,4 +1,4 @@
-// Read complete paged collections for reports/training. Never silently total only the first page.
+
 const countOf = (value, label) => {
   const parsed = typeof value === 'number' ? value : typeof value === 'string' && /^\d+$/.test(value.trim()) ? Number(value) : NaN;
   if (!Number.isSafeInteger(parsed) || parsed < 0) throw new Error('Thông tin phân trang ' + label + ' không hợp lệ. Chưa thể xác nhận dữ liệu đầy đủ.');
@@ -12,7 +12,7 @@ export async function readAllPages(path, get, { pageSize = 100, maxPages = 100 }
   for (let page = 1; page <= maxPages; page++) {
     uri.searchParams.set('pageIndex', String(page));
     const body = await get(uri.pathname + uri.search);
-    // The current invoice collection returns one complete plain array by API contract.
+
     if (Array.isArray(body)) {
       if (page !== 1) throw new Error('Máy chủ đổi định dạng phân trang. Chưa thể xác nhận dữ liệu đầy đủ.');
       return body;
@@ -38,7 +38,7 @@ export async function readAllPages(path, get, { pageSize = 100, maxPages = 100 }
     } else if (expectedTotal !== undefined) {
       throw new Error('Máy chủ thay đổi thông tin tổng bản ghi khi tải. Vui lòng tải lại.');
     } else if (!batch.length) {
-      // A short page is insufficient proof: the server may cap pageSize below what was requested.
+
       return rows;
     }
   }

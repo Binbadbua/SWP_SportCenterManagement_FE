@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 
-// Shared SportCenter mark, also used without a link inside the chat launcher.
 export function LogoMark({ className = 'logo__mark' }) {
   return (
     <svg className={className} viewBox="0 0 30 22" aria-hidden="true">
@@ -9,7 +8,6 @@ export function LogoMark({ className = 'logo__mark' }) {
   );
 }
 
-// Wordmark: a slanted "lane" block + condensed name.
 export default function Logo({ to = '/', inverse = false, compact = false }) {
   return (
     <Link to={to} className={`logo ${inverse ? 'logo--inverse' : ''}`} aria-label="Trang chủ SportCenter">

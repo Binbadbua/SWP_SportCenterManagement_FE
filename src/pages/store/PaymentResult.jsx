@@ -9,7 +9,6 @@ import { timeLeft } from '../../lib/payments.js';
 import { useToast } from '../../components/Toast.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice, StatusTag } from '../../components/ui.jsx';
 
-// SePay returns a VietQR image URL. Only the API decides whether money was received.
 export default function PaymentResult() {
   const [params] = useSearchParams();
   const id = params.get('paymentId');
@@ -40,7 +39,7 @@ function PaymentView({ paymentId }) {
   const check = useCallback(async (manual = false) => {
     if (manual) setChecking(true);
     try {
-      // Polling and a manual click share one read, so slow responses cannot build up.
+
       if (!refreshInFlight.current) {
         refreshInFlight.current = api.payments.get(paymentId).finally(() => { refreshInFlight.current = null; });
       }
@@ -68,7 +67,7 @@ function PaymentView({ paymentId }) {
     const stopAt = refundPending ? Date.now() + 600000 : expiresAt ? Date.parse(expiresAt) + 120000 : Date.now() + 2400000;
     const poll = () => {
       if (Date.now() > stopAt) { clearInterval(timer); return; }
-      // Mobile browsers throttle background timers while the bank app is open.
+
       if (document.visibilityState === 'visible') check();
     };
     const timer = setInterval(poll, sepay && !refundPending ? 2000 : 15000);

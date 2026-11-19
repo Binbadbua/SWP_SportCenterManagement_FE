@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { useAuth } from './context/AuthContext.jsx';
 import { Button, Loading } from './components/ui.jsx';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { ToastProvider } from './components/Toast.jsx';
 import StoreLayout from './layouts/StoreLayout.jsx';
@@ -32,7 +32,6 @@ const StaffNotifications = lazy(() => import('./pages/staff/Notifications.jsx'))
 const ResourceRoute = lazy(() => import('./pages/staff/ResourceRoute.jsx'));
 const AiChatWidget = lazy(() => import('./components/AiChatWidget.jsx'));
 
-// Staff list pages: URL -> config in resources.jsx
 const CRUD_ROUTES = {
   classes: 'classes',
   schedule: 'schedule',
@@ -56,8 +55,12 @@ const CRUD_ROUTES = {
 
 export default function App() {
   const location = useLocation();
-  const { user } = useAuth();
+  const { user, sessionExpired } = useAuth();
   const identity = [user?.accountId ?? 'guest', user?.role ?? user?.Role ?? '', user?.access_token ?? ''].join(':');
+  if (sessionExpired && location.pathname !== '/login') {
+    const next = encodeURIComponent(location.pathname + location.search);
+    return <Navigate to={`/login?expired=1&next=${next}`} replace />;
+  }
   return (
     <ToastProvider>
       <ErrorBoundary key={identity} resetKey={location.pathname + location.search}>
@@ -90,13 +93,12 @@ export default function App() {
           <Route path="check-ins" element={<CheckIns />} />
           <Route path="notifications" element={<StaffNotifications />} />
           {Object.entries(CRUD_ROUTES).map(([path, key]) => (
-            // key= forces a fresh page (and fresh hooks) when moving between list pages
+
             <Route key={path} path={path} element={<ResourceRoute key={key} resourceKey={key} />} />
           ))}
           <Route path="*" element={<NotFound />} />
         </Route>
 
-        {/* A bare page, so that only the invoice is printed */}
         <Route path="print/invoices/:id" element={<Suspense fallback={<Loading label="Đang mở hóa đơn" />}><InvoicePrint /></Suspense>} />
       </Routes>
       </ErrorBoundary>

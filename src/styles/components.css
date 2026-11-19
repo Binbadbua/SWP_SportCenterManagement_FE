@@ -1,8 +1,5 @@
-/* ==========================================================================
-   Shared components
-   ========================================================================== */
 
-/* ---- Buttons ------------------------------------------------------------- */
+
 .btn {
   display: inline-flex;
   align-items: center;
@@ -79,7 +76,6 @@
   border-color: var(--danger);
 }
 
-/* Square button with an offset outline (the "track lane" CTA) */
 .btn--offset {
   position: relative;
   border-radius: 0;
@@ -122,7 +118,6 @@
   background: var(--mist-2);
 }
 
-/* ---- Tags ---------------------------------------------------------------- */
 .tag {
   display: inline-flex;
   align-items: center;
@@ -162,7 +157,6 @@
   vertical-align: middle;
 }
 
-/* ---- Notices ------------------------------------------------------------- */
 .notice {
   display: flex;
   align-items: flex-start;
@@ -197,7 +191,6 @@
   background: #fbf6e9;
 }
 
-/* ---- Loading / empty ----------------------------------------------------- */
 .loading {
   height: 3px;
   overflow: hidden;
@@ -231,7 +224,6 @@
   margin-top: 20px;
 }
 
-/* ---- Forms --------------------------------------------------------------- */
 .field {
   display: flex;
   flex-direction: column;
@@ -298,7 +290,6 @@
   grid-column: 1 / -1;
 }
 
-/* Photo picked from the computer (components/ImageField.jsx): 4:5 preview like the coach photos */
 .image-field__body {
   display: flex;
   align-items: center;
@@ -337,7 +328,6 @@
   }
 }
 
-/* ---- Modal --------------------------------------------------------------- */
 .modal {
   width: min(560px, calc(100vw - 32px));
   max-height: calc(100vh - 48px);
@@ -387,7 +377,6 @@
   border-top: 1px solid var(--hairline);
 }
 
-/* ---- Toasts -------------------------------------------------------------- */
 .toasts {
   position: fixed;
   right: 16px;
@@ -428,9 +417,8 @@
   padding: 0;
 }
 
-/* ---- Tables (staff + account) ------------------------------------------ */
 .table-wrap {
-  position: relative; /* keeps absolutely positioned children (e.g. .visually-hidden) inside the scroll area */
+  position: relative;
   width: 100%;
   overflow-x: auto;
 }
@@ -474,11 +462,9 @@
   margin-left: 4px;
 }
 
-/* "The server is working" line under a slow submit (sign-in, sign-up, password) */
 .slow-hint { margin: 0; text-align: center; }
 .password-form .slow-hint { text-align: right; }
 
-/* ---- Printable invoice (pages/InvoicePrint.jsx) -------------------------- */
 .invoice-page {
   display: grid;
   gap: 20px;
@@ -555,7 +541,7 @@
 .invoice__words span { color: var(--stone); }
 .invoice__facts { max-width: 420px; }
 .invoice__facts dd { text-align: left; }
-/* Unpaid or cancelled: a stamp in the free space right of the customer */
+
 .invoice__stamp {
   position: absolute;
   top: 18px;
@@ -591,5 +577,4 @@
   .invoice { padding: 0; border: 0; }
 }
 
-/* A slow API should keep a readable status beside the loading indicator. */
 .loading-state > .slow-hint { margin: -12px 0 18px; text-align: center; font-size: 13px; }

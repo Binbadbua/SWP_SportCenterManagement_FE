@@ -1,19 +1,21 @@
+import RoleLabel from './RoleLabel.jsx';
 import { Link } from 'react-router-dom';
 import { photoUrl, sportImage } from '../lib/images.js';
 import { daysUntil, formatDateRange, formatMoney, initials } from '../lib/format.js';
 import { ClassStatus } from '../lib/enums.js';
+import { classDisplayStatus } from '../lib/classes.js';
 import { benefitsOf, summaryOf } from '../lib/pricing.js';
 import { Button } from './ui.jsx';
 import { sportsOf } from './CoachFacts.jsx';
 import Icon from './Icon.jsx';
 import ClassPrice from './ClassPrice.jsx';
 
-/* The most useful fact about the class right now, shown above its name. `started` (lib/classes.js) is known when
-   the caller has the class's sessions; a class that has started takes no more bookings. */
-export function classEyebrow(c, spotsLeft, started) {
-  if (c.status === 4) return { text: 'Đã hủy', tone: 'muted' };
-  if (c.status === 3) return { text: 'Đã kết thúc', tone: 'muted' };
-  if (started ?? c.status === 2) return { text: 'Đã bắt đầu · không nhận đặt thêm', tone: 'muted' };
+export function classEyebrow(c, spotsLeft, started, displayStatus) {
+  const status = displayStatus === undefined ? classDisplayStatus(c) : displayStatus;
+  if (status === 4) return { text: 'Đã hủy', tone: 'muted' };
+  if (status === 3) return { text: 'Đã kết thúc', tone: 'muted' };
+  if (status === 2 || started === true) return { text: 'Đã bắt đầu · không nhận đặt thêm', tone: 'muted' };
+  if (status === null) return { text: 'Lịch học đang được cập nhật', tone: 'muted' };
   if (spotsLeft !== undefined && spotsLeft <= 0) return { text: 'Đã đủ chỗ', tone: 'muted' };
   if (spotsLeft !== undefined && spotsLeft <= Math.max(3, Math.round(c.maxCapacity * 0.2))) {
     return { text: `Chỉ còn ${spotsLeft} chỗ`, tone: 'signal' };
@@ -25,16 +27,17 @@ export function classEyebrow(c, spotsLeft, started) {
   return { text: 'Đang nhận đăng ký', tone: 'ink' };
 }
 
-export function ClassCard({ item, spotsLeft, started, scheduleKnown = true, pricing }) {
-  // currentEnrolled includes the API's pending holds; never infer free seats from a staff-only roster.
+export function ClassCard({ item, spotsLeft, started, scheduleKnown = true, displayStatus, pricing }) {
+
   const knownCapacity = Number.isFinite(item.maxCapacity);
   const serverLeft = knownCapacity && Number.isFinite(item.currentEnrolled)
     ? Math.max(0, item.maxCapacity - item.currentEnrolled)
     : item.spotsLeft ?? (knownCapacity && Number.isFinite(item._enrolled) ? Math.max(0, item.maxCapacity - item._enrolled) : undefined);
   const left = spotsLeft ?? serverLeft;
-  const eyebrow = !scheduleKnown && item.status === 1
+  const status = displayStatus === undefined ? classDisplayStatus(item) : displayStatus;
+  const eyebrow = !scheduleKnown && status === 1
     ? { text: 'Xem lịch để kiểm tra đăng ký', tone: 'muted' }
-    : classEyebrow(item, left, started);
+    : classEyebrow(item, left, started, status);
   return (
     <Link to={`/classes/${item.id}`} className="class-card">
       <div className="class-card__media">
@@ -56,7 +59,7 @@ export function ClassCard({ item, spotsLeft, started, scheduleKnown = true, pric
     </Link>
   );
 }
-/* Sport tile with a boxed label on the photo */
+
 export function CategoryTile({ category, count }) {
   return (
     <Link to={`/classes?sport=${category.id}`} className="category-tile">
@@ -69,11 +72,10 @@ export function CategoryTile({ category, count }) {
   );
 }
 
-// Pixels asked from the photo store per size: md is the 4:5 card / coach page photo, sm and xs are squares (2× for sharp screens)
 const PORTRAIT_PX = { md: [800, 1000], sm: [128, 128], xs: [64, 64] };
 
 export function CoachPortrait({ coach, size = 'md' }) {
-  // Older coach rows hold a bare file name instead of a link; those fall back to initials
+
   if (/^(https?:\/\/|\/)/i.test(coach.avatar ?? '')) {
     const [w, h] = PORTRAIT_PX[size] ?? PORTRAIT_PX.md;
     return <img className={`coach-portrait coach-portrait--${size}`} src={photoUrl(coach.avatar, w, h)} alt="" loading="lazy" />;
@@ -85,7 +87,6 @@ export function CoachPortrait({ coach, size = 'md' }) {
   );
 }
 
-/* Opens the coach's page. `classes` (the coach's own, optional) adds the sports they teach. */
 export function CoachCard({ coach, classes }) {
   const sports = sportsOf(classes).map(([, name]) => name);
   const yearsKnown = Number.isFinite(coach.experienceYears) && coach.experienceYears >= 0;
@@ -96,7 +97,7 @@ export function CoachCard({ coach, classes }) {
         {yearsKnown && <span className="coach-card__experience"><Icon name="user" size={14} />{coach.experienceYears} năm kinh nghiệm</span>}
       </div>
       <div className="coach-card__body">
-        <p className="coach-card__eyebrow">Huấn luyện viên</p>
+        <p className="coach-card__eyebrow"><RoleLabel role="Coach" /></p>
         <h3 className="coach-card__name">{coach.fullName}</h3>
         <p className="coach-card__specialization">{coach.specialization || 'Chuyên môn sẽ được cập nhật'}</p>
         {sports.length > 0 && <div className="coach-card__sports">{sports.slice(0, 3).map(sport => <span key={sport}>{sport}</span>)}{sports.length > 3 && <span>+{sports.length - 3} môn</span>}</div>}
@@ -116,7 +117,7 @@ export function PackageCard({ pkg, onChoose, featured = false }) {
         {pkg.durationDays} ngày{months > 1 ? ` · khoảng ${formatMoney(perMonth)}/tháng` : ''}
       </p>
       <p className="package-card__price num">{formatMoney(pkg.price)}</p>
-      {/* Class fees (CHANGELOG Part B, B53): the discount the card gives and the services that come with it */}
+
       {Number(pkg.discountPercent ?? 0) > 0 && (
         <p className="package-card__deal">Giảm {pkg.discountPercent}% học phí mọi lớp</p>
       )}

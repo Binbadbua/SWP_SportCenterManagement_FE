@@ -3,21 +3,14 @@ import { api } from '../api/endpoints.js';
 import { photoUrl } from '../lib/images.js';
 import { Button } from './ui.jsx';
 
-// What the API's photo store accepts (it also checks the file's first bytes) — see api.media
 const TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 const MAX_BYTES = 5 * 1024 * 1024;
 
-/* ---------------------------------------------------------------------------
-   ImageField — a photo chosen from the computer instead of a pasted link.
-   The file is uploaded as soon as it is picked and the field's value becomes the
-   link the API returns, so the form still saves a plain URL (avatar). onBusy(true)
-   while uploading lets the form hold its Save button.
---------------------------------------------------------------------------- */
 export default function ImageField({ label, name, value, onChange, onBusy, help, error, className = '' }) {
   const id = `f-${name}`;
   const input = useRef(null);
   const alive = useRef(true);
-  const [local, setLocal] = useState(null); // preview of the file being uploaded
+  const [local, setLocal] = useState(null);
   const [problem, setProblem] = useState(null);
   const busy = !!local;
 
@@ -29,7 +22,7 @@ export default function ImageField({ label, name, value, onChange, onBusy, help,
 
   const pick = async (e) => {
     const file = e.target.files?.[0];
-    e.target.value = ''; // picking the same file again still counts as a change
+    e.target.value = '';
     if (!file) return;
     if (!TYPES.includes(file.type)) {
       setProblem('Chỉ chọn được ảnh JPG, PNG, WebP hoặc GIF.');
@@ -44,7 +37,7 @@ export default function ImageField({ label, name, value, onChange, onBusy, help,
     onBusy?.(true);
     try {
       const { url } = await api.media.uploadImage(file);
-      // The dialog may have been closed while the file was on its way
+
       if (alive.current) onChange?.(name, url);
     } catch (err) {
       if (alive.current) setProblem(err.message || 'Không tải được ảnh lên. Hãy thử lại.');

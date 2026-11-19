@@ -2,7 +2,6 @@ import { memo, useEffect, useMemo, useState } from 'react';
 import { useSlideshow } from '../hooks/useSlideshow.js';
 import { IMAGES, sportImage } from '../lib/images.js';
 
-// Decorative only: all current sports supply a photo, without links, labels or controls.
 function SportPhotoSlideshow({ categories }) {
   const photos = useMemo(() => categories?.length
     ? categories.map((category, index) => ({ key: category.id ?? index, src: sportImage(category.categoryName) }))

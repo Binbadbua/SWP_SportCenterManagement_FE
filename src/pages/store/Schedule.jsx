@@ -13,7 +13,6 @@ const addDays = (iso, n) => {
   return d.toISOString().slice(0, 10);
 };
 
-// Public weekly timetable built from GET /api/schedules
 export default function Schedule() {
   const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
   const [weekStart, setWeekStart] = useState(todayCenterDateString());

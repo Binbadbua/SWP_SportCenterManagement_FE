@@ -37,3 +37,26 @@
 
 .revenue-report .table tbody th { color: #30412a; font-size: 12px; font-weight: 600; text-transform: none; letter-spacing: normal; border-bottom: 1px solid #e1e5da; }
 .revenue-report__metric .text-link { display: inline-block; margin-top: 8px; font-size: 11px; }
+
+.revenue-chart { min-width: 0; max-width: 100%; margin: 24px 0; padding: 20px; border: 1px solid #e1e7da; border-radius: 14px; background: #fff; }
+.revenue-chart__heading { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; }
+.revenue-chart__heading h3 { margin: 0; color: #26362a; font-size: 16px; line-height: 1.6; }
+.revenue-chart__heading p, .revenue-chart__caption { margin: 5px 0 0; color: #64715b; font-size: 11px; line-height: 1.8; }
+.revenue-chart__legend { display: flex; flex-wrap: wrap; gap: 10px 16px; margin: 3px 0 0; padding: 0; list-style: none; }
+.revenue-chart__legend li { display: flex; align-items: center; gap: 7px; font-size: 11px; color: #40533f; white-space: nowrap; }
+.revenue-chart__legend span { width: 10px; height: 10px; flex: 0 0 10px; border-radius: 3px; }
+.revenue-chart__caption { margin-top: 12px; }
+.revenue-chart__scroll { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; margin-top: 8px; border-radius: 8px; scrollbar-width: thin; }
+.revenue-chart__scroll:focus-visible { outline: 2px solid #c63b13; outline-offset: 3px; }
+.revenue-chart svg { display: block; max-width: none; }
+.revenue-chart__tick line { stroke: #e8ece4; stroke-dasharray: 3 4; }
+.revenue-chart__tick text { fill: #6c7866; font-size: 10px; font-family: inherit; }
+.revenue-chart__zero { stroke: #9ba795; stroke-width: 1; }
+.revenue-chart__label { fill: #40533f; font-size: 10px; font-family: inherit; }
+.revenue-chart__group rect:hover { opacity: .76; }
+.revenue-chart__empty { margin: 22px 0 5px; font-size: 12px; color: #64715b; }
+@media (max-width: 600px) {
+ .revenue-chart { padding: 14px; }
+ .revenue-chart__heading h3 { font-size: 15px; }
+ .revenue-chart__legend { gap: 9px 12px; }
+}

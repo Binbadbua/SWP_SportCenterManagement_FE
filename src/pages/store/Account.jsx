@@ -1,3 +1,4 @@
+import RoleLabel from '../../components/RoleLabel.jsx';
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { api, isMissingRoute } from "../../api/endpoints.js";
@@ -66,7 +67,6 @@ const TABS = [
 ];
 
 const GENDERS = Gender.options;
-
 
 export default function Account() {
   const { user } = useAuth();
@@ -158,7 +158,6 @@ export default function Account() {
   );
 }
 
-/* The API answers 403 when a member asks for data only staff may read */
 function StaffOnlyNotice({ what }) {
   return (
     <Notice tone="info" title={`Chưa xem được ${what} ở đây`}>
@@ -168,19 +167,18 @@ function StaffOnlyNotice({ what }) {
   );
 }
 
-/* ---- Bookings (API) ----------------------------------------------------- */
 function BookingsTab({ memberId }) {
   const toast = useToast();
   const bookings = useApi(() => api.bookings.mine(), [], {
     sample: () => mock.bookings.filter((b) => b.memberId === memberId),
   });
-  // The booking response has no sport name, so look it up from the class list for the photo
+
   const classes = useApi(() => api.classes.list(), [], {
     sample: mock.classes,
   });
   const sportOf = (classId) =>
     (classes.data ?? []).find((c) => c.id === classId)?.categoryName;
-  // Whether a booked class has started: no refund on cancelling then, and no booking it again
+
   const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
   const startedOf = (b) => {
     const c = (classes.data ?? []).find((x) => x.id === b.classId);
@@ -188,12 +186,11 @@ function BookingsTab({ memberId }) {
       ? classStarted(c, sessions.data)
       : !!b.classStartDate && String(b.classStartDate).slice(0, 10) < todayLocalDateString();
   };
-  // With SePay (B54–B55) a member cancels a paid class themself and requests a full refund before the class starts; reception confirms the actual refund.
-  // before that reception cancel and refund paid classes
+
   const opts = usePaymentOptions();
   const selfRefund = !!opts?.online;
   const [busyId, setBusyId] = useState(null);
-  const [asking, setAsking] = useState(null); // the booking the cancel dialog is about
+  const [asking, setAsking] = useState(null);
 
   const canReviewCancellation = b => !bookings.usingSample && (b?.status === 4 || (!classes.loading && !classes.error && !classes.usingSample && !sessions.loading && !sessions.error && !sessions.usingSample && (classes.data ?? []).some(item => item.id === b?.classId)));
 
@@ -257,7 +254,7 @@ function BookingsTab({ memberId }) {
                   Khai giảng {formatDate(b.classStartDate)} · đặt ngày{" "}
                   {formatDate(b.bookingDate)}
                 </p>
-                {/* Class fees (B53): what the booking costs, and what cancelling it gives back */}
+
                 {Number(b.price ?? 0) > 0 && (
                   <p className="muted small">
                     Học phí {formatMoney(b.price)}
@@ -314,10 +311,6 @@ function BookingsTab({ memberId }) {
   );
 }
 
-/* ---- Personal schedule (API) -------------------------------------------- */
-// The upcoming sessions of every class the member booked. The API has no "my sessions" endpoint, so the
-// bookings are matched with the public timetable. Before class fees (B53) a session outside the member's card
-// dates is flagged; with them a card only gives a discount, and a booking waiting for payment is flagged instead.
 const SCHEDULE_SHOWN = 20;
 function ScheduleTab() {
   const bookings = useApi(() => api.bookings.mine(), []);
@@ -334,13 +327,13 @@ function ScheduleTab() {
     .filter((s) => booked.has(s.classId) && !isSessionOver(s))
     .sort((a, b) => `${a.date}${a.startTime}`.localeCompare(`${b.date}${b.startTime}`));
   const shown = showAll ? upcoming : upcoming.slice(0, SCHEDULE_SHOWN);
-  // [["2026-10-28", [sessions…]], …] in date order
+
   const days = [...shown.reduce((m, s) => {
     const day = String(s.date).slice(0, 10);
     return m.set(day, [...(m.get(day) ?? []), s]);
   }, new Map())];
   const coachOf = (id) => (classes.data ?? []).find((c) => c.id === id)?.coachName;
-  // Unknown cards (still loading or failed) flag nothing
+
   const covered = (day) => priced || !cards.data || cardsOn(cards.data, day).length > 0;
   const uncovered = upcoming.filter((s) => !covered(String(s.date).slice(0, 10))).length;
   const today = todayLocalDateString();
@@ -428,7 +421,6 @@ function ScheduleTab() {
   );
 }
 
-/* ---- Attendance (API) --------------------------------------------------- */
 function AttendanceTab({ memberId }) {
   const rows = useApi(() => api.attendance.mine(), [], {
     sample: () => mock.attendance.filter((a) => a.memberId === memberId),
@@ -490,11 +482,6 @@ function AttendanceTab({ memberId }) {
   );
 }
 
-/* ---- Membership (API) --------------------------------------------------- */
-// Before class fees (B53) a card lets the member book classes whose sessions fall within its dates; with them it
-// takes its package's discount off every class. Renewing is buying the package again: checkout starts the new
-// card the day after the current one ends. Upgrading (B54) moves the card in use today to a longer package at once,
-// less what is left of it.
 function MembershipTab() {
   const rows = useApi(() => api.memberships.mine(), []);
   const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
@@ -507,14 +494,14 @@ function MembershipTab() {
     .filter((m) => m.status === 1 && String(m.endDate).slice(0, 10) >= today)
     .sort((a, b) => String(b.endDate).localeCompare(String(a.endDate)))[0];
   const left = current ? daysUntil(current.endDate) : null;
-  // A package bought on the website waits for reception: its invoice is the payment to follow
+
   const pending = list.filter((m) => m.status === 2 && String(m.endDate).slice(0, 10) >= today);
   const paymentOf = (m) => (invoices.data ?? []).find((i) => i.memberMembershipId === m.id && i.status === 1);
   const latest = current ?? [...list].sort((a, b) => String(b.endDate).localeCompare(String(a.endDate)))[0];
   const onSale = latest && (packages.data ?? []).some((p) => p.id === latest.packageId && p.status === 1);
   const discounts = hasPackageDiscounts(packages.data);
   const currentDiscount = Number((packages.data ?? []).find((p) => p.id === current?.packageId)?.discountPercent ?? 0);
-  // "Nâng cấp gói" only for the card in use today, and only to a longer package
+
   const [inUse] = cardsOn(list, today);
   const targets = upgradeTargets(inUse, packages.data);
   const rule = discounts
@@ -615,7 +602,6 @@ function MembershipTab() {
   );
 }
 
-/* The member's visits to train on their own, logged by reception at the door (CHANGELOG Part B, B47) */
 function CheckInHistory() {
   const rows = useApi(() => api.checkIns.mine(), []);
   if (rows.loading || isMissingRoute(rows.error)) return null;
@@ -639,12 +625,10 @@ function CheckInHistory() {
   );
 }
 
-/* ---- Training (API) ----------------------------------------------------- */
 function TrainingTab() {
   return <MemberTraining />;
 }
 
-/* ---- Invoices (API) ----------------------------------------------------- */
 function InvoicesTab() {
   const rows = useApi(() => api.invoices.mine(), []);
   const [refundFilter, setRefundFilter] = useState('all');
@@ -712,13 +696,10 @@ function InvoicesTab() {
   );
 }
 
-/* ---- Notifications (API) ------------------------------------------------ */
 function NotificationsTab() {
   return <NotificationInbox />;
 }
 
-/* ---- Support requests (API) --------------------------------------------- */
-// The member writes to reception; reception answers from Staff → Support requests
 function SupportTab() {
   const cooldown = useMutationCooldown('POST', '/api/support-requests');
   const submitLock = useRef(false);
@@ -782,7 +763,7 @@ function SupportTab() {
                   <p className="pre-wrap">{r.content}</p>
                   {r.resolution && (
                     <p className="support-item__answer pre-wrap">
-                      <strong>Lễ tân:</strong> {r.resolution}
+                      <strong><RoleLabel role="Receptionist" />:</strong> {r.resolution}
                     </p>
                   )}
                 </li>
@@ -797,7 +778,6 @@ function SupportTab() {
   );
 }
 
-/* ---- Profile (API) ------------------------------------------------------ */
 function validateProfile(v) {
   const e = {};
   if (!v.fullName.trim()) e.fullName = "Vui lòng nhập họ tên.";
@@ -819,7 +799,6 @@ function ProfileTab() {
   const [errors, setErrors] = useState({});
   const [saving, setSaving] = useState(false);
 
-  // Keep the name in the header in step with the saved profile
   useEffect(() => {
     if (p?.fullName && p.fullName !== user.fullName) updateUser({ fullName: p.fullName });
   }, [p?.fullName, user.fullName, updateUser]);
@@ -845,7 +824,7 @@ function ProfileTab() {
     if (Object.keys(found).length) return;
     setSaving(true);
     try {
-      // PUT /api/members/me replaces every field, so the whole profile is sent
+
       await api.members.me.update({
         accountId: p.accountId,
         fullName: v.fullName.trim(),
@@ -870,7 +849,7 @@ function ProfileTab() {
   if (me.loading) return <Loading />;
 
   if (!p) {
-    // The profile endpoint failed: show what the sign-in token knows, read-only
+
     return (
       <>
         <ErrorNotice
@@ -1002,9 +981,6 @@ function ProfileTab() {
   );
 }
 
-/* ---- Password ----------------------------------------------------------- */
-// POST /api/auth/change-password checks the current password and keeps the session; an API without the
-// route (older deploy) gets the "not supported yet" notice instead of a raw error.
 const NO_PASSWORDS = { currentPassword: "", newPassword: "", confirmPassword: "" };
 
 function validatePassword(v) {

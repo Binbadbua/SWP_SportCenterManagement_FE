@@ -7,7 +7,8 @@ import { useAuth } from "../../context/AuthContext.jsx";
 import { ClassStatus } from "../../lib/enums.js";
 import { addDaysToDateInput, formatDate, formatMoney, formatTimeRange, todayCenterDateString, } from "../../lib/format.js";
 import Icon from "../../components/Icon.jsx";
-import { buildRevenueReport, revenueCsv, validateRevenueRange } from "../../lib/revenue.js";
+import RevenueChart from "../../components/RevenueChart.jsx";
+import { buildRevenueReport, validateRevenueRange } from "../../lib/revenue.js";
 import "../../styles/revenue-report.css";
 import { Button, ErrorNotice, FillBar, Loading, SampleDataNotice, StatusTag, } from "../../components/ui.jsx";
 
@@ -107,7 +108,7 @@ export default function Dashboard() {
                 </span>
                 <span className="cell-strong">{s.className}</span>
                 <span className="muted">{s.roomName}</span>
-                {/* Only coaches take attendance (for their own sessions, listed here) */}
+
                 {user.role === "Coach" && (
                   <Link
                     className="btn btn--secondary btn--sm"
@@ -127,7 +128,6 @@ export default function Dashboard() {
   );
 }
 
-// Financial reports use invoices, including confirmed refunds. Legacy dashboard monthly totals do not expose that split.
 function ManagerReports() {
   const today = todayCenterDateString();
   const firstDay = today.slice(0, 7) + "-01";
@@ -181,13 +181,6 @@ function ManagerReports() {
     setDraft(next); setFilters(next); setRangeError(""); setPage(1);
   };
   const refresh = () => { invoices.reload(); classes.reload(); membersApi.reload(); membershipsApi.reload(); classesSummaryApi.reload(); };
-  const download = () => {
-    if (!ready || report.error) return;
-    const url = URL.createObjectURL(new Blob([revenueCsv(report, filters)], { type: "text/csv;charset=utf-8" }));
-    const link = document.createElement("a");
-    link.href = url; link.download = `bao-cao-thu-hoan-${filters.from}-${filters.to}.csv`; link.click();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
-  };
   const summaryValue = (state, value) => state.loading ? "…" : state.error ? "—" : Number(value ?? 0).toLocaleString("vi-VN");
 
   return (
@@ -217,7 +210,7 @@ function ManagerReports() {
           <label>Môn thể thao<select disabled={draft.kind === "membership"} value={draft.categoryId} onChange={event => setDraft({ ...draft, categoryId: event.target.value, classId: "" })}><option value="">Tất cả môn / nội dung</option>{categoryOptions.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}<option value="__unknown">Chưa xác định môn</option></select></label>
           <label className="revenue-filters__wide">Lớp học<select disabled={draft.kind === "membership"} value={draft.classId} onChange={event => setDraft({ ...draft, classId: event.target.value })}><option value="">Tất cả lớp / nội dung</option>{classOptions.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}</select></label>
           <label className="revenue-filters__wide">Cơ sở báo cáo<select value={draft.basis} onChange={event => setDraft({ ...draft, basis: event.target.value })}><option value="cohort">Kỳ thu tiền, trừ hoàn của hóa đơn thuộc kỳ</option><option value="cash" disabled={!ready || !capability.cashAvailable}>Dòng tiền theo ngày thực thu / thực hoàn</option></select></label>
-          <div className="revenue-filters__actions"><Button type="submit" size="sm">Áp dụng bộ lọc</Button><Button variant="secondary" size="sm" onClick={download} disabled={!ready || !!report.error}>Tải CSV đang hiển thị</Button></div>
+          <div className="revenue-filters__actions"><Button type="submit" size="sm">Áp dụng bộ lọc</Button></div>
           {rangeError && <p className="revenue-report__error" role="alert">{rangeError}</p>}
         </form>
         <div className="revenue-presets" aria-label="Khoảng báo cáo nhanh"><button type="button" onClick={() => preset(addDaysToDateInput(today, -6), today)}>7 ngày gần đây</button><button type="button" onClick={() => preset(addDaysToDateInput(today, -29), today)}>30 ngày gần đây</button><button type="button" onClick={() => preset(firstDay, today)}>Tháng này</button><button type="button" onClick={() => preset(addDaysToDateInput(today, -89), today)}>90 ngày gần đây</button></div>
@@ -239,6 +232,7 @@ function ManagerReports() {
                   <div className="revenue-report__metric revenue-report__metric--net"><dt>Thu sau hoàn</dt><dd className="num">{formatMoney(report.totals.net)}</dd><small>Tổng đã thu − Đã hoàn thực tế</small></div>
                   <div className="revenue-report__metric"><dt>Chờ hoàn của hóa đơn trong kỳ</dt><dd className="num">{formatMoney(report.totals.pendingRefund)}</dd><small>{report.totals.pendingCount} yêu cầu hiện tại, chưa trừ khỏi thu sau hoàn</small>{report.totals.pendingCount > 0 && <Link className="text-link small" to="/staff/invoices?refund=pending">Xem yêu cầu chờ hoàn</Link>}</div>
                 </dl>
+                <RevenueChart rows={shownRows} filters={filters} page={activePage} pageCount={pageCount} />
                 <div className="table-wrap"><table className="table"><thead><tr><th scope="col">{filters.dimension === "time" ? filters.grain === "day" ? "Ngày" : filters.grain === "week" ? "Tuần" : "Tháng" : filters.dimension === "sport" ? "Môn / nội dung" : "Lớp / nội dung"}</th><th scope="col">Hóa đơn đã thu</th><th scope="col">Tổng đã thu</th><th scope="col">Đã hoàn</th><th scope="col">Thu sau hoàn</th><th scope="col">Chờ hoàn</th></tr></thead><tbody>{shownRows.length ? shownRows.map(row => <tr key={row.key}><th scope="row" className="revenue-report__row-label">{row.label}{row.sublabel && <small>{row.sublabel}</small>}</th><td className="num">{row.receiptCount}</td><td className="num revenue-report__money">{formatMoney(row.gross)}</td><td className="num revenue-report__money">{formatMoney(row.refunds)}</td><td className="num revenue-report__money"><strong>{formatMoney(row.net)}</strong></td><td className="num revenue-report__money">{formatMoney(row.pendingRefund)}</td></tr>) : <tr><td colSpan={6}>Không có giao dịch thuộc bộ lọc này.</td></tr>}</tbody><tfoot><tr><th scope="row">Tổng kỳ đã chọn</th><td className="num">{report.totals.receiptCount}</td><td className="num revenue-report__money">{formatMoney(report.totals.gross)}</td><td className="num revenue-report__money">{formatMoney(report.totals.refunds)}</td><td className="num revenue-report__money"><strong>{formatMoney(report.totals.net)}</strong></td><td className="num revenue-report__money">{formatMoney(report.totals.pendingRefund)}</td></tr></tfoot></table></div>
                 {pageCount > 1 && <nav className="revenue-report__pager" aria-label="Phân trang báo cáo"><Button variant="secondary" size="sm" disabled={activePage <= 1} onClick={() => setPage(activePage - 1)}>Trang trước</Button><span>Trang {activePage}/{pageCount} · {report.rows.length} nhóm</span><Button variant="secondary" size="sm" disabled={activePage >= pageCount} onClick={() => setPage(activePage + 1)}>Trang sau</Button></nav>}
               </>
@@ -253,7 +247,6 @@ function ManagerReports() {
 
 const FILL_SHOWN = 8;
 
-// How full the classes still open for booking are, the fullest first
 function ClassFill({ classes }) {
   const [showAll, setShowAll] = useState(false);
   const open = (classes.data ?? [])

@@ -1,7 +1,4 @@
-// Sample data in the SAME shape as the API responses (see SWP_SportCenter.Service/*/Response.cs).
-// Used in two cases:
-//   1. API-backed pages when the back-end is offline ("Showing sample data" notice).
-//   2. Preview pages for features that have no API yet (members, packages, memberships...).
+
 
 const day = (offset) => {
   const d = new Date();
@@ -17,7 +14,6 @@ const stamp = (offset, hour = 9) => {
 };
 const id = (prefix, n) => `${prefix}000000-0000-4000-8000-${String(n).padStart(12, '0')}`;
 
-// ---- IDs used by the demo sign-in (Login page) ---------------------------
 export const DEMO_IDS = {
   memberAccountId: '11111111-1111-1111-1111-111111111111',
   memberId: id('a1', 1),
@@ -71,7 +67,7 @@ const mkClass = (n, name, c, k, max, start, weeks, status, enrolled) => ({
   status,
   createdAt: stamp(-30 + n),
   updatedAt: null,
-  _enrolled: enrolled, // sample-only: how many members booked
+  _enrolled: enrolled,
 });
 
 export const classes = [
@@ -107,7 +103,7 @@ export const sessions = [];
   for (const [ci, ri, start, s, e] of plan) {
     for (let w = 0; w < 6; w++) sessions.push(mkSession(n++, ci, ri, start + w * 7, s, e));
   }
-  // Two sessions this week for "today" views
+
   sessions.push(mkSession(n++, 1, 5, 0, '18:00:00', '19:15:00'));
   sessions.push(mkSession(n++, 6, 1, 0, '12:15:00', '12:45:00'));
 }
@@ -203,13 +199,11 @@ export const accounts = [
   { id: id('ac', 25), username: 'thinh.vo', role: 1, status: 3, createdAt: stamp(-30) },
 ];
 
-// SupportResponse (status: 1 Open, 2 In progress, 3 Resolved, 4 Cancelled)
 export const supportRequests = [
   { id: id('sr', 1), memberId: id('a1', 1), memberName: 'An Nguyễn', content: 'Tuần sau tôi chuyển sang lớp buổi tối được không?', status: 1, handledByAccountId: null, resolution: null, createdAt: stamp(0, 7), updatedAt: null },
   { id: id('sr', 2), memberId: id('a1', 1), memberName: 'An Nguyễn', content: 'Hóa đơn của tôi ghi sai gói tập.', status: 3, handledByAccountId: DEMO_IDS.receptionistAccountId, resolution: 'Đã sửa tại quầy; hóa đơn mới nằm ở Tài khoản của tôi → Hóa đơn.', createdAt: stamp(-3, 9), updatedAt: stamp(-2, 10) },
 ];
 
-// AuditLogResponse as the server writes it: "<EF state>:<entity>" + JSON (lib/audit.js)
 const serverLog = (n, accountId, username, actionType, entityId, changedFields, timestamp) => ({
   id: id('al', n), accountId, username, actionType, timestamp,
   description: JSON.stringify({ entityId, changedFields, source: 'server' }),
@@ -221,7 +215,6 @@ export const auditLogs = [
   serverLog(4, DEMO_IDS.coachAccountId, 'coach.khoa', 'Added:Attendance', id('at', 1), [], stamp(-1, 9)),
 ];
 
-// Report preview (no report API yet)
 export const report = {
   totals: { activeMembers: 412, activeMemberships: 356, bookingsThisMonth: 1284, revenueThisMonth: 186400000 },
   revenueByMonth: [

@@ -1,10 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Icon from './Icon.jsx';
 
-// Small toast stack: toast.success('Đã lưu'), toast.error('Không lưu được').
 const ToastContext = createContext(null);
 
-// Long enough to read: a base time plus ~70 ms per character, longer for errors, capped
 const durationOf = (tone, message) => {
   const [base, max] = tone === 'error' ? [9000, 16000] : [6000, 12000];
   return Math.min(max, Math.max(base, 2500 + String(message ?? '').length * 70));
@@ -34,7 +32,6 @@ export function ToastProvider({ children }) {
   );
 }
 
-// The countdown stops while the pointer is over the toast or it has focus, so it never vanishes mid-read
 function ToastItem({ toast, onDismiss }) {
   const [paused, setPaused] = useState(false);
   const left = useRef(toast.duration);

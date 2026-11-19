@@ -1,206 +1,130 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
-// Import 'http' hoặc 'api' từ file cấu hình API của bạn để gọi request
-import { api } from "../api/endpoints.js";
-
-const STORAGE_KEY = "sportcenter.session";
-const TOKEN_KEY = "sportcenter.token"; // Thêm key để lưu Token bảo mật
-
-const read = () => {
-  try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
-    const token = localStorage.getItem(TOKEN_KEY);
-    if (!saved || typeof saved !== 'object' || Array.isArray(saved) || !token) return null;
-    if (saved.access_token && saved.access_token !== token) return null;
-    return saved;
-  } catch {
-    return null;
-  }
-};
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { api } from '../api/endpoints.js';
+import { SESSION_EVENT, SESSION_KEY, TOKEN_KEY, expireSession, getSessionToken, normalizeSession, readSession, saveSession, sessionRole, tokenClaims, tokenExpired } from '../lib/session.js';
 
 const AuthContext = createContext(null);
-
-// The login token only carries the account ID. Pages also need the ID of the profile behind it
-// (bookings use memberId, training plans use coachId, invoices use receptionistId).
 const PROFILE = {
-  Member: { key: "memberId", load: () => api.members.myId() },
-  Coach: { key: "coachId", load: async () => (await api.coaches.me()).id },
-  Receptionist: { key: "receptionistId", load: async () => (await api.receptionists.me()).id },
+  Member: { key: 'memberId', load: () => api.members.myId() },
+  Coach: { key: 'coachId', load: async () => (await api.coaches.me()).id },
+  Receptionist: { key: 'receptionistId', load: async () => (await api.receptionists.me()).id },
 };
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(read);
-  // idle | loading | ready | error — whether user[PROFILE[role].key] could be found
-  const [profile, setProfile] = useState({ status: "idle", error: null });
+  const [user, setUser] = useState(readSession);
+  const [sessionExpired, setSessionExpired] = useState(() => !!getSessionToken() && tokenExpired(getSessionToken()));
+  const [profile, setProfile] = useState({ status: 'idle', error: null });
+  const generation = useRef(0);
+  const currentUser = useRef(user);
+  currentUser.current = user;
+  const [attempt, setAttempt] = useState(0);
 
-  // Other tabs share the token: keep the displayed identity in the same session.
   useEffect(() => {
-    const sync = (event) => {
-      if (event.key !== null && event.key !== STORAGE_KEY && event.key !== TOKEN_KEY) return;
-      setUser(read());
-      setProfile({ status: "idle", error: null });
+    const sync = event => {
+      if (event.type === 'storage' && event.key !== null && event.key !== SESSION_KEY && event.key !== TOKEN_KEY) return;
+      const next = readSession();
+      const before = currentUser.current;
+      if (before?.access_token !== next?.access_token || before?.accountId !== next?.accountId || before?.role !== next?.role) {
+        generation.current += 1;
+        setProfile({ status: 'idle', error: null });
+      }
+      currentUser.current = next;
+      setUser(next);
+      if (event.detail?.reason === 'expired') setSessionExpired(true);
+      else if (next || event.detail?.reason === 'signout') setSessionExpired(false);
     };
+    const focus = () => {
+      const token = getSessionToken();
+      if (token && tokenExpired(token)) expireSession(token);
+      else sync({ type: 'focus' });
+    };
+    const visible = () => { if (!document.hidden) focus(); };
     window.addEventListener('storage', sync);
-    return () => window.removeEventListener('storage', sync);
+    window.addEventListener(SESSION_EVENT, sync);
+    window.addEventListener('focus', focus);
+    document.addEventListener('visibilitychange', visible);
+    return () => {
+      window.removeEventListener('storage', sync);
+      window.removeEventListener(SESSION_EVENT, sync);
+      window.removeEventListener('focus', focus);
+      document.removeEventListener('visibilitychange', visible);
+    };
   }, []);
 
-  const save = useCallback((nextUser, token) => {
-    setUser(nextUser);
+  useEffect(() => {
+    const token = user?.access_token ?? getSessionToken();
+    const exp = tokenClaims(token)?.exp;
+    if (!token || exp == null) return undefined;
+    let timer;
+    const schedule = () => {
+      const remaining = Number(exp) * 1000 - Date.now();
+      if (remaining <= 0) expireSession(token);
+      else timer = setTimeout(schedule, Math.min(remaining + 10, 2147483647));
+    };
+    schedule();
+    return () => clearTimeout(timer);
+  }, [user?.access_token]);
+
+  const signIn = useCallback(async (username, password) => {
+    const call = ++generation.current;
+    const previousToken = getSessionToken();
     try {
-      if (nextUser) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(nextUser));
-        if (token) localStorage.setItem(TOKEN_KEY, token); // Lưu token vào bộ nhớ
-      } else {
-        // Đăng xuất thì xóa hết
-        localStorage.removeItem(STORAGE_KEY);
-        localStorage.removeItem(TOKEN_KEY);
+      const response = await api.auth.login({ email: username, password });
+      if (call !== generation.current || previousToken !== getSessionToken()) {
+        return { success: false, error: 'Phiên đăng nhập đã thay đổi. Vui lòng thử lại.' };
       }
-    } catch {
-      /* private mode: keep in memory only */
+      const data = response.data || response;
+      const token = data.access_token;
+      const next = normalizeSession({ ...data, role: sessionRole({ ...data, access_token: token }) }, token);
+      if (!next) return { success: false, error: 'Máy chủ trả phiên đăng nhập không hợp lệ hoặc đã hết hạn.' };
+      saveSession(next, token);
+      setUser(next);
+      setSessionExpired(false);
+      return { success: true, role: next.role };
+    } catch (error) {
+      return { success: false, error: error.status || error.offline ? error.message : 'Không thể đăng nhập. Vui lòng kiểm tra tài khoản và thử lại.' };
     }
   }, []);
 
-  // HÀM ĐĂNG NHẬP THẬT (Đã trang bị bộ phiên dịch Role)
-  const signIn = useCallback(
-    async (username, password) => {
-      try {
-        const response = await api.auth.login({
-          email: username,
-          password,
-        });
-        const data = response.data || response;
-        const token = data.access_token;
+  const signOut = useCallback(() => {
+    generation.current += 1;
+    saveSession(null, null, 'signout');
+    setUser(null);
+    setSessionExpired(false);
+    setProfile({ status: 'idle', error: null });
+  }, []);
+  const updateUser = useCallback(patch => {
+    const current = readSession();
+    if (!current || current.accountId !== user?.accountId || current.access_token !== user?.access_token) return false;
+    const allowed = ['fullName', 'email', PROFILE[current.role]?.key].filter(Boolean);
+    const safe = Object.fromEntries(Object.entries(patch).filter(([key]) => allowed.includes(key)));
+    const next = saveSession({ ...current, ...safe }, current.access_token, 'profile');
+    setUser(next);
+    return true;
+  }, [user?.accountId, user?.access_token]);
 
-        if (!token) throw new Error("Không nhận được token từ server");
-
-        const decodeJWT = (t) => {
-          try {
-            const base64Url = t.split(".")[1];
-            const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-            const jsonPayload = decodeURIComponent(
-              window
-                .atob(base64)
-                .split("")
-                .map(function (c) {
-                  return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-                })
-                .join(""),
-            );
-            return JSON.parse(jsonPayload);
-          } catch (e) {
-            return {};
-          }
-        };
-
-        const tokenPayload = decodeJWT(token);
-
-        // MÓC DỮ LIỆU TỪ CÁC LINK CỦA .NET VÀ GÁN VÀO CÁC BIẾN NGẮN GỌN
-        const normalizedUser = {
-          accountId:
-            tokenPayload[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier"
-            ],
-          username:
-            tokenPayload[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"
-            ] || "Người dùng",
-
-          fullName:
-            tokenPayload.FullName || "Người dùng",
-          email:
-            tokenPayload[
-              "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress"
-            ],
-          role: tokenPayload[
-            "http://schemas.microsoft.com/ws/2008/06/identity/claims/role"
-          ],
-        };
-
-        const userData = {
-          ...data,
-          ...normalizedUser,
-        };
-
-        save(userData, token);
-        return { success: true, role: userData.role || userData.Role };
-      } catch (error) {
-        console.error("Đăng nhập thất bại:", error);
-        return {
-          success: false,
-          // ApiError carries the server's message ("Invalid username or password", "Account is not active"…)
-          error: error.status || error.offline ? error.message : "Sai tài khoản hoặc mật khẩu",
-        };
-      }
-    },
-    [save],
-  );
-
-  const signOut = useCallback(() => save(null, null), [save]);
-  const updateUser = useCallback((patch) => {
-    const current = read();
-    if (!current || current.accountId !== user?.accountId) return;
-    if (user?.access_token && current.access_token !== user.access_token) return;
-    // Ignore profile responses that finish after logout or a session switch.
-    save({ ...current, ...patch }, localStorage.getItem(TOKEN_KEY));
-  }, [save, user?.accountId, user?.access_token]);
-
-  // Look up the profile ID once per sign-in; it is saved with the session afterwards.
   const role = user?.role;
   const accountId = user?.accountId;
   const hasProfileId = !!(PROFILE[role] && user?.[PROFILE[role].key]);
-  const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const def = PROFILE[role];
-    if (!accountId || !def) {
-      setProfile({ status: "idle", error: null });
-      return undefined;
-    }
-    if (hasProfileId) {
-      setProfile({ status: "ready", error: null });
-      return undefined;
-    }
+    if (!accountId || !def) { setProfile({ status: 'idle', error: null }); return undefined; }
+    if (hasProfileId) { setProfile({ status: 'ready', error: null }); return undefined; }
     let cancelled = false;
-    setProfile({ status: "loading", error: null });
-    def
-      .load()
-      .then((id) => {
-        if (cancelled) return;
-        if (!id) throw new Error("Không tìm thấy hồ sơ.");
-        updateUser({ [def.key]: id });
-        setProfile({ status: "ready", error: null });
-      })
-      .catch((error) => {
-        if (!cancelled) setProfile({ status: "error", error });
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [accountId, role, hasProfileId, attempt, updateUser]);
-  const retryProfile = useCallback(() => setAttempt((n) => n + 1), []);
-
-  const value = useMemo(
-    () => ({ user, signIn, signOut, updateUser, profile, retryProfile }),
-    [user, signIn, signOut, updateUser, profile, retryProfile],
-  );
+    setProfile({ status: 'loading', error: null });
+    def.load().then(id => {
+      if (cancelled) return;
+      if (!id) throw new Error('Không tìm thấy hồ sơ.');
+      if (updateUser({ [def.key]: id })) setProfile({ status: 'ready', error: null });
+    }).catch(error => { if (!cancelled) setProfile({ status: 'error', error }); });
+    return () => { cancelled = true; };
+  }, [accountId, role, user?.access_token, hasProfileId, attempt, updateUser]);
+  const retryProfile = useCallback(() => setAttempt(n => n + 1), []);
+  const acknowledgeExpiry = useCallback(() => setSessionExpired(false), []);
+  const validUser = normalizeSession(user, user?.access_token);
+  const value = useMemo(() => ({ user: validUser, signIn, signOut, updateUser, profile, retryProfile, sessionExpired, acknowledgeExpiry }), [user, signIn, signOut, updateUser, profile, retryProfile, sessionExpired, acknowledgeExpiry]);
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export const useAuth = () => useContext(AuthContext);
-
-// Roles come from the JWT as the enum names of AccountRole: "Member", "Coach", "Receptionist", "CenterManager".
-const roleOf = (user) => user?.role ?? user?.Role;
-
-export const isStaff = (user) => {
-  if (!user) return false;
-  return [2, 3, 4, "Coach", "Receptionist", "CenterManager"].includes(
-    roleOf(user),
-  );
-};
-
-export const isMember = (user) => [1, "Member"].includes(roleOf(user));
+export const isStaff = user => ['Coach', 'Receptionist', 'CenterManager'].includes(sessionRole(user));
+export const isMember = user => sessionRole(user) === 'Member';

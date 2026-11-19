@@ -1,10 +1,9 @@
-// When a class stops taking bookings (team rule, 28/10/2026): once it is marked "Đang diễn ra" or its first session
-// has begun, members can no longer book it, and cancelling a paid booking then gives no refund.
+
+
 import { formatMoney, isSessionStarted, todayCenterDateString } from './format.js';
 
 const day = (v) => String(v ?? '').slice(0, 10);
 
-// `sessions` may hold every class's sessions; without any, the class's start date stands in for its first session
 export function classStarted(c, sessions, now = new Date()) {
   if (!c) return false;
   if (c.status === 2) return true;
@@ -14,9 +13,35 @@ export function classStarted(c, sessions, now = new Date()) {
   return !!c.startDate && day(c.startDate) < todayCenterDateString(now);
 }
 
-// What cancelling a member's booking means (CHANGELOG Part B, B55): a place waiting for payment is just freed; before
-// the class starts a paid booking is refunded in full; once it has started nothing is refunded, and the member cannot
-// book it again because a started class takes no bookings. `booking.price` is what the member paid.
+const validClassDay = (value) => {
+  const text = day(value);
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(text)) return null;
+  const instant = new Date(text + 'T00:00:00Z');
+  return Number.isFinite(instant.getTime()) && instant.toISOString().slice(0, 10) === text ? text : null;
+};
+
+export function classDisplayStatus(c, sessions, now = new Date()) {
+  if (!c) return null;
+  const status = Number(c.status);
+  if (status === 4 || status === 3) return status;
+  if (status !== 1 && status !== 2) return null;
+  const today = todayCenterDateString(now);
+  const start = validClassDay(c.startDate);
+  const end = validClassDay(c.endDate);
+  if (end && end < today) return 3;
+  const id = c.id ?? c.classId;
+  const own = Array.isArray(sessions) ? sessions.filter(s => s.classId === id && validClassDay(s.date) && /^([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/.test(String(s.startTime ?? ''))) : [];
+  if (status === 2 || c.started === true || own.some(s => isSessionStarted(s, now)) || (start && start < today)) return 2;
+  if (status !== 1 || !start || (end && end < start)) return null;
+  if (start > today || (start === today && own.length)) return 1;
+  return null;
+}
+
+export function classScheduleKnown(c, sessions) {
+  const id = c?.id ?? c?.classId;
+  return Array.isArray(sessions) && sessions.some(s => s.classId === id && validClassDay(s.date) && /^([01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/.test(String(s.startTime ?? '')));
+}
+
 export function cancelTerms(booking, started) {
   const fee = Number(booking?.price ?? 0);
   if (booking?.status === 4) {
@@ -44,9 +69,6 @@ export function cancelTerms(booking, started) {
     : { tone: 'info', title: null, text: 'Lớp chưa bắt đầu nên bạn có thể đặt lại sau nếu lớp còn chỗ.' };
 }
 
-// Whether a class is running. Deletion is a separate decision in classDeletion.js: a running class may be
-// deleted only when it is explicitly empty and fresh roster/financial checks pass. The backend must also
-// protect historical registrations atomically. `c.started` or `sessions` uses the same start rule as bookings.
 export function classRunning(c, sessions, now = new Date()) {
   if (!c || c.status === 3 || c.status === 4) return false;
   if (c.status === 2) return true;

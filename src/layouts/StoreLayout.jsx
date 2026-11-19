@@ -8,7 +8,7 @@ import '../styles/catalog-redesign.css';
 
 export default function StoreLayout() {
   const { pathname } = useLocation();
-  // Braces matter: newer browsers make scrollTo() return a Promise, and an effect must not return one
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);

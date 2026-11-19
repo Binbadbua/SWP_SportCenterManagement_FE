@@ -10,6 +10,6 @@ export function useMutationCooldown(method, path) {
     return () => clearInterval(timer);
   }, []);
   let token = user?.access_token;
-  try { token ||= localStorage.getItem('sportcenter.token'); } catch { /* No storage. */ }
+  try { token ||= localStorage.getItem('sportcenter.token'); } catch {   }
   return Math.ceil(mutationGuard.wait(method, path, mutationScope(token)) / 1000);
 }

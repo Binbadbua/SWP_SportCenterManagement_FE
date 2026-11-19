@@ -6,7 +6,8 @@ import { useApi } from '../../hooks/useApi.js';
 import { useMemberDiscount } from '../../hooks/useMemberDiscount.js';
 import MemberDiscountNotice from '../../components/MemberDiscountNotice.jsx';
 import { daysUntil } from '../../lib/format.js';
-import { classStarted } from '../../lib/classes.js';
+import { classDisplayStatus, classScheduleKnown, classStarted } from '../../lib/classes.js';
+import { useCenterNow } from '../../hooks/useCenterNow.js';
 import Icon from '../../components/Icon.jsx';
 import { ClassCard } from '../../components/cards.jsx';
 import SportPhotoSlideshow from '../../components/SportPhotoSlideshow.jsx';
@@ -25,7 +26,6 @@ const STATUS_FILTERS = [
   { value: '3', label: 'Đã kết thúc' },
 ];
 
-// Multi-value URL params stay shareable: ?sport=a,b&coach=c&status=1,2.
 const readList = (params, key) => (params.get(key) ? params.get(key).split(',') : []);
 
 export default function Classes() {
@@ -35,8 +35,10 @@ export default function Classes() {
   const categories = useApi(() => api.categories.list(), [], { sample: mock.categories });
   const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
   const pricing = useMemberDiscount({ enabled: !classes.usingSample });
+  const now = useCenterNow();
+  const scheduleData = !sessions.loading && !sessions.error && (!sessions.usingSample || classes.usingSample) ? sessions.data : undefined;
   const sports = readList(params, 'sport');
-  const statuses = readList(params, 'status').length ? readList(params, 'status') : ['1', '2'];
+  const statuses = params.has('status') ? readList(params, 'status').filter(value => STATUS_FILTERS.some(status => status.value === value)) : ['1', '2'];
   const coachIds = readList(params, 'coach');
   const q = params.get('q') ?? '';
   const sort = SORTS[params.get('sort')] ? params.get('sort') : 'soonest';
@@ -45,7 +47,7 @@ export default function Classes() {
   const toggle = (key, value, current) => {
     const next = current.includes(value) ? current.filter(v => v !== value) : [...current, value];
     const p = new URLSearchParams(params);
-    if (next.length) p.set(key, next.join(','));
+    if (next.length || key === 'status') p.set(key, next.join(','));
     else p.delete(key);
     setParams(p, { replace: true });
   };
@@ -64,14 +66,13 @@ export default function Classes() {
     const needle = q.trim().toLowerCase();
     return list
       .filter(c => !sports.length || sports.includes(c.categoryId))
-      .filter(c => statuses.includes(String(c.status)))
+      .filter(c => statuses.includes(String(classDisplayStatus(c, scheduleData, now))))
       .filter(c => !coachIds.length || coachIds.includes(c.coachId))
       .filter(c => !needle || `${c.className} ${c.categoryName} ${c.coachName}`.toLowerCase().includes(needle))
       .sort(SORTS[sort].fn);
-  }, [list, sports, statuses, coachIds, q, sort]);
+  }, [list, sports, statuses, coachIds, q, sort, scheduleData, now]);
   const activeSport = sports.length === 1 ? (categories.data ?? []).find(c => c.id === sports[0]) : null;
   const title = q ? `Kết quả cho “${q}”` : activeSport ? `Các lớp ${activeSport.categoryName}` : 'Tìm nhịp tập của bạn';
-  const scheduleKnown = !sessions.loading && !!sessions.data && (!sessions.usingSample || classes.usingSample);
   const usingSample = classes.usingSample || categories.usingSample || sessions.usingSample;
 
   return (
@@ -114,7 +115,7 @@ export default function Classes() {
 
         <section className="catalog-results" aria-label="Danh sách lớp học" aria-live="polite" aria-busy={classes.loading}>
           <div className="catalog-result-head"><p>{classes.loading ? 'Đang tìm lớp dành cho bạn…' : classes.error && !classes.usingSample ? 'Danh sách lớp chưa sẵn sàng' : <><strong>{visible.length}</strong> lớp phù hợp</>}</p>{hasFilters && <button type="button" onClick={() => setParams({}, { replace: true })}>Xóa bộ lọc<Icon name="close" size={14} /></button>}</div>
-          {classes.loading ? <Loading label="Đang tải lớp học" /> : visible.length ? <div className={`product-grid ${showFilters ? 'product-grid--3' : 'product-grid--4'}`}>{visible.map(item => <ClassCard key={item.id} item={item} started={scheduleKnown ? classStarted(item, sessions.data) : undefined} scheduleKnown={scheduleKnown} pricing={pricing} />)}</div> : !classes.error || classes.usingSample ? <EmptyState title="Chưa tìm thấy lớp phù hợp" action={<Button variant="secondary" onClick={() => setParams({}, { replace: true })}>Xóa bộ lọc</Button>}>Thử một từ khóa khác hoặc chọn thêm bộ môn, huấn luyện viên và tình trạng lớp.</EmptyState> : null}
+          {classes.loading ? <Loading label="Đang tải lớp học" /> : visible.length ? <div className={`product-grid ${showFilters ? 'product-grid--3' : 'product-grid--4'}`}>{visible.map(item => <ClassCard key={item.id} item={item} started={scheduleData ? classStarted(item, scheduleData, now) : undefined} scheduleKnown={classScheduleKnown(item, scheduleData)} displayStatus={classDisplayStatus(item, scheduleData, now)} pricing={pricing} />)}</div> : !classes.error || classes.usingSample ? <EmptyState title="Chưa tìm thấy lớp phù hợp" action={<Button variant="secondary" onClick={() => setParams({}, { replace: true })}>Xóa bộ lọc</Button>}>Thử một từ khóa khác hoặc chọn thêm bộ môn, huấn luyện viên và tình trạng lớp.</EmptyState> : null}
         </section>
       </div>
     </div>

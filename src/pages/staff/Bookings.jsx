@@ -10,13 +10,9 @@ import { discountFor, hasClassPrices, priceAfter } from '../../lib/pricing.js';
 import { useToast } from '../../components/Toast.jsx';
 import { Button, EmptyState, ErrorNotice, Field, Loading, Notice, SampleDataNotice, StatusTag } from '../../components/ui.jsx';
 
-// A booking holds its spot unless it was cancelled (the API deletes cancelled bookings, but older
-// rows may still say Cancelled)
 const holdsSpot = (b) => b.status !== 3;
 const paid = (b) => b.status === 1 && Number(b.price ?? 0) > 0;
 
-// The member's card, shown under the member picker. With class fees (CHANGELOG Part B, B53) it only gives a
-// discount; before them a class needs a card valid on its next session.
 function CardStatus({ cards, priced, discount }) {
   if (cards.loading) return <p className="muted small">Đang kiểm tra thẻ thành viên…</p>;
   if (cards.error) return <ErrorNotice error={cards.error} onRetry={cards.reload} />;
@@ -60,8 +56,6 @@ function CardStatus({ cards, priced, discount }) {
   );
 }
 
-// Front desk: book a member into a class (taking the class fee once the API bills classes), or look up and
-// cancel their bookings.
 export default function Bookings() {
   const toast = useToast();
   const members = useApi(() => api.members.list(), [], { sample: mock.members });
@@ -70,12 +64,11 @@ export default function Bookings() {
   const packages = useApi(() => api.packages.list(), [], { sample: mock.packages });
   const [memberId, setMemberId] = useState('');
   const [classId, setClassId] = useState('');
-  const [method, setMethod] = useState('1'); // cash, the usual way at the desk
+  const [method, setMethod] = useState('1');
   const [lookupId, setLookupId] = useState('');
   const [saving, setSaving] = useState(false);
   const [formError, setFormError] = useState(null);
 
-  // The bookings of the member being booked mark the classes they already hold a spot in
   const memberBookings = useApi(() => api.bookings.byMember(memberId), [memberId], { skip: !memberId });
   const memberCards = useApi(() => api.memberships.byMember(memberId), [memberId], { skip: !memberId });
   const bookings = useApi(() => api.bookings.byMember(lookupId), [lookupId], { skip: !lookupId });
@@ -94,11 +87,10 @@ export default function Bookings() {
   const sessionsKnown = !!sessions.data && !sessions.error && !sessions.usingSample;
   const cardsKnown = !!memberId && !!memberCards.data && !memberCards.error;
   const withSessionsLeft = new Set((sessions.data ?? []).filter((s) => !isSessionOver(s)).map((s) => s.classId));
-  // Before class fees: the member's cards against each class's next session (null while either is unknown)
+
   const cardFor = (id) => (!priced && cardsKnown && sessionsKnown ? cardCheck(memberCards.data, sessions.data, id) : null);
   const deal = priced && cardsKnown ? discountFor(memberCards.data, packages.data) : { percent: 0 };
-  // Classes open for booking; one that can't take this member says why and can't be picked. A class takes members only
-  // before it starts (team rule, 28/10/2026), at the desk as on the web.
+
   const classOptions = (classes.data ?? [])
     .filter((c) => c.status === 1 || c.status === 2)
     .sort((a, b) => a.className.localeCompare(b.className, 'vi'))
@@ -138,7 +130,7 @@ export default function Bookings() {
     const who = memberName(memberId);
     const className = chosen?.className ?? 'lớp này';
     const alreadyBooked = `${who} đã đặt lớp ${className} rồi.`;
-    // Before class fees the API does not check the card (B45), so the desk does
+
     if (chosenCard && !chosenCard.ok) {
       setFormError(`${chosenCard.reason} ${who} cần thẻ còn hiệu lực vào buổi học kế tiếp của lớp (${formatDate(chosenCard.nextDate)}).`);
       return;
@@ -149,14 +141,14 @@ export default function Bookings() {
     }
     setSaving(true);
     try {
-      // Checked again here: the member may have booked online since this page loaded
+
       const current = await api.bookings.byMember(memberId);
       if (current.some((b) => b.classId === classId && holdsSpot(b))) {
         setFormError(alreadyBooked);
         memberBookings.reload();
         return;
       }
-      // With a fee the money is taken at the desk: the API books and bills at once, working out the amount
+
       const b = await api.bookings.create(fee > 0 ? { memberId, classId, paymentMethod: Number(method) } : { memberId, classId });
       toast.success(
         fee > 0
@@ -169,15 +161,13 @@ export default function Bookings() {
       memberBookings.reload();
       classes.reload();
     } catch (err) {
-      // The API words a repeat booking for the member ("Bạn đã đăng ký…"); name the member instead
+
       setFormError(/đã đăng ký/i.test(err.message) ? alreadyBooked : err.message);
     } finally {
       setSaving(false);
     }
   };
 
-  // The cancel rules of 28/10/2026 (B55): a paid class is refunded in full before it starts — through SePay when the
-  // member paid online, at the desk otherwise — and not at all once it has started
   const startedOf = (b) => {
     const c = (classes.data ?? []).find((x) => x.id === b.classId);
     return c ? classStarted(c, sessionsKnown ? sessions.data : []) : false;
@@ -246,7 +236,7 @@ export default function Bookings() {
             onChange={(_, v) => {
               setMemberId(v);
               setFormError(null);
-              // Show the same member's bookings on the right
+
               if (v) setLookupId(v);
             }}
             options={memberOptions}

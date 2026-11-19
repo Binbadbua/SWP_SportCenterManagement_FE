@@ -7,7 +7,8 @@ import { isMember, useAuth } from '../../context/AuthContext.jsx';
 import {
   formatDate, formatMoney, formatTimeRange, formatWeekday, isSessionOver, realPhone,
 } from '../../lib/format.js';
-import { classStarted } from '../../lib/classes.js';
+import { classDisplayStatus, classStarted } from '../../lib/classes.js';
+import { useCenterNow } from '../../hooks/useCenterNow.js';
 import { afterCheckout } from '../../lib/payments.js';
 import { discountFor, maxDiscount, priceAfter } from '../../lib/pricing.js';
 import Icon from '../../components/Icon.jsx';
@@ -15,11 +16,6 @@ import PayMethods from '../../components/PayMethods.jsx';
 import { AgreeToPolicies } from '../../components/Policies.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, Notice } from '../../components/ui.jsx';
 
-// A member books a class with a fee (CHANGELOG Part B, B53): POST /api/payments/class-checkout holds a place with a
-// pending invoice while the member pays — online through SePay (B54, 15 minutes), or before that a bank transfer that
-// reception confirms (30 minutes). The API works out the amount (the class fee less the discount of the member's card);
-// this page shows the same figure beforehand. Only a class that has not started takes bookings. A free class is
-// booked straight from its page.
 export default function ClassCheckout() {
   const { id } = useParams();
   const { user } = useAuth();
@@ -35,12 +31,13 @@ export default function ClassCheckout() {
   const me = useApi(() => api.members.me.get(), [user?.accountId], { skip: !member });
   const mine = useApi(() => api.bookings.mine(), [user?.accountId], { skip: !member });
 
-  const [picked, setPicked] = useState(null); // null = the first method the API takes
+  const [picked, setPicked] = useState(null);
   const [agree, setAgree] = useState(false);
   const [agreeError, setAgreeError] = useState(null);
   const [paying, setPaying] = useState(false);
   const [failure, setFailure] = useState(null);
   const [unavailable, setUnavailable] = useState(false);
+  const now = useCenterNow();
   const requiredData = [cls, sessions, packages, paymentOptions, ...(member ? [cards, me, mine] : [])];
   const readinessBlocked = requiredData.some((state) => state.loading || state.error || state.usingSample);
 
@@ -66,7 +63,8 @@ export default function ClassCheckout() {
   const full = c?.currentEnrolled != null && c.currentEnrolled >= c.maxCapacity;
   const started = c ? classStarted(c, sessions.data) : false;
   const priced = typeof c?.price === 'number' && c.price > 0;
-  const open = c && c.status === 1 && !started && upcoming.length > 0 && !full;
+  const displayStatus = c ? classDisplayStatus(c, sessions.data, now) : null;
+  const open = c && displayStatus === 1 && !started && upcoming.length > 0 && !full;
   if (!c || !priced || !open) {
     return (
       <div className="container page">
@@ -77,7 +75,7 @@ export default function ClassCheckout() {
               ? 'Không tìm thấy lớp học này'
               : !priced
                 ? 'Lớp này không cần thanh toán trước'
-                : started && c.status !== 3 && c.status !== 4
+                : displayStatus === 2
                   ? 'Lớp này đã bắt đầu'
                   : 'Lớp này không nhận đặt thêm'
           }
@@ -87,7 +85,7 @@ export default function ClassCheckout() {
             ? 'Có thể lớp đã bị xóa hoặc đường dẫn không đúng.'
             : !priced
               ? 'Bạn đặt lớp này ngay trên trang lớp.'
-              : started && c.status !== 3 && c.status !== 4
+              : displayStatus === 2
                 ? 'Chỉ nhận đặt các lớp chưa khai giảng. Hãy chọn một lớp sắp khai giảng cùng môn.'
                 : 'Lớp đã đủ chỗ, đã kết thúc hoặc không còn buổi học sắp tới.'}
         </EmptyState>
@@ -106,7 +104,7 @@ export default function ClassCheckout() {
 
   const pay = async (e) => {
     e.preventDefault();
-    if (paying || !member || readinessBlocked || !opts || already) return;
+    if (paying || !member || readinessBlocked || !opts || already || classDisplayStatus(c, sessions.data) !== 1) return;
     if (!agree) {
       setAgreeError('Bạn cần đồng ý với điều khoản trước khi thanh toán.');
       return;
@@ -122,7 +120,7 @@ export default function ClassCheckout() {
         paymentMethod: method,
         returnUrl: `${window.location.origin}/payment/result`,
       });
-      // Nothing to pay after all (the API books it at once)
+
       if (afterCheckout(res, method, navigate) === null) navigate('/account?tab=bookings');
     } catch (err) {
       if (isMissingRoute(err)) setUnavailable(true);

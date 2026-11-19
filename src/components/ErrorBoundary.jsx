@@ -1,6 +1,5 @@
 import { Component } from 'react';
 
-// Stops one broken page from blanking the whole app.
 export default class ErrorBoundary extends Component {
   state = { error: null };
 
@@ -12,7 +11,6 @@ export default class ErrorBoundary extends Component {
     console.error('Page crashed:', error, info.componentStack);
   }
 
-  // Clear the error when the user navigates to another page
   componentDidUpdate(prev) {
     if (this.state.error && prev.resetKey !== this.props.resetKey) this.setState({ error: null });
   }

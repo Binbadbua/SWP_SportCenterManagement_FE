@@ -1,3 +1,4 @@
+import RoleLabel from '../../components/RoleLabel.jsx';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../../api/endpoints.js';
@@ -10,6 +11,8 @@ import { useAuth, isStaff } from '../../context/AuthContext.jsx';
 import { HERO_SLIDES, HERO_TIMING, sportImage } from '../../lib/images.js';
 import { useSlideshow } from '../../hooks/useSlideshow.js';
 import { daysUntil, formatDateRange } from '../../lib/format.js';
+import { classDisplayStatus, classScheduleKnown } from '../../lib/classes.js';
+import { useCenterNow } from '../../hooks/useCenterNow.js';
 import { CoachPortrait, classEyebrow } from '../../components/cards.jsx';
 import Icon from '../../components/Icon.jsx';
 import AutoScrollRow from '../../components/AutoScrollRow.jsx';
@@ -29,10 +32,10 @@ function SectionHead({ id, eyebrow, title, description, action }) {
   );
 }
 
-function HomeClass({ item, tabIndex, pricing }) {
+function HomeClass({ item, tabIndex, pricing, scheduleKnown, displayStatus }) {
   const knownCapacity = Number.isFinite(item.maxCapacity) && Number.isFinite(item.currentEnrolled);
   const left = knownCapacity ? Math.max(0, item.maxCapacity - item.currentEnrolled) : item.spotsLeft;
-  const eyebrow = classEyebrow(item, left);
+  const eyebrow = !scheduleKnown && displayStatus === 1 ? { text: 'Xem lịch để kiểm tra đăng ký', tone: 'muted' } : classEyebrow(item, left, undefined, displayStatus);
   return (
     <Link to={`/classes/${item.id}`} className="home-class" tabIndex={tabIndex}>
       <div className="home-class__photo">
@@ -125,17 +128,17 @@ export default function Home() {
   const classes = useApi(() => api.classes.list(), [], { sample: mock.classes });
   const coaches = useApi(() => api.coaches.list(), [], { sample: mock.coaches });
   const pricing = useMemberDiscount({ enabled: !classes.usingSample });
-  const sources = [categories, classes, coaches];
+  const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
+  const now = useCenterNow();
+  const scheduleData = !sessions.loading && !sessions.error && (!sessions.usingSample || classes.usingSample) ? sessions.data : undefined;
+  const sources = [categories, classes, coaches, sessions];
   const usingSample = sources.some(source => source.usingSample);
   const classList = classes.data ?? [];
-  const upcoming = classList.filter(item => {
-    const days = daysUntil(item.startDate);
-    return item.status === 1 && days !== null && Number.isFinite(days) && days >= 0;
-  }).sort((a, b) => daysUntil(a.startDate) - daysUntil(b.startDate));
+  const upcoming = classList.filter(item => classDisplayStatus(item, scheduleData, now) === 1).sort((a, b) => daysUntil(a.startDate) - daysUntil(b.startDate));
   const visibleClasses = upcoming;
   const allSports = categories.data ?? [];
   const visibleSports = showAllSports ? allSports : allSports.slice(0, 8);
-  const countBySport = classList.filter(item => item.status === 2).reduce((counts, item) => ({ ...counts, [item.categoryId]: (counts[item.categoryId] ?? 0) + 1 }), {});
+  const countBySport = classList.filter(item => classDisplayStatus(item, scheduleData, now) === 2).reduce((counts, item) => ({ ...counts, [item.categoryId]: (counts[item.categoryId] ?? 0) + 1 }), {});
   const coachList = [...(coaches.data ?? [])].sort((a, b) => (b.experienceYears ?? 0) - (a.experienceYears ?? 0));
   const accountHref = user ? isStaff(user) ? '/staff' : '/account?tab=schedule' : '/register';
   const accountAction = user ? isStaff(user) ? 'Mở khu vực nhân viên' : 'Mở lịch tập của tôi' : 'Tạo tài khoản của bạn';
@@ -157,7 +160,7 @@ export default function Home() {
                 <Link key={category.id} className="home-sport" to={`/classes?sport=${encodeURIComponent(category.id)}&status=2`}>
                   <img src={sportImage(category.categoryName)} alt="" loading="lazy" decoding="async" />
                   <div className="home-sport__shade" />
-                  <div className="home-sport__label"><div><h3>{category.categoryName}</h3><p>{classes.loading || (classes.error && !classes.usingSample) ? 'Khám phá bộ môn' : `${countBySport[category.id] ?? 0} lớp đang diễn ra`}</p></div><span><Icon name="arrowRight" size={18} /></span></div>
+                  <div className="home-sport__label"><div><h3>{category.categoryName}</h3><p>{classes.loading || (classes.error && !classes.usingSample) || !scheduleData ? 'Khám phá bộ môn' : `${countBySport[category.id] ?? 0} lớp đang diễn ra`}</p></div><span><Icon name="arrowRight" size={18} /></span></div>
                 </Link>
               ))}
             </div>
@@ -171,7 +174,7 @@ export default function Home() {
           <SectionHead id="home-classes-title" eyebrow="Lên lịch cho một khởi đầu mới" title="Sắp khai giảng" description="Xem ngày học, huấn luyện viên và học phí để tìm lớp phù hợp với bạn." action={<Link className="home-text-link" to="/classes?status=1">Xem các lớp sắp khai giảng<Icon name="arrowRight" size={18} /></Link>} />
           <ErrorNotice error={!classes.usingSample ? classes.error : null} onRetry={classes.reload} />
           <MemberDiscountNotice pricing={pricing} />
-          {classes.loading ? <Loading label="Đang tải các lớp sắp khai giảng" /> : visibleClasses.length ? <AutoScrollRow className="home-classes-row" label="các lớp sắp khai giảng" direction="right" speed={18}>{visibleClasses.map(item => <HomeClass key={item.id} item={item} pricing={pricing} />)}</AutoScrollRow> : !classes.error || classes.usingSample ? <div className="home-empty" role="status"><Icon name="calendar" size={28} /><h3>Chưa có lịch khai giảng phù hợp</h3><p>Bạn có thể xem lịch hiện tại hoặc quay lại khi trung tâm mở lớp mới.</p></div> : null}
+          {classes.loading ? <Loading label="Đang tải các lớp sắp khai giảng" /> : visibleClasses.length ? <AutoScrollRow className="home-classes-row" label="các lớp sắp khai giảng" direction="right" speed={18}>{visibleClasses.map(item => <HomeClass key={item.id} item={item} pricing={pricing} scheduleKnown={classScheduleKnown(item, scheduleData)} displayStatus={classDisplayStatus(item, scheduleData, now)} />)}</AutoScrollRow> : !classes.error || classes.usingSample ? <div className="home-empty" role="status"><Icon name="calendar" size={28} /><h3>Chưa có lịch khai giảng phù hợp</h3><p>Bạn có thể xem lịch hiện tại hoặc quay lại khi trung tâm mở lớp mới.</p></div> : null}
           {visibleClasses.length > 0 && <p className="home-price-note">Học phí hiển thị cho toàn khóa. Ưu đãi theo thẻ thành viên được áp dụng khi đủ điều kiện.</p>}
         </div>
       </section>
@@ -193,12 +196,10 @@ export default function Home() {
         </div>
       </section>
 
-
-
       <section className="home-section container" aria-labelledby="home-coaches-title">
         <SectionHead id="home-coaches-title" eyebrow="Cùng bạn đi xa hơn" title="Đội ngũ huấn luyện viên" description="Tìm người đồng hành và phương pháp tập phù hợp với mục tiêu của bạn." action={<Link className="home-text-link" to="/coaches">Tìm hiểu đội ngũ<Icon name="arrowRight" size={18} /></Link>} />
         <ErrorNotice error={!coaches.usingSample ? coaches.error : null} onRetry={coaches.reload} />
-        {coaches.loading ? <Loading label="Đang tải huấn luyện viên" /> : coachList.length ? <AutoScrollRow className="home-coaches-row" label="đội ngũ huấn luyện viên" direction="left" speed={18}>{coachList.map(coach => <Link key={coach.id} className="home-coach" to={`/coaches/${coach.id}`}><div className="home-coach__photo"><CoachPortrait coach={coach} />{Number(coach.experienceYears) > 0 && <span>{coach.experienceYears} năm kinh nghiệm</span>}</div><div className="home-coach__body"><p>Huấn luyện viên</p><h3>{coach.fullName}</h3><span>{coach.specialization || 'Đồng hành cùng hành trình tập luyện của bạn'}</span><div className="home-coach__link">Xem hồ sơ<Icon name="arrowRight" size={17} /></div></div></Link>)}</AutoScrollRow> : !coaches.error && <div className="home-empty"><Icon name="user" size={26} /><p>Thông tin huấn luyện viên sẽ sớm được cập nhật.</p></div>}
+        {coaches.loading ? <Loading label="Đang tải huấn luyện viên" /> : coachList.length ? <AutoScrollRow className="home-coaches-row" label="đội ngũ huấn luyện viên" direction="left" speed={18}>{coachList.map(coach => <Link key={coach.id} className="home-coach" to={`/coaches/${coach.id}`}><div className="home-coach__photo"><CoachPortrait coach={coach} />{Number(coach.experienceYears) > 0 && <span>{coach.experienceYears} năm kinh nghiệm</span>}</div><div className="home-coach__body"><p><RoleLabel role="Coach" /></p><h3>{coach.fullName}</h3><span>{coach.specialization || 'Đồng hành cùng hành trình tập luyện của bạn'}</span><div className="home-coach__link">Xem hồ sơ<Icon name="arrowRight" size={17} /></div></div></Link>)}</AutoScrollRow> : !coaches.error && <div className="home-empty"><Icon name="user" size={26} /><p>Thông tin huấn luyện viên sẽ sớm được cập nhật.</p></div>}
       </section>
     </div>
   );

@@ -1,8 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FRONT_DESK_PHONE } from '../lib/contact.js';
 
-// The member terms and privacy policy people agree to (Register, Checkout), each shown on its own page
-// (pages/store/Policy.jsx). Keep them true to how the site works; a rule the center adds goes here too.
 export const POLICY_UPDATED = '30/10/2026';
 
 export const POLICIES = {
@@ -35,14 +33,12 @@ export const POLICIES = {
   },
 };
 
-// The member terms that change once classes have fees (CHANGELOG Part B, B53); pages/store/Policy.jsx swaps them in
 export const TERMS_WITH_CLASS_FEES = {
   'Gói tập và thẻ thành viên': 'Mỗi gói dùng cho mọi môn: trong thời hạn thẻ, tính từ ngày bắt đầu, bạn tự tập không giới hạn ở khu gym, cardio và hồ bơi và được giảm học phí mọi lớp theo mức của gói; lễ tân kiểm tra thẻ và ghi lượt vào khi bạn đến. Thẻ chỉ dùng cho chính chủ tài khoản. Đơn đặt trên web thanh toán trực tuyến, không trả tại quầy; đến trực tiếp thì mua tại quầy lễ tân. Hóa đơn lưu ở Tài khoản của tôi → Hóa đơn.',
   'Đặt lớp': 'Mỗi lớp có học phí cả khóa, trả một lần khi đặt; chỉ đặt được lớp chưa bắt đầu. Thẻ thành viên còn hiệu lực vào ngày thanh toán được giảm theo gói; không có thẻ thì trả giá gốc, và mua gói sau khi đã trả học phí không được hoàn phần chênh lệch. Đặt trên web thì thanh toán trực tuyến; chỗ được giữ trong lúc chờ thanh toán (15 phút với SePay), quá hạn lượt đặt tự hủy và chỗ được trả lại. Lớp đã đủ chỗ hoặc đã kết thúc không nhận đặt thêm.',
   'Hoàn tiền, bảo lưu': 'Hủy lớp đã thanh toán trước khi lớp bắt đầu: hoàn đủ học phí (qua lễ tân bằng chuyển khoản hoặc tiền mặt, tại quầy nếu bạn trả tại quầy). Lớp đã bắt đầu: vẫn hủy được nhưng không hoàn học phí và không đặt lại được. Lượt đặt chưa thanh toán hủy lúc nào cũng được, chưa bị trừ tiền. Thẻ thành viên và bảo lưu: gửi yêu cầu ở Tài khoản của tôi → Hỗ trợ; lễ tân xem xét từng trường hợp và trả lời tại đó.',
 };
 
-// Opens in a new tab so a half-filled form (register, checkout) is still there when the reader comes back
 function PolicyLink({ kind }) {
   return (
     <Link className="text-link" to={POLICIES[kind].path} target="_blank" rel="noopener">
@@ -52,8 +48,6 @@ function PolicyLink({ kind }) {
   );
 }
 
-// The words next to an agree checkbox, with the two policies as links. `termsNote` adds a few words
-// after the terms link (Checkout points out that refunds are part of them).
 export function AgreeToPolicies({ lead = 'Tôi đã đọc và đồng ý với', termsNote = '' }) {
   return (
     <>

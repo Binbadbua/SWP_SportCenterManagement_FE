@@ -1,12 +1,10 @@
-// Thin fetch wrapper for the ASP.NET Core API.
-// - In development, leave VITE_API_BASE_URL empty: Vite proxies /api to the back-end (see vite.config.js).
-// - In production, set VITE_API_BASE_URL to the API origin, e.g. https://api.example.com
+
 
 import { mutationGuard, mutationScope, retryAfterMilliseconds } from '../lib/mutationGuard.js';
+import { expireSession, getSessionToken, tokenExpired } from '../lib/session.js';
 
 const BASE_URL = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '');
 
-// A link the API hands back as a path ("/api/payments/…") points at the API, not at this site
 export const apiUrl = (path) => (/^https?:\/\//i.test(path) ? path : BASE_URL + path);
 
 export class ApiError extends Error {
@@ -14,7 +12,7 @@ export class ApiError extends Error {
     super(message);
     this.name = 'ApiError';
     this.status = status;
-    this.offline = offline; // true when the back-end could not be reached at all
+    this.offline = offline;
     this.details = details;
     this.timeout = timeout;
     this.retryAfterMs = retryAfterMs;
@@ -29,15 +27,12 @@ const parse = (text) => {
   }
 };
 
-// The API has no exception handler: a service that throws comes back as HTTP 500 with a plain-text
-// stack trace ("System.Exception: Lớp học không tồn tại.\n   at ..."). Keep only the message.
 function messageFromText(text) {
   const firstLine = (text ?? '').split('\n')[0].trim();
-  if (!firstLine || firstLine.startsWith('<')) return null; // empty or an HTML error page
+  if (!firstLine || firstLine.startsWith('<')) return null;
   return firstLine.replace(/^[\w.]+Exception:\s*/, '') || null;
 }
 
-// Messages the API still writes in English, as the website shows them
 const VI_MESSAGES = {
   'Invalid username or password': 'Sai tên đăng nhập hoặc mật khẩu.',
   'Account is not active': 'Tài khoản đang bị khóa hoặc chưa hoạt động.',
@@ -79,8 +74,6 @@ const toVietnamese = (message) => {
   return message;
 };
 
-// ASP.NET Core returns ProblemDetails: { title, detail } or validation { errors: { Field: [msg] } },
-// some actions return a plain string (NotFound("...")) or { message }.
 function messageFrom(body, status, text) {
   if (body?.errors && typeof body.errors === 'object') {
     const first = Object.values(body.errors).flat().filter(Boolean);
@@ -103,11 +96,13 @@ export async function request(method, path, body, { signal, timeoutMs = method =
   const form = body instanceof FormData;
   const headers = { Accept: 'application/json' };
   if (body !== undefined && !form) headers['Content-Type'] = 'application/json';
-  let token;
-  try {
-    token = localStorage.getItem('sportcenter.token');
-    if (token) headers.Authorization = `Bearer ${token}`;
-  } catch { /* Storage may be unavailable; let the API report whether sign-in is required. */ }
+  const anonymousAuth = /^\/api\/auth\/(login|register|forgot-password|reset-password)(?:\?|$)/.test(path);
+  const token = anonymousAuth ? null : getSessionToken();
+  if (token && tokenExpired(token)) {
+    expireSession(token);
+    throw new ApiError('Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.', { status: 401 });
+  }
+  if (token) headers.Authorization = `Bearer ${token}`;
 
   const scope = mutationScope(token);
   const admission = mutationGuard.begin(method, path, body, scope);
@@ -124,10 +119,13 @@ export async function request(method, path, body, { signal, timeoutMs = method =
       method, headers, signal: controller.signal,
       body: body === undefined ? undefined : form ? body : JSON.stringify(body),
     });
+    if (res.status === 401 && token) expireSession(token);
+    if (token && token !== getSessionToken() && res.status !== 401) throw new DOMException('Phiên đăng nhập đã thay đổi.', 'AbortError');
     if (res.status === 204) { admission.success(); return null; }
-    // Keep the deadline active while reading the response body too.
+
     const text = await res.text();
     const data = text ? parse(text) : null;
+    if (token && token !== getSessionToken() && res.status !== 401) throw new DOMException('Phiên đăng nhập đã thay đổi.', 'AbortError');
     if (!res.ok) {
       const apiMessage = data && typeof data === 'object'
         && ['message', 'detail', 'title'].some((key) => typeof data[key] === 'string' && data[key].trim());
@@ -148,7 +146,7 @@ export async function request(method, path, body, { signal, timeoutMs = method =
       }
       throw new DOMException('Đã hủy yêu cầu.', 'AbortError');
     }
-    if (error instanceof ApiError) throw error;
+    if (error instanceof ApiError || error?.name === 'AbortError') throw error;
     throw new ApiError('Không kết nối được máy chủ. Hãy kiểm tra kết nối rồi thử lại.', { offline: true });
   } finally {
     admission.release();

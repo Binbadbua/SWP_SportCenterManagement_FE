@@ -1,3 +1,4 @@
+import RoleLabel from '../../components/RoleLabel.jsx';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../../api/endpoints.js';
 import * as mock from '../../api/mockData.js';
@@ -6,17 +7,17 @@ import { useMemberDiscount } from '../../hooks/useMemberDiscount.js';
 import MemberDiscountNotice from '../../components/MemberDiscountNotice.jsx';
 import { formatShortDate, formatTimeRange, formatWeekday, todayLocalDateString } from '../../lib/format.js';
 import Icon from '../../components/Icon.jsx';
-import { classStarted } from '../../lib/classes.js';
+import { classDisplayStatus, classScheduleKnown, classStarted } from '../../lib/classes.js';
+import { useCenterNow } from '../../hooks/useCenterNow.js';
 import { ClassCard, CoachPortrait } from '../../components/cards.jsx';
 import { CoachFacts, classesOf, sportsOf } from '../../components/CoachFacts.jsx';
 import { Button, EmptyState, ErrorNotice, Loading, SampleDataNotice } from '../../components/ui.jsx';
 
 const UPCOMING_SHOWN = 8;
 const day = (v) => String(v).slice(0, 10);
-// "Tennis", "Tennis và Yoga", "Tennis, Yoga và Bơi lội"
+
 const joinVi = (xs) => (xs.length < 2 ? xs.join('') : `${xs.slice(0, -1).join(', ')} và ${xs[xs.length - 1]}`);
 
-// One coach: profile, the classes they run and their next sessions (all public on the API)
 export default function CoachDetail() {
   const { id } = useParams();
   const coach = useApi(() => api.coaches.get(id), [id], {
@@ -26,6 +27,8 @@ export default function CoachDetail() {
   const sessions = useApi(() => api.schedules.list(), [], { sample: mock.sessions });
 
   const pricing = useMemberDiscount({ enabled: !classes.usingSample });
+  const now = useCenterNow();
+  const scheduleData = !sessions.loading && !sessions.error && (!sessions.usingSample || classes.usingSample) ? sessions.data : undefined;
 
   if (coach.loading) {
     return (
@@ -74,7 +77,7 @@ export default function CoachDetail() {
           <CoachPortrait coach={c} />
         </div>
         <div className="coach-page__info">
-          <p className="label coach-page__eyebrow">Huấn luyện viên</p>
+          <p className="label coach-page__eyebrow"><RoleLabel role="Coach" /></p>
           <h1 className="display coach-page__name">{c.fullName}</h1>
           <p className="coach-page__lead">
             {c.experienceYears} năm kinh nghiệm huấn luyện
@@ -100,7 +103,7 @@ export default function CoachDetail() {
           <Loading />
         ) : mine.length ? (
           <div className="product-grid product-grid--4">
-            {mine.map((k) => <ClassCard key={k.id} item={k} pricing={pricing} started={sessions.data ? classStarted(k, sessions.data) : undefined} />)}
+            {mine.map((k) => <ClassCard key={k.id} item={k} pricing={pricing} started={scheduleData ? classStarted(k, scheduleData, now) : undefined} scheduleKnown={classScheduleKnown(k, scheduleData)} displayStatus={classDisplayStatus(k, scheduleData, now)} />)}
           </div>
         ) : (
           !classes.error && <p className="muted">Hiện chưa phụ trách lớp nào.</p>

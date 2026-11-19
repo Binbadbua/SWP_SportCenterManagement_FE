@@ -10,7 +10,6 @@ const timeOf = value => {
 };
 const centerTime = now => new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit', second: '2-digit', hourCycle: 'h23' }).format(now);
 
-// Keep unchanged historical values during corrections; every new date/slot must be in the present or future.
 export function validateClassDates(values, mode, { row, now = new Date() } = {}) {
   const errors = {};
   const today = todayCenterDateString(now);
@@ -71,4 +70,33 @@ export function validateSessionSlot(values, mode, { row, now = new Date(), looku
     errors.date = 'Ngày học phải nằm trong thời gian của lớp đã chọn.';
   }
   return errors;
+}
+
+export function validateSessionConflicts(values, mode, { row, lookups = {}, rows, rowsReady = false, lookupsReady = false } = {}) {
+  const start = timeOf(values.startTime), end = timeOf(values.endTime), date = values.date;
+  if (!values.classId || !values.roomId || !validDay(date) || !start || !end || end <= start) return {};
+  const unchanged = mode === 'edit' && row && values.classId === row.classId && values.roomId === row.roomId
+    && date === dayOf(row.date) && start === timeOf(row.startTime) && end === timeOf(row.endTime);
+  if (unchanged) return {};
+  if (!rowsReady || !Array.isArray(rows)) return { startTime: 'Chưa tải đủ lịch học thật để kiểm tra trùng. Hãy tải lại danh sách trước khi lưu.' };
+  if (!lookupsReady || !Array.isArray(lookups.classes)) return { classId: 'Chưa tải đủ thông tin lớp và huấn luyện viên để kiểm tra lịch trùng.' };
+  const cls = lookups.classes.find(item => item.id === values.classId);
+  if (!cls?.coachId) return { classId: 'Chưa xác định được huấn luyện viên của lớp đã chọn. Hãy tải lại dữ liệu trước khi xếp lịch.' };
+  for (const existing of rows) {
+    if (mode === 'edit' && row?.id && existing.id === row.id) continue;
+    const otherDate = dayOf(existing.date);
+    if (!validDay(otherDate)) return { startTime: 'Có buổi học thiếu ngày hợp lệ; chưa thể xác nhận lịch không trùng.' };
+    if (otherDate !== date) continue;
+    const otherStart = timeOf(existing.startTime), otherEnd = timeOf(existing.endTime);
+    if (!otherStart || !otherEnd || otherEnd <= otherStart) return { startTime: 'Có buổi học cùng ngày thiếu giờ hợp lệ; hãy kiểm tra lại lịch trước khi lưu.' };
+    if (start >= otherEnd || end <= otherStart) continue;
+    if (!existing.classId || !existing.roomId) return { startTime: 'Có buổi học trùng giờ thiếu thông tin lớp hoặc phòng; hãy tải lại lịch trước khi lưu.' };
+    const hours = otherStart.slice(0, 5) + '–' + otherEnd.slice(0, 5);
+    if (existing.roomId === values.roomId) return { roomId: 'Phòng đã có buổi học từ ' + hours + ' trong ngày đã chọn. Hãy đổi phòng hoặc giờ học.' };
+    if (existing.classId === values.classId) return { classId: 'Lớp này đã có buổi học từ ' + hours + ' trong ngày đã chọn; không thể xếp hai buổi trùng nhau.' };
+    const otherClass = lookups.classes.find(item => item.id === existing.classId);
+    if (!otherClass?.coachId) return { startTime: 'Chưa xác định được huấn luyện viên của một buổi học trùng giờ; hãy tải lại thông tin lớp trước khi lưu.' };
+    if (otherClass.coachId === cls.coachId) return { classId: 'Huấn luyện viên của lớp đang có buổi dạy từ ' + hours + ' trong ngày đã chọn, kể cả ở phòng khác. Hãy đổi giờ hoặc huấn luyện viên.' };
+  }
+  return {};
 }

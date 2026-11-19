@@ -1,4 +1,4 @@
-// Small inline icon set (24×24, 1.5px stroke) so no icon library is needed.
+
 const PATHS = {
   search: <><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.5 15.5 5 5" /></>,
   heart: <path d="M12 20s-7.5-4.6-7.5-10.1A4.3 4.3 0 0 1 12 7.3a4.3 4.3 0 0 1 7.5 2.6C19.5 15.4 12 20 12 20Z" />,

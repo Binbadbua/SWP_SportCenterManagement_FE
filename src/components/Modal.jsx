@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Icon from './Icon.jsx';
 
-// Accessible dialog built on the native <dialog> element (Esc closes, focus is trapped by the browser).
 export default function Modal({ open, title, onClose, children, footer, wide = false }) {
   const ref = useRef(null);
 
@@ -17,14 +16,13 @@ export default function Modal({ open, title, onClose, children, footer, wide = f
       ref={ref}
       className={`modal ${wide ? 'modal--wide' : ''}`}
       onCancel={(e) => {
-        // A file picker closed without a choice fires "cancel" on its <input>, and that event bubbles up
-        // to here: only the dialog's own cancel (Esc) closes it
+
         if (e.target !== e.currentTarget) return;
         e.preventDefault();
         onClose?.();
       }}
       onClick={(e) => {
-        if (e.target === ref.current) onClose?.(); // click on backdrop
+        if (e.target === ref.current) onClose?.();
       }}
       aria-labelledby="modal-title"
     >

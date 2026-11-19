@@ -2,7 +2,6 @@ import { formatMoney } from '../lib/format.js';
 import { priceAfter } from '../lib/pricing.js';
 import '../styles/class-price.css';
 
-// A preview only; checkout never supplies this amount to the server.
 export default function ClassPrice({ price, pricing, className = '' }) {
   const known = typeof price === 'number' && Number.isFinite(price) && price >= 0;
   const percent = pricing?.deal?.percent ?? 0;

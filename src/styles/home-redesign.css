@@ -1,4 +1,4 @@
-/* Home: Vietnamese typography, a warm canvas and purposeful actions. */
+
 .home-page {
   --home-accent: #c63b13;
   --home-accent-hover: #a92f0c;
@@ -32,7 +32,7 @@
 .home-text-link { display: inline-flex; align-items: center; justify-content: center; gap: 9px; min-height: 44px; padding: 5px 0; background: transparent; border: 0; color: var(--home-text); font-size: 12px; font-weight: 600; line-height: 1.5; text-decoration: none; }
 .home-text-link svg { color: var(--home-accent); flex-shrink: 0; }
 .home-text-link:hover { color: var(--home-accent); }
-/* Full-width photo slideshow; the refreshed copy and typography stay fixed. */
+
 .home-hero { position: relative; isolation: isolate; display: flex; align-items: center; min-height: calc(100svh - var(--home-header-height, 97px)); overflow: hidden; color: white; background: #202923; }
 .home-hero__photos, .home-hero__shade { position: absolute; inset: 0; pointer-events: none; }
 .home-hero__photos { z-index: -2; }
@@ -202,7 +202,6 @@
   .home-class { grid-template-columns: 110px minmax(0, 1fr); }
 }
 
-/* Keep all Home lettering in the new typeface, including initials from the shared portrait. */
 .home-coach__photo .coach-portrait--mono span { font-family: var(--font-home); font-size: clamp(42px, 5vw, 64px); font-weight: 700; letter-spacing: -.05em; line-height: 1.2; color: #5d7251; }
 .home-more[aria-expanded="true"] svg { transform: rotate(180deg); }
 main:has(> .home-page) + .site-footer { margin-top: 12px; }
@@ -216,7 +215,6 @@ main:has(> .home-page) + .site-footer { margin-top: 12px; }
   .store .site-footer__base a { white-space: nowrap; }
 }
 
-/* Rows are clipped to each section's container, never to the entire viewport. */
 .home-classes-row .home-class { height: 100%; }
 .home-coaches-row .home-coach { display: flex; flex-direction: column; height: 100%; }
 .home-coaches-row .home-coach__body { display: flex; flex: 1; flex-direction: column; }

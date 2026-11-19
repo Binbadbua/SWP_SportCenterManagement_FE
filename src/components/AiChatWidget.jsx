@@ -13,7 +13,6 @@ const PROMPTS = [
   'Trung tâm hiện có những môn thể thao nào?',
 ];
 
-// A different signed-in session gets a fresh, in-memory conversation.
 export default function AiChatWidget() {
   const { user } = useAuth();
   const { pathname, search } = useLocation();
