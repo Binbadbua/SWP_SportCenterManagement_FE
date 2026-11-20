@@ -153,7 +153,18 @@
   min-width: 0;
 }
 
+.staff-filter {
+  min-width: 0;
+  max-width: 100%;
+}
+.staff-filter-help {
+  margin: 12px 0 20px;
+  font-size: 13px;
+  line-height: 1.7;
+}
 .staff-filter .input {
+  max-width: 360px;
+  text-overflow: ellipsis;
   min-height: 44px;
   height: 44px;
   border: 0;

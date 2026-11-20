@@ -16,6 +16,7 @@ import { classRunning, classStarted } from '../../lib/classes.js';
 import { assertClassCanBeDeleted, assertClassDeletionSession, classDeletionLock, classDeletionSession, completeDeletionRows } from '../../lib/classDeletion.js';
 import { classDateMinimum, scheduleDateMinimum, sessionStartMinimum, validateClassDates, validateSessionSlot, validateSessionConflicts } from '../../lib/scheduling.js';
 import { cardsOn } from '../../lib/membership.js';
+import { coachTrainingFilters, trainingSessionOf } from '../../lib/coachTraining.js';
 import { hasClassPrices, hasPackageDiscounts } from '../../lib/pricing.js';
 import { CoachPortrait } from '../../components/cards.jsx';
 import ConfirmRefund from '../../components/ConfirmRefund.jsx';
@@ -99,14 +100,6 @@ function CardCell({ info }) {
 }
 
 const sessionLabel = (s) => `${formatWeekday(s.date)} ${formatDate(s.date)} · ${formatTimeRange(s.startTime, s.endTime)}`;
-
-const sessionOfResult = (sessions, plan, result) => {
-  if (result.sessionId) return (sessions ?? []).find((s) => s.id === result.sessionId);
-  if (!plan) return undefined;
-  const matches = (sessions ?? []).filter((s) =>
-    s.classId === plan.classId && String(s.date).slice(0, 10) === String(result.evaluationDate).slice(0, 10));
-  return matches.length === 1 ? matches[0] : undefined;
-};
 
 async function coachNames() {
   const [members, classes] = await Promise.all([
@@ -960,7 +953,13 @@ export const resources = {
     }),
     doneMessage: (mode, result) => (result?.count ? `Đã lập kế hoạch cho ${result.count} học viên của lớp.` : undefined),
     sample: mock.trainingPlans,
-    lookups: () => ({ members: L.coachMembers, classes: L.coachClasses }),
+    lookups: () => ({
+      members: L.coachMembers, classes: L.coachClasses,
+      results: { load: () => api.trainingResults.forCoach(), sample: mock.trainingResults, required: true },
+      sessions: { load: () => api.schedules.forCoach(), sample: mock.sessions, required: true },
+    }),
+    filters: coachTrainingFilters('plans'),
+    filterHelp: 'Chọn lớp trước, rồi chọn buổi học. Bộ lọc buổi hiển thị kế hoạch có kết quả tại buổi đó; kế hoạch chưa xác định buổi nằm trong “Chưa gắn buổi học”. Ngày tạo kế hoạch không phải ngày học.',
     nameOf: (r) => r.title,
     searchText: (r) => `${r.title} ${r.memberName} ${r.className}`,
     sort: (a, b) => String(b.createdDate).localeCompare(String(a.createdDate)),
@@ -1024,9 +1023,11 @@ export const resources = {
         ]);
         return results.map((r) => {
           const plan = plans.find((p) => p.id === r.planId);
-          const session = sessionOfResult(sessions, plan, r);
+          const session = trainingSessionOf(sessions, plan, r);
           return {
             ...r,
+            classId: plan?.classId || r.classId || session?.classId || '',
+            className: r.className || names.className(plan?.classId || r.classId || session?.classId),
             memberName: r.memberName || names.member(r.memberId),
             planTitle: r.planTitle || (plan?.title ?? '—'),
             sessionId: r.sessionId || session?.id || '',
@@ -1040,16 +1041,18 @@ export const resources = {
     }),
     sample: mock.trainingResults,
     lookups: () => ({
-      plans: L.coachPlans, members: L.coachMembers,
-      sessions: { load: () => api.schedules.forCoach(), sample: mock.sessions },
+      plans: L.coachPlans, members: L.coachMembers, classes: L.coachClasses,
+      sessions: { load: () => api.schedules.forCoach(), sample: mock.sessions, required: true },
     }),
+    filters: coachTrainingFilters('results'),
+    filterHelp: 'Chọn lớp trước, rồi chọn buổi học của lớp đó. Kết quả cũ thiếu thông tin hoặc có nhiều buổi trùng ngày nằm trong “Chưa gắn buổi học”; hệ thống không tự gán nhầm buổi.',
     nameOf: (r) => `${r.memberName} · ${r.planTitle}`,
-    searchText: (r) => `${r.memberName} ${r.planTitle} ${r.coachComment} ${r.sessionText ?? ''}`,
+    searchText: (r) => `${r.memberName} ${r.className ?? ''} ${r.planTitle} ${r.coachComment} ${r.sessionText ?? ''}`,
     sort: (a, b) => String(b.evaluationDate).localeCompare(String(a.evaluationDate)),
     columns: [
       {
         key: 'evaluationDate', label: 'Buổi học', className: 'num',
-        render: (r) => r.sessionText || formatDate(r.evaluationDate),
+        render: (r) => <>{r.sessionText || formatDate(r.evaluationDate)}<span className="cell-sub">{r.className || 'Chưa xác định lớp'}</span></>,
       },
       { key: 'memberName', label: 'Học viên', className: 'cell-strong' },
       { key: 'planTitle', label: 'Kế hoạch' },

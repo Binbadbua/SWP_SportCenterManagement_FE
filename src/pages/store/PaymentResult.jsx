@@ -116,14 +116,6 @@ function PaymentView({ paymentId }) {
       setCancelling(false);
     }
   };
-  const copy = async (value) => {
-    try {
-      await navigator.clipboard.writeText(String(value));
-      toast.success('Đã sao chép.');
-    } catch {
-      toast.info('Hãy chọn và sao chép thông tin chuyển khoản đang hiển thị.');
-    }
-  };
   const kind = p.kind === 'Upgrade' ? 'upgrade' : p.kind === 'Class' || p.className ? 'class' : 'package';
   const left = status === 1 && expiresAt ? timeLeft(expiresAt, now) : null;
   const overdue = status === 1 && !!expiresAt && !left;
@@ -181,9 +173,6 @@ function PaymentView({ paymentId }) {
               <div><dt>Nội dung chuyển khoản</dt><dd className="num payment-reference">{p.paymentReference || '—'}</dd></div>
             </dl>
             <div className="pay-qr__actions">
-              {p.bankAccountNumber && <Button variant="secondary" size="sm" onClick={() => copy(p.bankAccountNumber)}>Sao chép số tài khoản</Button>}
-              {p.paymentReference && <Button variant="secondary" size="sm" onClick={() => copy(p.paymentReference)}>Sao chép nội dung</Button>}
-              <Button variant="secondary" size="sm" onClick={() => copy(p.amount)}>Sao chép số tiền</Button>
               <Button variant="ghost" onClick={cancel} disabled={cancelling || checking}>{cancelling ? 'Đang hủy…' : 'Hủy đơn'}</Button>
             </div>
             <p className="muted small">Giữ nguyên nội dung chuyển khoản để hệ thống nhận đúng đơn. Không chuyển tiền vào mã QR của đơn đã hủy hoặc hết hạn.</p>

@@ -80,7 +80,7 @@ export default function CrudPage({ config }) {
             try {
               return [k, await l.load()];
             } catch (e) {
-              if (e?.offline) throw e;
+              if (e?.offline || l.required) throw e;
               return [k, []];
             }
           }),
@@ -133,6 +133,9 @@ export default function CrudPage({ config }) {
   const description =
     typeof config.description === "function" ? config.description(user) : config.description;
   const filtered = Object.values(filterValues).some(Boolean);
+  const lookupFilterActive = (config.filters ?? []).some((f) => f.requiresLookups && filterValues[f.key]);
+  const filterWaiting = lookupFilterActive && lookups.loading;
+  const filterUnavailable = lookupFilterActive && !!(lookups.error || lookups.usingSample);
 
   const rows = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -140,13 +143,13 @@ export default function CrudPage({ config }) {
     if (config.sort) all.sort(config.sort);
     for (const f of config.filters ?? []) {
       const value = filterValues[f.key];
-      if (value) all = all.filter((r) => f.match(r, value));
+      if (value) all = all.filter((r) => f.match(r, value, lk, filterValues));
     }
     if (!needle || !config.searchText) return all;
     return all.filter((r) =>
       config.searchText(r).toLowerCase().includes(needle),
     );
-  }, [list.data, query, filterValues, config]);
+  }, [list.data, query, filterValues, config, lookups.data]);
 
   const pageCount = Math.max(1, Math.ceil(rows.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
@@ -363,6 +366,7 @@ export default function CrudPage({ config }) {
       {source.preview && <PreviewNotice feature={config.title} />}
       {offline && <SampleDataNotice onRetry={list.reload} />}
       <ErrorNotice error={!offline ? list.error : null} onRetry={list.reload} />
+      <ErrorNotice error={lookups.error} onRetry={lookups.reload} />
 
       {(config.searchText || config.filters) && (
         <div className="staff-toolbar">
@@ -387,14 +391,20 @@ export default function CrudPage({ config }) {
                 <select
                   className="input"
                   aria-label={f.label}
+                  disabled={!!f.disabled?.(filterValues, lk) || !!(f.requiresLookups && (lookups.loading || lookups.error))}
                   value={filterValues[f.key] ?? ""}
                   onChange={(e) => {
-                    setFilterValues((s) => ({ ...s, [f.key]: e.target.value }));
+                    const value = e.target.value;
+                    setFilterValues((s) => ({
+                      ...s,
+                      ...Object.fromEntries((f.resets ?? []).map((key) => [key, ""])),
+                      [f.key]: value,
+                    }));
                     setPage(1);
                   }}
                 >
                   <option value="">{f.all}</option>
-                  {f.options(list.data ?? [], lk).map((o) => (
+                  {f.options(list.data ?? [], lk, filterValues).map((o) => (
                     <option key={o.value} value={o.value}>
                       {o.label}
                     </option>
@@ -403,15 +413,27 @@ export default function CrudPage({ config }) {
                 <Icon name="chevronDown" size={18} className="select-wrap__icon" />
               </div>
             ))}
+            {config.filterHelp && filtered && (
+              <Button variant="ghost" size="sm" onClick={() => {
+                setFilterValues({});
+                setPage(1);
+              }}>Xóa bộ lọc</Button>
+            )}
           </div>
           <span className="muted num">
-            {rows.length} kết quả
+            {filterWaiting ? "Đang tải dữ liệu lọc…" : filterUnavailable ? "Chưa lọc được dữ liệu" : `${rows.length} kết quả`}
           </span>
         </div>
       )}
 
-      {list.loading ? (
+      {config.filterHelp && <p className="muted staff-filter-help">{config.filterHelp}</p>}
+
+      {list.loading || filterWaiting ? (
         <Loading />
+      ) : filterUnavailable ? (
+        <Notice tone="warning" title="Chưa áp dụng được bộ lọc buổi học">
+          Vui lòng thử tải lại dữ liệu ở thông báo phía trên hoặc xóa bộ lọc để xem danh sách.
+        </Notice>
       ) : rows.length ? (
         <>
         <div className="table-wrap">
